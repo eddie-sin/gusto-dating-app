@@ -42,7 +42,7 @@ app.use(
     whitelist: [],
   })
 );
-app.use(express.static("./public")); //static file [for frontend]
+app.use(express.static("./public/login.html")); //static file [for frontend]
 
 //Importing Routers
 const userRouter = require("./routes/userRoutes");
@@ -59,3 +59,5 @@ app.use((req, res, next) => {
 app.use(globalErrorHandler);
 
 module.exports = app;
+
+/* Eddie Note */

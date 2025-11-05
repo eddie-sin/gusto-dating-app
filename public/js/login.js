@@ -44,6 +44,7 @@ form.addEventListener("submit", async (e) => {
     } else {
       showMsg("Login successful! Redirecting...", "success");
       console.log("Login response:", data);
+
       alert("login success");
     }
   } catch (err) {
