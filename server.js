@@ -19,7 +19,7 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 mongoose
-  .connect(DB)
+  .connect(process.env.DATABASE_LOCAL) //EDDIE: D mhr local database nae pl tone pr own, (For Safety)
   .then(() => console.log("DB connection successful"))
   .catch((err) => {
     console.error("DB connection failed:", err);

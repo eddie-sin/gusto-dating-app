@@ -1,5 +1,6 @@
 const express = require("express");
 const authController = require("../controllers/authControllers");
+const feedController = require("../controllers/feedControllers");
 
 const router = express.Router();
 
@@ -13,11 +14,15 @@ router.post("/signup", authController.signup);
 // Login existing user
 router.post("/login", authController.login);
 
-// Protect all routes that come after this middleware
-router.use(authController.protect);
-
 // Update password (must be logged in)
-router.patch("/updatePassword", authController.updatePassword);
+router.patch(
+  "/updatePassword",
+  authController.protect,
+  authController.updatePassword
+);
+
+// Get a chunk (5 profiles)
+router.get("/feed/chunk", authController.protect, feedController.getFeedChunk);
 
 /* ============================================================
    PROFILE / USER ACCOUNT ROUTES

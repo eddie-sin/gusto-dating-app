@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
 
     gender: {
       type: String,
-      enum: ["male", "female"],
+      enum: ["male", "female", "lgbt"],
       required: [true, "Please specify gender (Male or Female)"],
     },
 
@@ -170,6 +170,11 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 10, // initial daily dislike limit
       min: 0,
+    },
+
+    shownProfiles: {
+      type: [mongoose.Schema.Types.ObjectId],
+      default: [],
     },
   },
   {
