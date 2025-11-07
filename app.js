@@ -10,6 +10,7 @@ const hpp = require("hpp"); // to cleans up duplicate parameters
 /* ERROR HANDLERS */
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorControllers");
+const ImageKit = require("imagekit");
 
 const limiter = rateLimit({
   // x amount of request from one ip in a y time
@@ -25,7 +26,35 @@ const app = express();
 app.use(express.json({ limit: "10kb" })); //body parser
 app.use(morgan("dev"));
 app.use("/api", limiter);
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        "default-src": ["'self'"],
+        "script-src": [
+          "'self'",
+          "https://unpkg.com",
+        ],
+        "img-src": [
+          "'self'",
+          "data:",
+          "https://ik.imagekit.io",
+        ],
+        "connect-src": [
+          "'self'",
+          "https://upload.imagekit.io",
+          "https://ik.imagekit.io",
+        ],
+        "style-src": ["'self'", "'unsafe-inline'"],
+        "font-src": ["'self'", "data:"],
+        "frame-ancestors": ["'self'"],
+      },
+    },
+  })
+);
 // temporarily ignoring mogoSanitize middleware (will fix later)
 /* app.use(
   mongoSanitize({
@@ -42,7 +71,24 @@ app.use(
     whitelist: [],
   })
 );
-app.use(express.static("./public/login.html")); //static file [for frontend]
+app.use(express.static("public")); // serve static assets from /public
+
+// ImageKit instance (env is loaded in server.js before app is required)
+const imagekit = new ImageKit({
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+});
+
+// Auth endpoint for client-side uploads
+app.get("/api/v1/imagekit/auth", (req, res) => {
+  const authParams = imagekit.getAuthenticationParameters();
+  res.status(200).json({
+    ...authParams,
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+  });
+});
 
 //Importing Routers
 const userRouter = require("./routes/userRoutes");
