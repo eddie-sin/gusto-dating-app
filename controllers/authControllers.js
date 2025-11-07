@@ -50,8 +50,6 @@ const createAndSendToken = (user, statusCode, res) => {
 
 // SIGNUP — Register new user
 exports.signup = catchAsync(async (req, res, next) => {
-  console.log("hello");
-
   const newUser = await User.create({
     nickname: req.body.nickname,
     dob: req.body.dob,
@@ -72,6 +70,8 @@ exports.signup = catchAsync(async (req, res, next) => {
 
     username: req.body.username,
     password: req.body.password,
+
+    // status defaults to "pending" automatically
   });
 
   createAndSendToken(newUser, 201, res);
@@ -93,7 +93,16 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError("Incorrect username or password", 401));
   }
 
-  // 3. Login success
+  // 3. Check user status
+  if (user.status === "pending") {
+    return next(new AppError("Your account is pending approval by admin.", 403));
+  }
+
+  if (user.status === "rejected") {
+    return next(new AppError("Your account has been rejected by admin.", 403));
+  }
+
+  // 4. Login success
   createAndSendToken(user, 200, res);
 });
 
@@ -137,7 +146,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 // UPDATE PASSWORD — While logged in
 exports.updatePassword = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   const { currentPassword, newPassword } = req.body;
 
   // 1. Get current user (already logged in from protect)

@@ -1,45 +1,79 @@
-/* IMPORTINGS */
-const mongoose = require("mongoose"); // to access mongoDB
-const dotenv = require("dotenv"); // to access env variables
+/* ===============================
+   IMPORTS
+=============================== */
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const app = require("./app");
+const Admin = require("./models/adminModel");
 
-// Load environment variables BEFORE requiring the app so app can use them
-dotenv.config({ path: "./config.env" }); // assign to .env file
+/* ===============================
+   LOAD ENV VARIABLES
+=============================== */
+dotenv.config({ path: "./config.env" });
 
-const app = require("./app"); // express app
-
-// ERROR HANDLING: Handling Code Errors (unCatch)
+/* ===============================
+   HANDLE UNCAUGHT EXCEPTIONS
+=============================== */
 process.on("uncaughtException", (err) => {
   console.error("UNCAUGHT EXCEPTION! Shutting down...");
   console.error(err.name, err.message);
   process.exit(1);
 });
 
-// dotenv is already configured above
+/* ===============================
+   DATABASE CONNECTION
+=============================== */
+let DB;
+if (process.env.NODE_ENV === "development" && process.env.DATABASE_LOCAL) {
+  DB = process.env.DATABASE_LOCAL;
+  console.log("Using local MongoDB:", DB);
+} else {
+  DB = process.env.DATABASE.replace("<db_password>", process.env.DATABASE_PASSWORD);
+  console.log("Using cloud MongoDB.");
+}
 
-//1. Connection to Cloud mongodb Database
-const DB = process.env.DATABASE.replace(
-  "<db_password>",
-  process.env.DATABASE_PASSWORD
-);
 mongoose
-  .connect(DB) //EDDIE: D mhr local database nae pl tone pr own, (For Safety)
+  .connect(DB, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("DB connection successful"))
   .catch((err) => {
-    console.error("DB connection failed:", err);
+    console.error("DB connection failed:", err.message);
     process.exit(1);
   });
 
-//2. Start Server
+/* ===============================
+   SEED FIXED ADMIN
+=============================== */
+const seedAdmin = async () => {
+  try {
+    const username = "GDA-Admin";         // <-- set your admin username here
+    const password = "24K%gda%OakGyi";    // <-- set your admin password here
+
+    const existing = await Admin.findOne({ username });
+    if (!existing) {
+      await Admin.create({ username, password });
+      console.log("Admin user seeded:", username);
+    } else {
+      console.log("Admin user already exists:", username);
+    }
+  } catch (err) {
+    console.error("Admin seeding failed:", err.message);
+  }
+};
+
+/* ===============================
+   START SERVER
+=============================== */
 const port = process.env.PORT || 3000;
-const server = app.listen(port, () => {
-  console.log(`Server started on port: ${port} (${process.env.NODE_ENV})`);
+const server = app.listen(port, async () => {
+  console.log(`Server running on port ${port} (${process.env.NODE_ENV})`);
+  await seedAdmin();
 });
 
-// ERROR HANDLING: Handling Async Error (unCatch)
+/* ===============================
+   HANDLE UNHANDLED REJECTIONS
+=============================== */
 process.on("unhandledRejection", (err) => {
   console.error("UNHANDLED REJECTION! Shutting down...");
   console.error(err.name, err.message);
-  server.close(() => {
-    process.exit(1);
-  });
+  server.close(() => process.exit(1));
 });

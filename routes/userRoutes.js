@@ -14,23 +14,25 @@ router.post("/signup", authController.signup);
 // Login existing user
 router.post("/login", authController.login);
 
-// Update password (must be logged in)
-router.patch(
-  "/updatePassword",
-  authController.protect,
-  authController.updatePassword
-);
+/* ============================================================
+   PROTECTED ROUTES (requires login)
+   ============================================================ */
+router.use(authController.protect);
 
-// Get a chunk (5 profiles)
-router.get("/feed/chunk", authController.protect, feedController.getFeedChunk);
+// Update password (must be logged in)
+router.patch("/updatePassword", authController.updatePassword);
+
+// Get a chunk (5 profiles) for feed
+router.get("/feed/chunk", feedController.getFeedChunk);
 
 /* ============================================================
-   PROFILE / USER ACCOUNT ROUTES
+   PROFILE / USER ACCOUNT ROUTES (examples)
    ============================================================ */
 
-//getMe
-//updateMe
-//deleteMe,..
+// TODO: implement routes like getMe, updateMe, deleteMe
+// router.get("/me", authController.getMe);
+// router.patch("/me", authController.updateMe);
+// router.delete("/me", authController.deleteMe);
 
 /* ============================================================
    EXPORT ROUTER
