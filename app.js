@@ -90,22 +90,12 @@ app.get("/api/v1/imagekit/auth", (req, res, next) => {
    ROUTERS
 ========================== */
 const userRouter = require("./routes/userRoutes");
-const adminRouter = require("./routes/adminRoutes");
+const dislikeRouter = require("./routes/dislikeRoutes");
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/dislikes", dislikeRouter);
 
-/* Serve Admin UI */
-app.get("/admin", (req, res) => {
-  res.sendFile(`${__dirname}/public/admin/login.html`);
-});
-app.get("/admin/dashboard", (req, res) => {
-  res.sendFile(`${__dirname}/public/admin/dashboard.html`);
-});
-
-/* ==========================
-   404 HANDLER
-========================== */
+//Error Handling (else part)
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });

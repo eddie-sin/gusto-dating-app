@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const Dislike = require("../models/dislikeModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
@@ -20,9 +21,15 @@ exports.getFeedChunk = catchAsync(async (req, res, next) => {
 
   const allowedGenders = getAllowedGenders(currentUser.sexuality);
 
+  const dislikedUsers = await Dislike.find({ user: currentUser._id }).select(
+    "target"
+  );
+
+  const dislikedIds = dislikedUsers.map((d) => d.target.toString());
+
   // 1. Query list of All Possible Users (sexuality | approved)
   const allCandidates = await User.find({
-    _id: { $ne: currentUser._id },
+    _id: { $nin: [...dislikedIds, currentUser._id] },
     gender: { $in: allowedGenders },
     status: "approved",
   }).select("_id");
