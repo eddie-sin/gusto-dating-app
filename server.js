@@ -2,6 +2,9 @@
 const mongoose = require("mongoose"); // to access mongoDB
 const dotenv = require("dotenv"); // to access env variables
 
+// Load environment variables BEFORE requiring the app so app can use them
+dotenv.config({ path: "./config.env" }); // assign to .env file
+
 const app = require("./app"); // express app
 
 // ERROR HANDLING: Handling Code Errors (unCatch)
@@ -11,7 +14,7 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-dotenv.config({ path: "./config.env" }); // assign to .env file
+// dotenv is already configured above
 
 //1. Connection to Cloud mongodb Database
 const DB = process.env.DATABASE.replace(
@@ -19,7 +22,7 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 mongoose
-  .connect(process.env.DATABASE_LOCAL) //EDDIE: D mhr local database nae pl tone pr own, (For Safety)
+  .connect(DB) //EDDIE: D mhr local database nae pl tone pr own, (For Safety)
   .then(() => console.log("DB connection successful"))
   .catch((err) => {
     console.error("DB connection failed:", err);
