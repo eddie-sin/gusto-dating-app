@@ -46,9 +46,11 @@ app.use(express.static("./public/login.html")); //static file [for frontend]
 
 //Importing Routers
 const userRouter = require("./routes/userRoutes");
+const dislikeRouter = require("./routes/dislikeRoutes");
 
 //Mounting
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/dislikes", dislikeRouter);
 
 //Error Handling (else part)
 app.use((req, res, next) => {

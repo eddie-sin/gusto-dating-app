@@ -161,16 +161,9 @@ const userSchema = new mongoose.Schema(
 
     /* SECTION-E: Backend Work flow  */
 
-    likeLimit: {
-      type: Number,
-      default: 2, // initial daily like limit
-      min: 0,
-    },
-    dislikeLimit: {
-      type: Number,
-      default: 10, // initial daily dislike limit
-      min: 0,
-    },
+    dislikesUsedToday: { type: Number, default: 0 },
+
+    lastDislikeReset: { type: Date, default: Date.now },
 
     shownProfiles: {
       type: [mongoose.Schema.Types.ObjectId],
