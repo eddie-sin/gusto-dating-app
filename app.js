@@ -11,6 +11,8 @@ const hpp = require("hpp");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorControllers");
 const ImageKit = require("imagekit");
+const dotenv = require("dotenv");
+dotenv.config({ path: "./config.env" });
 
 /* ==========================
    INIT APP
