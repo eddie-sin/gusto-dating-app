@@ -10,7 +10,11 @@ const userSchema = new mongoose.Schema(
     nickname: { type: String, required: true, trim: true, maxlength: 40 },
     dob: { type: Date, required: true },
     gender: { type: String, enum: ["male", "female", "lgbt"], required: true },
-    sexuality: { type: String, enum: ["male", "female", "both"], required: true },
+    sexuality: {
+      type: String,
+      enum: ["male", "female", "both"],
+      required: true,
+    },
     bio: { type: String, maxlength: 500, default: "" },
     hobbies: {
       type: [String],
@@ -50,7 +54,8 @@ const userSchema = new mongoose.Schema(
       maxlength: 30,
       validate: {
         validator: (v) => /^[a-z0-9._]+$/.test(v),
-        message: "Username may contain lowercase letters, numbers, dot and underscore only.",
+        message:
+          "Username may contain lowercase letters, numbers, dot and underscore only.",
       },
     },
     password: { type: String, required: true, minlength: 8, select: false },
@@ -59,13 +64,24 @@ const userSchema = new mongoose.Schema(
     passwordResetExpires: { type: Date },
 
     /* SECTION-D: Admin Workflow */
-    status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending", required: true },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+      required: true,
+    },
     approvedBy: { type: mongoose.Schema.ObjectId },
 
     /* SECTION-E: Backend Workflow */
-    likeLimit: { type: Number, default: 2, min: 0 },
-    dislikeLimit: { type: Number, default: 10, min: 0 },
     shownProfiles: { type: [mongoose.Schema.Types.ObjectId], default: [] },
+
+    //1. DISLIKE WORKFLOW
+    dislikesUsedToday: { type: Number, default: 0 },
+    lastDislikeReset: { type: Date, default: Date.now },
+
+    //2. PROPOSE WORKFLOW
+    dailyProposeCount: { type: Number, default: 0 },
+    lastProposeReset: { type: Date, default: Date.now },
   },
   {
     timestamps: true,
@@ -113,7 +129,10 @@ userSchema.pre("save", function (next) {
 });
 
 /* Instance methods */
-userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
