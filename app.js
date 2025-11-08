@@ -100,12 +100,10 @@ app.get("/api/v1/imagekit/auth", (req, res, next) => {
 const userRouter = require("./routes/userRoutes");
 const adminRouter = require("./routes/adminRoutes");
 const dislikeRouter = require("./routes/dislikeRoutes");
-const adminRouter = require("./routes/adminRoutes");
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/dislikes", dislikeRouter);
 app.use("/api/v1/admins", adminRouter);
+app.use("/api/v1/dislikes", dislikeRouter);
 
 /* Serve Admin UI Pages */
 app.get("/admin", (req, res) => {
