@@ -28,7 +28,10 @@ if (process.env.NODE_ENV === "development" && process.env.DATABASE_LOCAL) {
   DB = process.env.DATABASE_LOCAL;
   console.log("Using local MongoDB:", DB);
 } else {
-  DB = process.env.DATABASE.replace("<db_password>", process.env.DATABASE_PASSWORD);
+  DB = process.env.DATABASE.replace(
+    "<db_password>",
+    process.env.DATABASE_PASSWORD
+  );
   console.log("Using cloud MongoDB.");
 }
 
@@ -45,8 +48,8 @@ mongoose
 =============================== */
 const seedAdmin = async () => {
   try {
-    const username = "GDA-Admin";         // <-- set your admin username here
-    const password = "24K%gda%OakGyi";    // <-- set your admin password here
+    const username = "GDA-Admin"; // <-- set your admin username here
+    const password = "24K%gda%OakGyi"; // <-- set your admin password here
 
     const existing = await Admin.findOne({ username });
     if (!existing) {

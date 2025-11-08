@@ -40,7 +40,11 @@ app.use(
         "default-src": ["'self'"],
         "script-src": ["'self'", "https://unpkg.com"],
         "img-src": ["'self'", "data:", "https://ik.imagekit.io"],
-        "connect-src": ["'self'", "https://upload.imagekit.io", "https://ik.imagekit.io"],
+        "connect-src": [
+          "'self'",
+          "https://upload.imagekit.io",
+          "https://ik.imagekit.io",
+        ],
         "style-src": ["'self'", "'unsafe-inline'"],
         "font-src": ["'self'", "data:"],
         "frame-ancestors": ["'self'"],
@@ -91,9 +95,11 @@ app.get("/api/v1/imagekit/auth", (req, res, next) => {
 ========================== */
 const userRouter = require("./routes/userRoutes");
 const dislikeRouter = require("./routes/dislikeRoutes");
+const adminRouter = require("./routes/adminRoutes");
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/dislikes", dislikeRouter);
+app.use("/api/v1/admins", adminRouter);
 
 //Error Handling (else part)
 app.use((req, res, next) => {

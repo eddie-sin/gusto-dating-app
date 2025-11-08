@@ -6,7 +6,9 @@ const AppError = require("../utils/appError");
 
 // ---------------- Helper Functions ----------------
 const signToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+  jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
 
 const createSendToken = (admin, statusCode, res) => {
   const token = signToken(admin._id);
@@ -30,7 +32,8 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!admin) return next(new AppError("Incorrect username or password", 401));
 
   const isCorrect = await admin.correctPassword(password, admin.password);
-  if (!isCorrect) return next(new AppError("Incorrect username or password", 401));
+  if (!isCorrect)
+    return next(new AppError("Incorrect username or password", 401));
 
   createSendToken(admin, 200, res);
 });
@@ -38,7 +41,10 @@ exports.login = catchAsync(async (req, res, next) => {
 // ---------------- Protect Admin Routes ----------------
 exports.protectAdmin = catchAsync(async (req, res, next) => {
   let token;
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
     token = req.headers.authorization.split(" ")[1];
   }
   if (!token) return next(new AppError("Not logged in as admin", 401));
@@ -53,8 +59,12 @@ exports.protectAdmin = catchAsync(async (req, res, next) => {
 
 // ---------------- Get Pending Users ----------------
 exports.getPendingUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find({ status: "pending" }).select("name studentIdPhoto contact");
-  res.status(200).json({ status: "success", results: users.length, data: { users } });
+  const users = await User.find({ status: "pending" }).select(
+    "name studentIdPhoto contact dob batch"
+  );
+  res
+    .status(200)
+    .json({ status: "success", results: users.length, data: { users } });
 });
 
 // ---------------- Approve User ----------------
