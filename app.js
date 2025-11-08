@@ -22,14 +22,14 @@ const app = express();
 ========================== */
 app.use(express.json({ limit: "10kb" })); // parse JSON
 app.use(morgan("dev")); // logging
-app.use(
-  "/api",
-  rateLimit({
-    max: 100,
-    windowMs: 60 * 60 * 1000,
-    message: "Too many requests from this IP, please try again in an hour!",
-  })
-);
+
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: "Too many requests from this IP, please try again in an hour!",
+});
+app.use("/api", limiter);
+
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -52,10 +52,14 @@ app.use(
     },
   })
 );
+
 app.use(xssSanitizer);
 // app.use(mongoSanitize()); // enable later if needed
 app.use(hpp());
-app.use(express.static("./public")); // serve public files
+
+/* Serve static files */
+app.use(express.static("./public")); // main frontend
+app.use("/admin", express.static("./public/admin")); // admin UI
 
 /* ==========================
    IMAGEKIT SETUP
@@ -77,7 +81,7 @@ if (
   );
 }
 
-/* Endpoint for client-side ImageKit auth */
+// Endpoint for client-side ImageKit auth
 app.get("/api/v1/imagekit/auth", (req, res, next) => {
   if (!imagekit) {
     return next(new AppError("ImageKit not configured on server.", 500));
@@ -94,21 +98,32 @@ app.get("/api/v1/imagekit/auth", (req, res, next) => {
    ROUTERS
 ========================== */
 const userRouter = require("./routes/userRoutes");
+const adminRouter = require("./routes/adminRoutes");
 const dislikeRouter = require("./routes/dislikeRoutes");
 const adminRouter = require("./routes/adminRoutes");
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/dislikes", dislikeRouter);
 app.use("/api/v1/admins", adminRouter);
 
-//Error Handling (else part)
+/* Serve Admin UI Pages */
+app.get("/admin", (req, res) => {
+  res.sendFile(`${__dirname}/public/admin/login.html`);
+});
+app.get("/admin/dashboard", (req, res) => {
+  res.sendFile(`${__dirname}/public/admin/dashboard.html`);
+});
+
+/* ==========================
+   ERROR HANDLING
+========================== */
+// 404
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-/* ==========================
-   GLOBAL ERROR HANDLER
-========================== */
+// Global error handler
 app.use(globalErrorHandler);
 
 module.exports = app;
