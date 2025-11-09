@@ -3,6 +3,8 @@ const Admin = require("../models/adminModel");
 const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const fs = require("fs");
+const path = require("path");
 
 // ---------------- Helper Functions ----------------
 const signToken = (id) =>
@@ -28,7 +30,6 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // Fetch admin and include password
   const admin = await Admin.findOne({ username }).select("+password");
-
   if (!admin) return next(new AppError("Incorrect username or password", 401));
 
   const isCorrect = await admin.correctPassword(password, admin.password);
@@ -62,29 +63,95 @@ exports.getPendingUsers = catchAsync(async (req, res, next) => {
   const users = await User.find({ status: "pending" }).select(
     "name studentIdPhoto contact dob batch"
   );
-  res
-    .status(200)
-    .json({ status: "success", results: users.length, data: { users } });
+
+  res.status(200).json({
+    status: "success",
+    results: users.length,
+    data: { users },
+  });
 });
 
-// ---------------- Approve User ----------------
+/* ============================================================
+   APPROVE USER (Remove studentIdPhoto)
+   ============================================================ */
 exports.approveUser = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    { status: "approved", approvedBy: req.admin._id },
-    { new: true }
-  );
+  const user = await User.findById(req.params.id).select("+studentIdPhoto");
   if (!user) return next(new AppError("User not found", 404));
-  res.status(200).json({ status: "success", message: "User approved" });
+
+  // Remove file if exists (optional)
+  if (user.studentIdPhoto) {
+    const filePath = path.join(__dirname, "../public/uploads", user.studentIdPhoto);
+    fs.unlink(filePath, (err) => {
+      if (err && err.code !== "ENOENT") console.error("File deletion error:", err);
+    });
+  }
+
+  user.status = "approved";
+  user.approvedBy = req.admin._id;
+  await user.save({ validateBeforeSave: false });
+
+  // Remove studentIdPhoto field permanently from DB
+  await User.removeStudentIdPhoto(user._id);
+
+  res.status(200).json({
+    status: "success",
+    message: "User approved successfully",
+  });
 });
 
-// ---------------- Reject User ----------------
+/* ============================================================
+   REJECT USER (Remove studentIdPhoto)
+   ============================================================ */
 exports.rejectUser = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    { status: "rejected", approvedBy: req.admin._id },
-    { new: true }
-  );
+  const user = await User.findById(req.params.id).select("+studentIdPhoto");
   if (!user) return next(new AppError("User not found", 404));
-  res.status(200).json({ status: "success", message: "User rejected" });
+
+  // Remove file if exists (optional)
+  if (user.studentIdPhoto) {
+    const filePath = path.join(__dirname, "../public/uploads", user.studentIdPhoto);
+    fs.unlink(filePath, (err) => {
+      if (err && err.code !== "ENOENT") console.error("File deletion error:", err);
+    });
+  }
+
+  user.status = "rejected";
+  user.approvedBy = req.admin._id;
+  await user.save({ validateBeforeSave: false });
+
+  // Remove studentIdPhoto field permanently from DB
+  await User.removeStudentIdPhoto(user._id);
+
+  res.status(200).json({
+    status: "success",
+    message: "User rejected successfully",
+  });
+});
+
+/* ============================================================
+   USER STATS (For dashboard cards)
+   ============================================================ */
+exports.getUserStats = catchAsync(async (req, res, next) => {
+  const stats = await User.aggregate([
+    {
+      $group: {
+        _id: "$status",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const formattedStats = {
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+  };
+
+  stats.forEach((s) => {
+    formattedStats[s._id] = s.count;
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: formattedStats,
+  });
 });
