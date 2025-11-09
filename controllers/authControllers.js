@@ -95,7 +95,9 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // 3. Check user status
   if (user.status === "pending") {
-    return next(new AppError("Your account is pending approval by admin.", 403));
+    return next(
+      new AppError("Your account is pending approval by admin.", 403)
+    );
   }
 
   if (user.status === "rejected") {
