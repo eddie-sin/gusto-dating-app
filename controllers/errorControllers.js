@@ -18,6 +18,19 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+const handleMulterError = (err) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return new AppError("File size too large. Maximum size is 5MB.", 400);
+  }
+  if (err.code === "LIMIT_FILE_COUNT") {
+    return new AppError("Too many files uploaded.", 400);
+  }
+  if (err.code === "LIMIT_UNEXPECTED_FILE") {
+    return new AppError("Unexpected file field.", 400);
+  }
+  return new AppError(err.message || "File upload error", 400);
+};
+
 // Error Format for Developers
 const sendErrorDev = (err, req, res) => {
   res.status(err.statusCode || 500).json({
@@ -51,6 +64,16 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || "error";
 
   if ((process.env.NODE_ENV || "development") === "development") {
+    // In development, also handle multer errors for better UX
+    if (err.code && err.code.startsWith("LIMIT_")) {
+      const multerError = handleMulterError(err);
+      return res.status(multerError.statusCode).json({
+        status: multerError.status,
+        error: multerError,
+        message: multerError.message,
+        stack: err.stack,
+      });
+    }
     sendErrorDev(err, req, res);
   } else {
     let error = Object.assign({}, err);
@@ -59,6 +82,10 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === "ValidationError")
       error = handleValidationErrorDB(error);
+    // handle multer errors
+    if (error.code && error.code.startsWith("LIMIT_")) {
+      error = handleMulterError(error);
+    }
 
     sendErrorProd(error, req, res);
   }

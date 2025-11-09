@@ -1,6 +1,7 @@
 const express = require("express");
 const authController = require("../controllers/authControllers");
 const feedController = require("../controllers/feedControllers");
+const { uploadSignupFiles } = require("../utils/multerConfig");
 
 const router = express.Router();
 
@@ -8,8 +9,8 @@ const router = express.Router();
    AUTHENTICATION ROUTES
    ============================================================ */
 
-// Register new user
-router.post("/signup", authController.signup);
+// Register new user (with file upload middleware)
+router.post("/signup", uploadSignupFiles, authController.signup);
 
 // Login existing user
 router.post("/login", authController.login);
