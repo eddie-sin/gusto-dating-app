@@ -10,9 +10,6 @@ const xssSanitizer = require("./utils/xssSanitizer");
 const hpp = require("hpp");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorControllers");
-const ImageKit = require("imagekit");
-const dotenv = require("dotenv");
-dotenv.config({ path: "./config.env" });
 
 /* ==========================
    INIT APP
@@ -64,50 +61,19 @@ app.use(express.static("./public")); // main frontend
 app.use("/admin", express.static("./public/admin")); // admin UI
 
 /* ==========================
-   IMAGEKIT SETUP
-========================== */
-let imagekit = null;
-if (
-  process.env.IMAGEKIT_PUBLIC_KEY &&
-  process.env.IMAGEKIT_PRIVATE_KEY &&
-  process.env.IMAGEKIT_URL_ENDPOINT
-) {
-  imagekit = new ImageKit({
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
-  });
-} else {
-  console.warn(
-    "ImageKit environment variables missing. Client-side uploads will not work."
-  );
-}
-
-// Endpoint for client-side ImageKit auth
-app.get("/api/v1/imagekit/auth", (req, res, next) => {
-  if (!imagekit) {
-    return next(new AppError("ImageKit not configured on server.", 500));
-  }
-  const authParams = imagekit.getAuthenticationParameters();
-  res.status(200).json({
-    ...authParams,
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
-  });
-});
-
-/* ==========================
    ROUTERS
 ========================== */
 const userRouter = require("./routes/userRoutes");
 const adminRouter = require("./routes/adminRoutes");
 const dislikeRouter = require("./routes/dislikeRoutes");
 const proposeRouter = require("./routes/proposeRoutes");
+const imageRouter = require("./routes/imageRoutes");
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/admins", adminRouter);
 app.use("/api/v1/dislikes", dislikeRouter);
 app.use("/api/v1/proposes", proposeRouter);
+app.use("/api/v1/images", imageRouter);
 
 /* Serve Admin UI Pages */
 app.get("/admin", (req, res) => {

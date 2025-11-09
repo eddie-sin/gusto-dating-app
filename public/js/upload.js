@@ -16,11 +16,11 @@ async function init() {
   const link = $("link");
   const preview = $("preview");
 
-  const initial = await fetch("/api/v1/imagekit/auth").then(r => r.json());
+  const initial = await fetch("/api/v1/images/auth").then(r => r.json());
   const imagekit = new ImageKit({
     publicKey: initial.publicKey,
     urlEndpoint: initial.urlEndpoint,
-    authenticationEndpoint: "/api/v1/imagekit/auth",
+    authenticationEndpoint: "/api/v1/images/auth",
   });
 
   function resetProgress() {
@@ -52,7 +52,7 @@ async function init() {
 
     try {
       // Fetch fresh auth just before upload (ensures valid token/signature)
-      const auth = await fetch("/api/v1/imagekit/auth").then(r => r.json());
+      const auth = await fetch("/api/v1/images/auth").then(r => r.json());
       const response = await imagekit.upload({
         file,
         fileName,

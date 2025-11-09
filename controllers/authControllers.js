@@ -1,8 +1,11 @@
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const fs = require("fs").promises;
+const path = require("path");
 const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const uploadToImageKit = require("../utils/uploadToImageKit");
 const { promisify } = require("util");
 
 /* ==========================================
@@ -50,31 +53,131 @@ const createAndSendToken = (user, statusCode, res) => {
 
 // SIGNUP — Register new user
 exports.signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create({
-    nickname: req.body.nickname,
-    dob: req.body.dob,
-    gender: req.body.gender,
-    sexuality: req.body.sexuality,
-    bio: req.body.bio,
-    hobbies: req.body.hobbies,
-    heightFt: req.body.heightFt,
-    heightIn: req.body.heightIn,
-    zodiac: req.body.zodiac,
-    mbti: req.body.mbti,
+  // Array to track temporary files for cleanup
+  const tempFiles = [];
+  let photoUrls = [];
+  let studentIdPhotoUrl = null;
 
-    name: req.body.name,
-    batch: req.body.batch,
-    contact: req.body.contact,
-    photos: req.body.photos,
-    studentIdPhoto: req.body.studentIdPhoto,
+  try {
+    // 1. Handle photos upload (array of files)
+    if (req.files && req.files.photos && req.files.photos.length > 0) {
+      // Validate: at least 3 photos required
+      if (req.files.photos.length < 3) {
+        return next(
+          new AppError("Please upload at least 3 photos", 400)
+        );
+      }
 
-    username: req.body.username,
-    password: req.body.password,
+      // Upload each photo to ImageKit
+      const uploadPromises = req.files.photos.map(async (file, index) => {
+        tempFiles.push(file.path);
+        const timestamp = Date.now();
+        const random = Math.round(Math.random() * 1e9);
+        const fileName = `photo_${timestamp}_${random}_${index}${path.extname(file.originalname)}`;
+        const url = await uploadToImageKit(
+          file.path,
+          fileName,
+          "/gusto/photos"
+        );
+        return url;
+      });
 
-    // status defaults to "pending" automatically
-  });
+      photoUrls = await Promise.all(uploadPromises);
+    } else {
+      // If no files uploaded, check if URLs were provided in body (backward compatibility)
+      if (req.body.photos) {
+        try {
+          photoUrls = typeof req.body.photos === "string" 
+            ? JSON.parse(req.body.photos) 
+            : req.body.photos;
+        } catch (e) {
+          return next(new AppError("Invalid photos format", 400));
+        }
+      } else {
+        return next(new AppError("Please upload at least 3 photos", 400));
+      }
+    }
 
-  createAndSendToken(newUser, 201, res);
+    // 2. Handle studentIdPhoto upload (single file)
+    if (req.files && req.files.studentIdPhoto && req.files.studentIdPhoto.length > 0) {
+      const file = req.files.studentIdPhoto[0];
+      tempFiles.push(file.path);
+      const fileName = `studentId_${Date.now()}_${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+      studentIdPhotoUrl = await uploadToImageKit(
+        file.path,
+        fileName,
+        "/gusto/studentIds"
+      );
+    } else if (req.body.studentIdPhoto) {
+      // Backward compatibility: if URL provided directly
+      studentIdPhotoUrl = req.body.studentIdPhoto;
+    } else {
+      return next(new AppError("Student ID photo is required", 400));
+    }
+
+    // 3. Parse other fields (multer provides everything as strings for multipart/form-data)
+    let hobbies = [];
+    if (req.body.hobbies) {
+      try {
+        hobbies = typeof req.body.hobbies === "string" 
+          ? JSON.parse(req.body.hobbies) 
+          : req.body.hobbies;
+      } catch (e) {
+        hobbies = Array.isArray(req.body.hobbies) ? req.body.hobbies : [req.body.hobbies];
+      }
+    }
+
+    let heightFt = req.body.heightFt ? parseInt(req.body.heightFt) : undefined;
+    let heightIn = req.body.heightIn ? parseInt(req.body.heightIn) : undefined;
+
+    // 4. Create user with ImageKit URLs
+    const newUser = await User.create({
+      nickname: req.body.nickname,
+      dob: req.body.dob,
+      gender: req.body.gender,
+      sexuality: req.body.sexuality,
+      bio: req.body.bio || "",
+      hobbies: hobbies,
+      heightFt: heightFt,
+      heightIn: heightIn,
+      zodiac: req.body.zodiac || "",
+      mbti: req.body.mbti || "",
+
+      name: req.body.name,
+      batch: req.body.batch,
+      contact: req.body.contact,
+      photos: photoUrls,
+      studentIdPhoto: studentIdPhotoUrl,
+
+      username: req.body.username,
+      password: req.body.password,
+
+      // status defaults to "pending" automatically
+    });
+
+    // 5. Clean up temporary files
+    for (const filePath of tempFiles) {
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        console.error(`Failed to delete temp file: ${filePath}`, err);
+      }
+    }
+
+    // 6. Send response
+    createAndSendToken(newUser, 201, res);
+  } catch (error) {
+    // Clean up temp files on error
+    for (const filePath of tempFiles) {
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        console.error(`Failed to delete temp file: ${filePath}`, err);
+      }
+    }
+    // Re-throw error to be handled by error handler
+    throw error;
+  }
 });
 
 // LOGIN — Authenticate user and send JWT

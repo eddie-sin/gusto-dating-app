@@ -69,3 +69,7 @@ jspm_packages/
 # Parcel / Vite / frontend temp files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Temporary uploaded files
+public/img/tmp/*
+!public/img/tmp/.gitkeep
