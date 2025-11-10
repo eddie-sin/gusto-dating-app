@@ -15,6 +15,8 @@ async function init() {
   const status = $("status");
   const link = $("link");
   const preview = $("preview");
+  const fileIdInput = $("fileId");
+  const deleteBtn = $("deleteBtn");
 
   const initial = await fetch("/api/v1/images/auth").then(r => r.json());
   const imagekit = new ImageKit({
@@ -30,6 +32,7 @@ async function init() {
     link.href = "#";
     preview.src = "";
     preview.alt = "";
+    if (fileIdInput) fileIdInput.value = "";
   }
 
   fileInput.addEventListener("change", () => {
@@ -78,6 +81,7 @@ async function init() {
       link.href = response.url;
       preview.src = response.url;
       preview.alt = response.name || "Uploaded image";
+      if (fileIdInput) fileIdInput.value = response.fileId || "";
     } catch (err) {
       console.error(err);
       const msg = (err && (err.message || err.toString())) || "Unknown error";
@@ -85,6 +89,36 @@ async function init() {
       alert("Upload failed: " + msg);
     } finally {
       uploadBtn.disabled = false;
+    }
+  });
+
+  // Delete image by fileId using server route
+  deleteBtn.addEventListener("click", async () => {
+    const fileId = (fileIdInput && fileIdInput.value || "").trim();
+    if (!fileId) { alert("Enter a fileId to delete."); return; }
+    deleteBtn.disabled = true;
+    status.textContent = "Deleting...";
+    try {
+      const resp = await fetch("/api/v1/images/file?fileId=" + encodeURIComponent(fileId), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        throw new Error(data && data.message ? data.message : "Delete failed");
+      }
+      status.textContent = "Deleted successfully";
+      // Clear preview
+      link.textContent = "";
+      link.href = "#";
+      preview.src = "";
+      if (fileIdInput) fileIdInput.value = "";
+    } catch (err) {
+      console.error(err);
+      alert("Delete failed: " + (err.message || String(err)));
+      status.textContent = "Delete failed";
+    } finally {
+      deleteBtn.disabled = false;
     }
   });
 }

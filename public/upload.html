@@ -48,7 +48,12 @@
     <div class="row"><span id="status" class="muted"></span></div>
 
     <div class="result">
-      <div>URL: <a id="link" href="#" target="_blank" rel="noopener noreferrer"></a></div>
+      <div style="margin-bottom:8px;">URL: <a id="link" href="#" target="_blank" rel="noopener noreferrer"></a></div>
+      <div class="row">
+        <label for="fileId">File ID</label>
+        <input id="fileId" type="text" placeholder="Populates after upload" readonly />
+        <button id="deleteBtn" style="background:#dc2626">Delete</button>
+      </div>
       <div style="margin-top: 12px;"><img id="preview" alt="" /></div>
     </div>
   </div>

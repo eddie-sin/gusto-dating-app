@@ -141,17 +141,8 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError("Incorrect username or password", 401));
   }
 
-<<<<<<< HEAD
-  // 3. Check user status
-  if (user.status === "pending") {
-    return next(
-      new AppError("Your account is pending approval by admin.", 403)
-    );
-  }
-=======
   if (user.status === "pending") return next(new AppError("Your account is pending approval by admin.", 403));
   if (user.status === "rejected") return next(new AppError("Your account has been rejected by admin.", 403));
->>>>>>> 0dc837e82051cef6e8caa3a18a303f8673e21e0b
 
   createAndSendToken(user, 200, res);
 });
