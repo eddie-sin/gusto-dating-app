@@ -27,3 +27,25 @@ exports.getImageKitAuth = catchAsync(async (req, res, next) => {
   }
 });
 
+/**
+ * Delete an ImageKit file by fileId
+ * @route DELETE /api/v1/images/file
+ * @access Public (for demo). Consider protecting in production.
+ * Body: { fileId: string }
+ */
+exports.deleteImage = catchAsync(async (req, res, next) => {
+  const fileId = req.body?.fileId || req.query?.fileId;
+  if (!fileId) {
+    return next(new AppError("fileId is required to delete an image", 400));
+  }
+
+  const imagekit = getImageKit();
+  await imagekit.deleteFile(fileId);
+
+  res.status(200).json({
+    status: "success",
+    message: "Image deleted successfully",
+    data: { fileId },
+  });
+});
+
