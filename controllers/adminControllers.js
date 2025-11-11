@@ -3,8 +3,7 @@ const Admin = require("../models/adminModel");
 const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const fs = require("fs");
-const path = require("path");
+const getImageKit = require("../utils/imagekit");
 
 // ---------------- Helper Functions ----------------
 const signToken = (id) =>
@@ -72,26 +71,28 @@ exports.getPendingUsers = catchAsync(async (req, res, next) => {
 });
 
 /* ============================================================
-   APPROVE USER (Remove studentIdPhoto)
+   APPROVE USER (Remove studentIdPhoto from ImageKit and DB)
    ============================================================ */
 exports.approveUser = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id).select("+studentIdPhoto");
   if (!user) return next(new AppError("User not found", 404));
 
-  // Remove file if exists (optional)
-  if (user.studentIdPhoto) {
-    const filePath = path.join(__dirname, "../public/uploads", user.studentIdPhoto);
-    fs.unlink(filePath, (err) => {
-      if (err && err.code !== "ENOENT") console.error("File deletion error:", err);
-    });
+  // Delete studentIdPhoto from ImageKit if it exists
+  if (user.studentIdPhoto && user.studentIdPhoto.fileId) {
+    try {
+      const imagekit = getImageKit();
+      await imagekit.deleteFile(user.studentIdPhoto.fileId);
+    } catch (err) {
+      // Log error but don't fail the approval if ImageKit deletion fails
+      console.error("Failed to delete studentIdPhoto from ImageKit:", err.message);
+    }
   }
 
+  // Update user status and remove studentIdPhoto from DB
   user.status = "approved";
   user.approvedBy = req.admin._id;
+  user.studentIdPhoto = undefined; // Remove the field
   await user.save({ validateBeforeSave: false });
-
-  // Remove studentIdPhoto field permanently from DB
-  await User.removeStudentIdPhoto(user._id);
 
   res.status(200).json({
     status: "success",
@@ -100,26 +101,28 @@ exports.approveUser = catchAsync(async (req, res, next) => {
 });
 
 /* ============================================================
-   REJECT USER (Remove studentIdPhoto)
+   REJECT USER (Remove studentIdPhoto from ImageKit and DB)
    ============================================================ */
 exports.rejectUser = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id).select("+studentIdPhoto");
   if (!user) return next(new AppError("User not found", 404));
 
-  // Remove file if exists (optional)
-  if (user.studentIdPhoto) {
-    const filePath = path.join(__dirname, "../public/uploads", user.studentIdPhoto);
-    fs.unlink(filePath, (err) => {
-      if (err && err.code !== "ENOENT") console.error("File deletion error:", err);
-    });
+  // Delete studentIdPhoto from ImageKit if it exists
+  if (user.studentIdPhoto && user.studentIdPhoto.fileId) {
+    try {
+      const imagekit = getImageKit();
+      await imagekit.deleteFile(user.studentIdPhoto.fileId);
+    } catch (err) {
+      // Log error but don't fail the rejection if ImageKit deletion fails
+      console.error("Failed to delete studentIdPhoto from ImageKit:", err.message);
+    }
   }
 
+  // Update user status and remove studentIdPhoto from DB
   user.status = "rejected";
   user.approvedBy = req.admin._id;
+  user.studentIdPhoto = undefined; // Remove the field
   await user.save({ validateBeforeSave: false });
-
-  // Remove studentIdPhoto field permanently from DB
-  await User.removeStudentIdPhoto(user._id);
 
   res.status(200).json({
     status: "success",

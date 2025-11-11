@@ -4,60 +4,97 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Image Upload — ImageKit</title>
-  <link rel="preconnect" href="https://ik.imagekit.io" />
-  <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; color: #0f172a; }
-    .card { max-width: 720px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; }
-    .row { display: flex; gap: 12px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
-    label { min-width: 120px; font-weight: 600; }
-    input[type="text"], input[type="file"] { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
-    button { padding: 10px 16px; border: 0; border-radius: 8px; background: #2563eb; color: #fff; font-weight: 600; cursor: pointer; }
-    button:disabled { background: #94a3b8; cursor: not-allowed; }
-    .progress { height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
-    .bar { height: 100%; width: 0%; background: linear-gradient(90deg, #06b6d4, #2563eb); transition: width .15s ease; }
-    .result { margin-top: 16px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
-    img { max-width: 100%; border-radius: 8px; display: block; }
-    .muted { color: #64748b; font-size: 13px; }
-  </style>
-  <script src="https://unpkg.com/imagekit-javascript/dist/imagekit.min.js"></script>
-  <script src="/js/upload.js"></script>
-</head>
-<body>
-  <div class="card">
-    <h2>Upload Image to ImageKit</h2>
-    <p class="muted">Choose an image and click Upload. The file will be uploaded directly from your browser to ImageKit using a secure, short-lived signature from the server.</p>
+    <h2>User Media Upload (Photos + Student ID)</h2>
+    <p class="muted">Select 3-5 profile photos and one student ID card image. They will be stored in structured folders on ImageKit: <code>/gusto/users/&lt;username&gt;/photos</code> and <code>/gusto/users/&lt;username&gt;/studentID</code>.</p>
 
     <div class="row">
-      <label for="fileInput">Image file</label>
-      <input id="fileInput" type="file" accept="image/*" />
+      <label for="photosInput">Profile photos</label>
+      <input id="photosInput" type="file" accept="image/*" multiple />
     </div>
     <div class="row">
-      <label for="fileName">File name</label>
-      <input id="fileName" type="text" placeholder="Optional — defaults to selected file name" />
-    </div>
-    <div class="row">
-      <label for="folder">Folder</label>
-      <input id="folder" type="text" placeholder="Optional — e.g. /gusto" />
+      <label for="studentIdInput">Student ID</label>
+      <input id="studentIdInput" type="file" accept="image/*" />
     </div>
 
     <div class="row">
-      <button id="uploadBtn">Upload</button>
+      <button id="uploadBtn">Upload Media</button>
     </div>
 
     <div class="progress" aria-hidden="true"><div id="bar" class="bar"></div></div>
     <div class="row"><span id="status" class="muted"></span></div>
 
-    <div class="result">
-      <div style="margin-bottom:8px;">URL: <a id="link" href="#" target="_blank" rel="noopener noreferrer"></a></div>
-      <div class="row">
-        <label for="fileId">File ID</label>
-        <input id="fileId" type="text" placeholder="Populates after upload" readonly />
-        <button id="deleteBtn" style="background:#dc2626">Delete</button>
-      </div>
-      <div style="margin-top: 12px;"><img id="preview" alt="" /></div>
+    <div class="result" id="result" style="display:none">
+      <h3>Uploaded Media</h3>
+      <div id="photosList"></div>
+      <div id="studentIdPreview"></div>
     </div>
-  </div>
-</body>
-</html>
+      <label for="folder">Folder</label>
+      <input id="folder" type="text" placeholder="Optional — e.g. /gusto" />
+    </div>
+// Media upload (photos + studentIdPhoto) using server-side upload route
+(function(){
+  const photosInput = document.getElementById('photosInput');
+  const studentIdInput = document.getElementById('studentIdInput');
+  const uploadBtn = document.getElementById('uploadBtn');
+  const statusEl = document.getElementById('status');
+  const bar = document.getElementById('bar');
+  const result = document.getElementById('result');
+  const photosList = document.getElementById('photosList');
+  const studentIdPreview = document.getElementById('studentIdPreview');
+
+  const reset = () => {
+    bar.style.width = '0%';
+    statusEl.textContent='';
+    result.style.display='none';
+    photosList.innerHTML='';
+    studentIdPreview.innerHTML='';
+  };
+
+  uploadBtn.addEventListener('click', async () => {
+    reset();
+    const photoFiles = Array.from(photosInput.files || []);
+    const idFile = studentIdInput.files[0];
+    if(photoFiles.length === 0 && !idFile){
+      statusEl.textContent = 'Attach photos and/or a student ID card image.';
+      return;
+    }
+    if(photoFiles.length && (photoFiles.length < 3 || photoFiles.length > 5)){
+      statusEl.textContent = 'Please select between 3 and 5 profile photos.';
+      return;
+    }
+    uploadBtn.disabled = true;
+    statusEl.textContent = 'Uploading...';
+    bar.style.width = '15%';
+    try {
+      const fd = new FormData();
+      photoFiles.forEach(f => fd.append('photos', f));
+      if(idFile) fd.append('studentIdPhoto', idFile);
+      const resp = await fetch('/api/v1/users/media/upload', {
+        method: 'POST',
+        body: fd,
+        headers: {
+          // If auth cookie is used, no Authorization header needed.
+          // 'Authorization': 'Bearer <JWT>' // Optionally add manually for testing.
+        }
+      });
+      const data = await resp.json();
+      if(data.status !== 'success') throw new Error(data.message || 'Upload failed');
+      bar.style.width = '100%';
+      statusEl.textContent = 'Upload complete';
+      result.style.display='block';
+      if(Array.isArray(data.data.photos)){
+        photosList.innerHTML = '<h4>Photos</h4>' + data.data.photos.map(p => `<div><a href="${p.url}" target="_blank">${p.url}</a></div>`).join('');
+      }
+      if(data.data.studentIdPhoto){
+        studentIdPreview.innerHTML = `<h4>Student ID</h4><a href="${data.data.studentIdPhoto.url}" target="_blank">${data.data.studentIdPhoto.url}</a><div><img src="${data.data.studentIdPhoto.url}" alt="Student ID" style="max-width:260px;margin-top:8px;border:1px solid #e2e8f0;border-radius:8px"/></div>`;
+      }
+    } catch(err){
+      statusEl.textContent = 'Error: ' + err.message;
+      console.error(err);
+    } finally {
+      uploadBtn.disabled = false;
+    }
+  });
+})();
 
 

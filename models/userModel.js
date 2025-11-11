@@ -30,14 +30,26 @@ const userSchema = new mongoose.Schema(
     batch: { type: String, required: true, trim: true },
     contact: { type: String, required: true, trim: true, unique: true },
     photos: {
-      type: [String],
+      type: [
+        {
+          fileId: { type: String, required: true },
+          url: { type: String, required: true },
+        },
+      ],
       validate: {
-        validator: (arr) => Array.isArray(arr) && arr.length >= 3,
-        message: "Please upload at least 3 photos",
+        validator: (arr) => Array.isArray(arr) && arr.length >= 3 && arr.length <= 5,
+        message: "Please upload between 3 and 5 photos",
       },
       required: true,
     },
-    studentIdPhoto: { type: String, required: true, select: false },
+    studentIdPhoto: {
+      type: {
+        fileId: { type: String, required: true },
+        url: { type: String, required: true },
+      },
+      required: true,
+      select: false,
+    },
 
     /* SECTION-C: Authentication */
     username: {
@@ -142,3 +154,4 @@ userSchema.statics.removeStudentIdPhoto = async function (userId) {
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
+
