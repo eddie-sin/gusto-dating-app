@@ -6,6 +6,8 @@ config.env
 .env
 .env.*
 
+public/
+
 # Logs
 logs/
 *.log
