@@ -18,11 +18,11 @@ async function init() {
 
   // Initialize ImageKit
   try {
-    const authResp = await fetch("/api/v1/images/auth").then((r) => r.json());
+  const authResp = await fetch("/api/v1/images/auth").then((r) => r.json());
     imagekit = new ImageKit({
       publicKey: authResp.publicKey,
       urlEndpoint: authResp.urlEndpoint,
-      authenticationEndpoint: "/api/v1/images/auth",
+  authenticationEndpoint: "/api/v1/images/auth",
     });
   } catch (err) {
     showMessage("Failed to initialize ImageKit. Please refresh the page.", "error");
@@ -70,6 +70,17 @@ async function init() {
         return;
       }
 
+      // Determine per-user folder using entered username
+      const rawUsername = $("username").value || "";
+      const sanitized = (rawUsername || "")
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9._-]/g, "_");
+      const baseFolder = `/gusto/users/${sanitized || "user_unknown"}`;
+      const photosFolder = `${baseFolder}/photos`;
+      const studentIdFolder = `${baseFolder}/studentID`;
+
       // Show upload progress
       uploadProgress.style.display = "block";
       uploadStatus.textContent = "Uploading images to ImageKit...";
@@ -80,12 +91,12 @@ async function init() {
       let uploadedCount = 0;
 
       const uploadPhoto = async (file, index) => {
-        const auth = await fetch("/api/v1/images/auth").then((r) => r.json());
+  const auth = await fetch("/api/v1/images/auth").then((r) => r.json());
         const fileName = `photo_${Date.now()}_${index}_${file.name}`;
         const response = await imagekit.upload({
           file: file,
           fileName: fileName,
-          folder: "/gusto/photos",
+          folder: photosFolder,
           useUniqueFileName: true,
           token: auth.token,
           signature: auth.signature,
@@ -98,12 +109,12 @@ async function init() {
       };
 
       const uploadStudentId = async (file) => {
-        const auth = await fetch("/api/v1/images/auth").then((r) => r.json());
+  const auth = await fetch("/api/v1/images/auth").then((r) => r.json());
         const fileName = `studentId_${Date.now()}_${file.name}`;
         const response = await imagekit.upload({
           file: file,
           fileName: fileName,
-          folder: "/gusto/studentIds",
+          folder: studentIdFolder,
           useUniqueFileName: true,
           token: auth.token,
           signature: auth.signature,
@@ -188,4 +199,3 @@ function showMessage(text, type) {
 }
 
 window.addEventListener("DOMContentLoaded", init);
-
