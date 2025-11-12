@@ -59,6 +59,7 @@ app.use(hpp());
 /* Serve static files */
 app.use(express.static("./public")); // main frontend
 app.use("/admin", express.static("./public/admin")); // admin UI
+app.use("/", express.static("./public/register.html")); // admin UI
 
 /* ==========================
    ROUTERS
