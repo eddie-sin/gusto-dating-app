@@ -1,6 +1,7 @@
 const express = require("express");
 const authController = require("../controllers/authControllers");
 const feedController = require("../controllers/feedControllers");
+const imageController = require("../controllers/imageController");
 const { uploadSignupFiles } = require("../utils/multerConfig");
 
 const router = express.Router();
@@ -25,6 +26,13 @@ router.patch("/updatePassword", authController.updatePassword);
 
 // Get a chunk (5 profiles) for feed
 router.get("/feed/chunk", feedController.getFeedChunk);
+
+// Upload user media (photos + studentIdPhoto) -> stores into ImageKit under gusto/users/{username}/...
+router.post(
+   "/media/upload",
+   uploadSignupFiles,
+   imageController.uploadUserMedia
+);
 
 /* ============================================================
    PROFILE / USER ACCOUNT ROUTES (examples)

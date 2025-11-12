@@ -4,11 +4,11 @@ const getImageKit = require("./imagekit");
 const AppError = require("./appError");
 
 /**
- * Uploads a file to ImageKit and returns the hosted URL
+ * Uploads a file to ImageKit and returns both fileId and url
  * @param {string} filePath - Local file path to upload
  * @param {string} fileName - Desired file name on ImageKit
  * @param {string} folder - Optional folder path on ImageKit (e.g., "/gusto/photos")
- * @returns {Promise<string>} - ImageKit hosted URL
+ * @returns {Promise<{fileId: string, url: string}>} - ImageKit fileId and hosted URL
  */
 const uploadToImageKit = async (filePath, fileName, folder = "/gusto") => {
   try {
@@ -31,8 +31,11 @@ const uploadToImageKit = async (filePath, fileName, folder = "/gusto") => {
       overwriteFile: false,
     });
 
-    // Return the hosted URL
-    return uploadResponse.url;
+    // Return both fileId and url
+    return {
+      fileId: uploadResponse.fileId,
+      url: uploadResponse.url,
+    };
   } catch (error) {
     throw new AppError(
       `Failed to upload image to ImageKit: ${error.message}`,

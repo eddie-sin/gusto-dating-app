@@ -58,33 +58,54 @@ exports.signup = catchAsync(async (req, res, next) => {
   let studentIdPhotoUrl = null;
 
   try {
-    // Handle photo uploads
+    // Handle photo uploads (3-5 photos required)
     if (req.files?.photos?.length > 0) {
-      if (req.files.photos.length < 3) {
-        return next(new AppError("Please upload at least 3 photos", 400));
+      if (req.files.photos.length < 3 || req.files.photos.length > 5) {
+        return next(new AppError("Please upload between 3 and 5 photos", 400));
       }
+
+      const rawUsername = (req.body.username || "").toString().trim().toLowerCase();
+      const userSegment = rawUsername.replace(/[^a-z0-9._-]/g, "_") || `user_${Date.now()}`;
+      const baseFolder = `/gusto/users/${userSegment}`;
+      const photosFolder = `${baseFolder}/photos`;
 
       const uploadPromises = req.files.photos.map(async (file, idx) => {
         tempFiles.push(file.path);
         const fileName = `photo_${Date.now()}_${Math.random()}_${idx}${path.extname(file.originalname)}`;
-        return await uploadToImageKit(file.path, fileName, "/gusto/photos");
+        return await uploadToImageKit(file.path, fileName, photosFolder);
       });
 
       photoUrls = await Promise.all(uploadPromises);
     } else if (req.body.photos) {
-      photoUrls = typeof req.body.photos === "string" ? JSON.parse(req.body.photos) : req.body.photos;
+      // Backward compatibility: if photos provided as array of objects with fileId/url
+      const parsedPhotos = typeof req.body.photos === "string" ? JSON.parse(req.body.photos) : req.body.photos;
+      if (Array.isArray(parsedPhotos) && parsedPhotos.every(p => p.fileId && p.url)) {
+        photoUrls = parsedPhotos;
+      } else {
+        return next(new AppError("Invalid photos format. Expected array of {fileId, url} objects", 400));
+      }
     } else {
-      return next(new AppError("Please upload at least 3 photos", 400));
+      return next(new AppError("Please upload between 3 and 5 photos", 400));
     }
 
     // Handle student ID photo
     if (req.files?.studentIdPhoto?.length > 0) {
-      const file = req.files.studentIdPhoto[0];
-      tempFiles.push(file.path);
-      const fileName = `studentId_${Date.now()}_${Math.random()}${path.extname(file.originalname)}`;
-      studentIdPhotoUrl = await uploadToImageKit(file.path, fileName, "/gusto/studentIds");
+  const rawUsername2 = (req.body.username || "").toString().trim().toLowerCase();
+  const userSegment2 = rawUsername2.replace(/[^a-z0-9._-]/g, "_") || `user_${Date.now()}`;
+  const baseFolder2 = `/gusto/users/${userSegment2}`;
+  const idFolder = `${baseFolder2}/studentID`;
+  const file = req.files.studentIdPhoto[0];
+  tempFiles.push(file.path);
+  const fileName = `studentId_${Date.now()}_${Math.random()}${path.extname(file.originalname)}`;
+  studentIdPhotoUrl = await uploadToImageKit(file.path, fileName, idFolder);
     } else if (req.body.studentIdPhoto) {
-      studentIdPhotoUrl = req.body.studentIdPhoto;
+      // Backward compatibility: if studentIdPhoto provided as object with fileId/url
+      const parsed = typeof req.body.studentIdPhoto === "string" ? JSON.parse(req.body.studentIdPhoto) : req.body.studentIdPhoto;
+      if (parsed && parsed.fileId && parsed.url) {
+        studentIdPhotoUrl = parsed;
+      } else {
+        return next(new AppError("Invalid studentIdPhoto format. Expected {fileId, url} object", 400));
+      }
     } else {
       return next(new AppError("Student ID photo is required", 400));
     }
