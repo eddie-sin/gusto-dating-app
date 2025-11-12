@@ -69,7 +69,6 @@ const dislikeRouter = require("./routes/dislikeRoutes");
 const proposeRouter = require("./routes/proposeRoutes");
 const imageRouter = require("./routes/imageRoutes");
 const crushRouter = require("./routes/crhRoutes");
-const matchRouter = require("./routes/matchRoutes");
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/admins", adminRouter);
@@ -77,7 +76,6 @@ app.use("/api/v1/dislikes", dislikeRouter);
 app.use("/api/v1/proposes", proposeRouter);
 app.use("/api/v1/images", imageRouter);
 app.use("/api/v1/crushes", crushRouter);
-app.use("/api/v1/matches", matchRouter);
 
 /* Serve Admin UI Pages */
 app.get("/admin", (req, res) => {
