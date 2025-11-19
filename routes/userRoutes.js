@@ -29,9 +29,9 @@ router.get("/feed/chunk", feedController.getFeedChunk);
 
 // Upload user media (photos + studentIdPhoto) -> stores into ImageKit under gusto/users/{username}/...
 router.post(
-   "/media/upload",
-   uploadSignupFiles,
-   imageController.uploadUserMedia
+  "/media/upload",
+  uploadSignupFiles,
+  imageController.uploadUserMedia
 );
 
 /* ============================================================
