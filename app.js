@@ -37,15 +37,18 @@ app.use(
       useDefaults: true,
       directives: {
         "default-src": ["'self'"],
-        "script-src": ["'self'", "https://unpkg.com"],
+        // Allow inline scripts and attribute handlers (e.g., onclick) used across public/*.html
+        "script-src": ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://cdn.tailwindcss.com"],
+        "script-src-elem": ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://cdn.tailwindcss.com"],
+        "script-src-attr": ["'unsafe-inline'"],
         "img-src": ["'self'", "data:", "https://ik.imagekit.io"],
         "connect-src": [
           "'self'",
           "https://upload.imagekit.io",
           "https://ik.imagekit.io",
         ],
-        "style-src": ["'self'", "'unsafe-inline'"],
-        "font-src": ["'self'", "data:"],
+        "style-src": ["'self'", "'unsafe-inline'", "https://rsms.me", "https://cdn.tailwindcss.com", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+        "font-src": ["'self'", "data:", "https://rsms.me", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
         "frame-ancestors": ["'self'"],
       },
     },

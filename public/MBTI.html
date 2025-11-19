@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personality Type</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      
+      rel="stylesheet"
+    />
+
+    <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+
+      /* Glass Container */
+      .glass {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+
+      /* MBTI Button Style */
+      .mbti-btn {
+        position: relative;
+        background: radial-gradient(
+            circle at 30% 100%,
+            rgba(255, 255, 255, 0.55) 0%,
+            rgba(255, 255, 255, 0.25) 35%,
+            rgba(255, 182, 193, 0.18) 60%,
+            rgba(255, 160, 180, 0.1) 80%,
+            rgba(255, 150, 170, 0.05) 100%
+          ),
+          rgba(255, 192, 203, 0.25);
+        border-radius: 1.2rem;
+        color: #111;
+        font-weight: 500;
+        transition: all 0.25s ease-in-out;
+        overflow: hidden;
+        z-index: 1;
+        box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.6),
+          inset 0 -1px 3px rgba(255, 255, 255, 0.4);
+      }
+
+      /* Subtle glossy border gradient */
+      .mbti-btn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1.4px;
+        background: linear-gradient(
+          150deg,
+          rgba(255, 255, 255, 0.9),
+          rgba(255, 190, 210, 0.65)
+        );
+        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        z-index: -1;
+      }
+
+      /* Hover and selection */
+      .mbti-btn:hover {
+        transform: scale(1.06);
+        box-shadow: 0 0 18px rgba(255, 180, 200, 0.85);
+      }
+
+      .selected {
+        background: radial-gradient(
+            circle at 30% 100%,
+            rgba(255, 255, 255, 0.55) 0%,
+            rgba(255, 160, 180, 0.4) 50%,
+            rgba(255, 100, 130, 0.25) 80%
+          ),
+          linear-gradient(to bottom right, #ff8eb5, #ff4f85);
+        color: white;
+        box-shadow: 0 0 22px rgba(255, 110, 150, 0.8);
+        transform: scale(1.08);
+      }
+    </style>
+  </head>
+
+  <body
+    class="flex flex-col items-center justify-center min-h-screen bg-cover bg-center"
+    style="background-image: url('bgimg.jpg');"
+  >
+  
+  <!-- Back Button (outside the card) -->
+  <div class="w-[90%] max-w-[560px] mb-6">
+  <a href="bio.html"
+     class="mbti-btn flex items-center justify-start font-medium 
+            w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px]
+            px-4 sm:px-6 text-base sm:text-lg transition-all duration-200"
+  >
+    <i class="fa-solid fa-arrow-left mr-2 text-lg sm:text-xl"></i>
+    <span class="font-serif leading-none">Back</span>
+  </a>
+</div>
+
+
+  <!-- Glass Container -->
+  <div
+    class="glass rounded-[2rem] p-8 sm:p-10 md:p-12 shadow-2xl border border-white/25 w-[90%] max-w-[560px] text-center"
+  >
+    <!-- Title -->
+    <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold text-black mb-[54px]">
+      what's your personality type?
+    </h2>
+
+    <!-- MBTI Grid -->
+    <div id="typeGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 md:gap-7 justify-items-center mb-10"></div>
+
+    <!-- Buttons -->
+    <div class="flex justify-center gap-6">
+      <button id="skipBtn" class="w-28 h-12 sm:w-32 sm:h-13 rounded-full border border-white/50 bg-white/30 text-gray-700 font-medium shadow-md hover:bg-white/50 transition-all duration-300">
+        Skip
+      </button>
+      <button id="nextBtn" class="w-28 h-12 sm:w-32 sm:h-13 rounded-full bg-gradient-to-t from-rose-500 to-pink-400 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 border border-white/50">
+        Next
+      </button>
+    </div>
+  </div>
+
+  
+
+
+    <!-- Script -->
+    <script>
+      const types = [
+        "ISTJ","ISTP","ISFJ","ISFP",
+        "INFJ","INFP","INTJ","INTP",
+        "ESTP","ESTJ","ESFP","ESFJ",
+        "ENFJ","ENFP","ENTJ","ENTP",
+      ];
+
+      const grid = document.getElementById("typeGrid");
+
+      types.forEach((t) => {
+        const btn = document.createElement("button");
+        btn.textContent = t;
+
+        // Responsive size tuning
+        btn.className = `
+          mbti-btn
+          w-16 h-16
+          sm:w-20 sm:h-20
+          md:w-22 md:h-22
+          flex items-center justify-center
+          text-base sm:text-lg md:text-xl
+        `;
+
+        // Selection behavior
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll("#typeGrid button")
+            .forEach((b) => b.classList.remove("selected"));
+          btn.classList.add("selected");
+        });
+
+        grid.appendChild(btn);
+      });
+
+      let selectedMBTI = null;
+
+      document.getElementById('skipBtn').addEventListener('click', () => {
+        localStorage.removeItem('mbti');
+        window.location.href = 'StudentId1.html';
+      });
+
+      document.getElementById('nextBtn').addEventListener('click', () => {
+        const selected = document.querySelector('#typeGrid button.selected');
+        if (selected) {
+          selectedMBTI = selected.textContent;
+          localStorage.setItem('mbti', selectedMBTI);
+        }
+        window.location.href = 'StudentId1.html';
+      });
+    </script>
+  </body>
+</html>

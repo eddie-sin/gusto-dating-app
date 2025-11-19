@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hobby — Select</title>
+
+  <link rel="stylesheet" href="/css/tailwind.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-image: url("bgimg.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* Floating glass card (same as Confirm Document) */
+    .glass {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 4px 30px rgba(255, 182, 193, 0.3);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .animate-float { animation: float 4s ease-in-out infinite; }
+
+    /* Heart shape background */
+    .heart-bg {
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 650px;
+      height: 650px;
+      background: radial-gradient(circle at 50% 25%,
+          rgba(255, 85, 130, 0.65),
+          rgba(255, 70, 110, 0.55),
+          rgba(255, 60, 105, 0.30),
+          transparent 70%);
+      filter: blur(45px);
+      opacity: 1;
+      clip-path: path(
+        "M 250 0 
+         C 390 0, 520 110, 520 230 
+         C 520 360, 350 480, 250 560 
+         C 150 480, -20 360, -20 230 
+         C -20 110, 110 0, 250 0 Z"
+      );
+    }
+
+    /* Pill selected */
+    .pill-selected {
+      background: linear-gradient(145deg, #f4b7c3, #ee90a3) !important;
+      color: black !important;
+      box-shadow: 0 0 15px rgba(255, 120, 150, 0.9) !important;
+      transform: scale(1.1);
+    }
+
+    /* MBTI Button */
+    .mbti-btn {
+      position: relative;
+      background: radial-gradient(
+          circle at 30% 100%,
+          rgba(255, 255, 255, 0.55) 0%,
+          rgba(255, 255, 255, 0.25) 35%,
+          rgba(255, 182, 193, 0.18) 60%,
+          rgba(255, 160, 180, 0.1) 80%,
+          rgba(255, 150, 170, 0.05) 100%
+        ),
+        rgba(255, 192, 203, 0.25);
+      border-radius: 1.2rem;
+      color: #111;
+      font-weight: 500;
+      transition: all 0.25s ease-in-out;
+      overflow: hidden;
+      z-index: 1;
+      box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.6),
+                  inset 0 -1px 3px rgba(255, 255, 255, 0.4);
+    }
+
+    .mbti-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1.4px;
+      background: linear-gradient(
+        150deg,
+        rgba(255, 255, 255, 0.9),
+        rgba(255, 190, 210, 0.65)
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box,
+                     linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: -1;
+    }
+
+    .mbti-btn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 18px rgba(255, 180, 200, 0.85);
+    }
+  </style>
+</head>
+
+
+<body class="flex flex-col items-center justify-center min-h-screen px-4 relative overflow-hidden">
+
+  <!-- ORIGINAL BACK BUTTON RESTORED -->
+  <button onclick="window.location.href='index.html'" class="absolute top-6 left-6 md:top-8 md:left-10 px-6 py-2.5 rounded-full 
+      bg-white/70 backdrop-blur-xl border border-white/60 shadow-lg
+      text-black text-[15px] font-medium hover:scale-105 transition flex items-center gap-2">
+    ← Back
+  </button>
+
+
+  <!-- Floating Glass Card (EXACT SAME AS CONFIRM PAGE) -->
+  <div class="glass relative z-10 w-[92%] sm:w-[85%] md:w-[75%] lg:w-[68%] xl:w-[58%] 
+              max-w-[760px] rounded-3xl p-8 sm:p-10 md:p-12 text-center animate-float">
+
+    <div class="heart-bg"></div>
+
+    <h2 class="text-[#2e2e2e] text-xl sm:text-2xl md:text-3xl mb-6">
+      What’s your Hobby?
+    </h2>
+
+    <!-- Pill Layout -->
+    <div id="hobbyContainer" class="relative z-10 flex flex-col items-center space-y-3 md:space-y-4">
+      <div class="flex gap-16 justify-center translate-y-0 translate-x-0"></div>
+      <div class="flex gap-4 justify-center -translate-y-2 translate-x-1"></div>
+      <div class="flex gap-2 justify-center -translate-y-3 translate-x-1"></div>
+      <div class="flex gap-4 justify-center -translate-y-4 translate-x-0"></div>
+      <div class="flex gap-8 justify-center -translate-y-6 -translate-x-4"></div>
+      <div class="flex gap-32 justify-center -translate-y-7 -translate-x-1"></div>
+      <div class="flex gap-3 justify-center -translate-y-7 -translate-x-1"></div>
+      <div class="flex gap-4 justify-center -translate-y-7 -translate-x-1"></div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-center gap-6 mt-10">
+      <button id="skipBtn" class="mbti-btn w-[130px] h-[48px] flex items-center justify-center text-[16px]">
+        Skip
+      </button>
+
+      <button id="nextBtn" class="mbti-btn w-[130px] h-[48px] flex items-center justify-center text-[16px]">
+        Next
+      </button>
+    </div>
+
+  </div>
+
+  <!-- JS for pills -->
+  <script>
+    const rows = [
+      ["Singing", "Music"],
+      ["Cooking", "Reading", "Travel"],
+      ["Learn", "Fashion", "Photography", "Exercise"],
+      ["Dancing", "Painting", "Gaming", "Crafting"],
+      ["Graphic Design", "Movie", "Football"],
+      ["Gym", "Camping"],
+      ["Video Editing", "Volunteering"],
+      ["Coding"]
+    ];
+
+    const container = document.getElementById("hobbyContainer");
+
+    rows.forEach((rowItems, i) => {
+      const row = container.children[i];
+
+      rowItems.forEach(text => {
+        const pill = document.createElement("div");
+
+        pill.className =
+          "text-center py-2 bg-[#E78597] border border-[#e8acb8]/60 " +
+          "rounded-full text-[14px] md:text-[15px] text-gray-800 shadow-md " +
+          "backdrop-blur-sm cursor-pointer transition hover:scale-105";
+
+        if (i === 0) pill.classList.add("w-[150px]");
+        if (i === 1) pill.classList.add("w-[140px]");
+        if (i === 2) pill.classList.add("w-[130px]");
+        if (i === 3) pill.classList.add("w-[135px]");
+        if (i === 4) pill.classList.add("w-[145px]");
+        if (i === 5) pill.classList.add("w-[150px]");
+        if (i === 6) pill.classList.add("w-[160px]");
+        if (i === 7) pill.classList.add("w-[170px]");
+
+        pill.textContent = text;
+        pill.dataset.hobby = text.toLowerCase();
+        pill.addEventListener("click", () => {
+          pill.classList.toggle("pill-selected");
+        });
+        row.appendChild(pill);
+      });
+    });
+
+    document.getElementById('skipBtn').addEventListener('click', () => {
+      localStorage.setItem('hobbies', JSON.stringify([]));
+      window.location.href = 'zodiac.html';
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      const selected = document.querySelectorAll('.pill-selected');
+      const hobbies = Array.from(selected).map(pill => pill.dataset.hobby);
+      
+      if (hobbies.length < 1) {
+        alert('⚠️ Please select at least 1 hobby.');
+        return;
+      }
+      if (hobbies.length > 5) {
+        alert('⚠️ You can select a maximum of 5 hobbies.');
+        return;
+      }
+      
+      localStorage.setItem('hobbies', JSON.stringify(hobbies));
+      window.location.href = 'zodiac.html';
+    });
+  </script>
+
+</body>
+</html>

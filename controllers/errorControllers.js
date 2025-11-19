@@ -76,14 +76,24 @@ module.exports = (err, req, res, next) => {
     }
     sendErrorDev(err, req, res);
   } else {
-    let error = Object.assign({}, err);
+    // In production, avoid shallow-copying Error (loses props). Work with original.
+    let error = err;
+
+    // Helpful debug logs (will not be sent to client)
+    console.error("Prod error details:", {
+      name: error.name,
+      code: error.code,
+      message: error.message,
+      keyValue: error.keyValue,
+      errors: error.errors && Object.keys(error.errors),
+    });
+
     // handle mongoose specific errors
     if (error.name === "CastError") error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    if (error.name === "ValidationError")
-      error = handleValidationErrorDB(error);
+    if (error.name === "ValidationError") error = handleValidationErrorDB(error);
     // handle multer errors
-    if (error.code && error.code.startsWith("LIMIT_")) {
+    if (error.code && String(error.code).startsWith("LIMIT_")) {
       error = handleMulterError(error);
     }
 
