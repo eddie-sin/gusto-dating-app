@@ -137,3 +137,16 @@ exports.getCrushCount = catchAsync(async (req, res, next) => {
     crushCount: count,
   });
 });
+
+// GET /api/v1/crushes  -> list all (admin)
+exports.getAllCrushes = catchAsync(async (req, res, next) => {
+  const crushes = await Crush.find().sort({ createdAt: -1 });
+  res.status(200).json({ status: "success", results: crushes.length, data: crushes });
+});
+
+// GET /api/v1/crushes/count -> { count: N } (admin)
+exports.getCrushCountAll = catchAsync(async (req, res, next) => {
+  const count = await Crush.countDocuments();
+  res.status(200).json({ status: "success", data: { count } });
+});
+

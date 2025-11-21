@@ -202,3 +202,16 @@ exports.getReceivedProposes = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ status: "success", results: proposals.length, data: proposals });
 });
+
+// GET /api/v1/proposes  -> list all (admin)
+exports.getAllProposes = catchAsync(async (req, res, next) => {
+  // Optionally support basic pagination later (skip/limit)
+  const proposes = await Propose.find().sort({ createdAt: -1 });
+  res.status(200).json({ status: "success", results: proposes.length, data: proposes });
+});
+
+// GET /api/v1/proposes/count -> { count: N } (admin)
+exports.getProposeCount = catchAsync(async (req, res, next) => {
+  const count = await Propose.countDocuments();
+  res.status(200).json({ status: "success", data: { count } });
+});

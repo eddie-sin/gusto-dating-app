@@ -1,30 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const crhController = require("../controllers/crhControllers");
-const { protect } = require("../controllers/authControllers"); // your auth middleware
+const { protect } = require("../controllers/authControllers");
+const adminController = require("../controllers/adminControllers");
 
-/* ============================
-   ADD CRUSH
-   POST /api/v1/crushes/:targetId
-============================ */
+// Admin endpoints
+router.get("/", adminController.protectAdmin, crhController.getAllCrushes);
+router.get("/count", adminController.protectAdmin, crhController.getCrushCountAll);
+
+// Add crush (user)
 router.post("/:targetId", protect, crhController.addCrush);
 
-/* ============================
-   CANCEL CRUSH
-   DELETE /api/v1/crushes/:targetId
-============================ */
+// Cancel crush
 router.delete("/:targetId", protect, crhController.cancelCrush);
 
-/* ============================
-   GET MY CRUSHES
-   GET /api/v1/crushes/my
-============================ */
+// User endpoints
 router.get("/my", protect, crhController.getMyCrushes);
-
-/* ============================
-   GET NUMBER OF PEOPLE WHO CRUSHED ME
-   GET /api/v1/crushes/me
-============================ */
 router.get("/me", protect, crhController.getCrushCount);
 
 module.exports = router;
