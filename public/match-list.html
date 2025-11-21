@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfect Match</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap" rel="stylesheet">
+
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background-image: url("bgimg.jpg"); /* page bg */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- MAIN CARD -->
+  <div
+    class="relative w-[90vw] max-w-[1200px]
+           h-[520px] md:h-[580px] lg:h-[620px]
+           rounded-[32px] overflow-hidden">
+
+    <!-- BACKGROUND IMAGE (50% see-through) -->
+    <img
+      src="img/match-list-img1.png"
+      class="absolute inset-0 w-full h-full object-cover opacity-50" />
+
+    <!-- CONTENT LAYER -->
+    <div class="relative z-10 w-full h-full">
+
+      <!-- TITLE -->
+      <h1
+        class="absolute top-6 left-[80px]
+               text-white font-extrabold drop-shadow-2xl
+               text-[56px] leading-[60px]
+               md:text-[72px] md:leading-[78px]
+               lg:text-[80px] lg:leading-[86px]">
+        Perfect <br />
+        <span style="color: #57ffd8;">Match!</span>
+      </h1>
+
+      <!-- INFO BOX -->
+      <div
+        class="absolute right-[100px] top-[30%]
+              bg-white/25 backdrop-blur-xl
+              border border-white/60
+              rounded-[30px] shadow-2xl
+              px-8 py-6
+              w-[400px] h-[300px]
+              flex flex-col justify-center items-center
+              text-white text-center">
+
+        <!-- NAME -->
+        <p
+          class="text-[34px] mb-2 drop-shadow-md"
+          style="
+            font-family: 'Gasoek One', sans-serif;
+            -webkit-text-stroke: 0.1px #FF395D;
+            color: white;
+          "
+        >
+          Kaung Zaw Hein
+        </p>
+
+
+        <!-- DIVIDER -->
+        <div class="w-[85%] h-[2px] bg-white/70 my-3"></div>
+
+        <!-- BIO TEXT -->
+        <div
+          class="space-y-3 text-[16px] md:text-[18px] lg:text-[20px] leading-relaxed opacity-95"
+          style="font-family: 'Rufina', serif;"
+        >
+          <p>I'm Gay! hel kg ma yal Nga Hla lar</p>
+          <p>Aries</p>
+          <p>HND–57</p>
+          <p>09–123456789</p>
+        </div>
+      </div>
+
+
+      <!-- BOTTOM THUMBNAILS -->
+      <div class="absolute bottom-20 left-[100px] flex gap-6">
+        <img
+          src="img/match-list-img2.png"
+          class="w-[160px] h-[120px] rounded-[20px]
+                 object-cover
+                 shadow-[0_10px_25px_rgba(0,0,0,0.35)]" />
+
+        <img
+          src="img/match-list-img3.png"
+          class="w-[160px] h-[120px] rounded-[20px]
+                 object-cover
+                 shadow-[0_10px_25px_rgba(0,0,0,0.35)]" />
+      </div>
+
+      <!-- DOTS -->
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
+        <div class="w-[60px] h-2 rounded-full bg-white"></div>
+        <div class="w-3 h-3 rounded-full bg-white/60"></div>
+        <div class="w-3 h-3 rounded-full bg-white/40"></div>
+        <div class="w-3 h-3 rounded-full bg-white/40"></div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

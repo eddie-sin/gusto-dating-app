@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Jomolhari&family=Rufina:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    .switch-h { height: 0.2rem; }
+
+    .action-btn {
+      width: 3.5rem;
+      height: 3.5rem;
+      background: transparent;
+      border: 2px solid #d3d3d3;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 
+        inset 0 5px 8px -4px #d3d3d3,
+        inset 0 -5px 8px -4px #d3d3d3,
+        inset 2px 0 8px -4px #d3d3d3,
+        inset -2px 0 8px -4px #d3d3d3;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      box-shadow: inset 0 0 10px #d3d3d3;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6"
+      style="background: linear-gradient(to bottom, #FFCAD4 24%, #FF4D6D 100%);">
+
+  <!-- CARD -->
+<div class="relative w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-lg h-[400px] sm:h-[550px] md:h-[580px] lg:h-[580px] bg-white rounded-3xl shadow-xl overflow-hidden mb-4">
+
+    <!-- Switch bars on image -->
+    <div class="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20" id="bars">
+      <div class="switch-h w-16 sm:w-24 md:w-28 rounded-full bg-white cursor-pointer" onclick="showImage(0)"></div>
+      <div class="switch-h w-16 sm:w-24 md:w-28 rounded-full bg-black/40 cursor-pointer" onclick="showImage(1)"></div>
+      <div class="switch-h w-16 sm:w-24 md:w-28 rounded-full bg-black/40 cursor-pointer" onclick="showImage(2)"></div>
+
+    </div>
+
+    <!-- Image -->
+    <img id="slideImage" src="img/mmainpageImage.png"
+         class="w-full h-full object-cover transition-opacity duration-500 opacity-100" />
+
+    <!-- Bottom text inside image -->
+    <div class="absolute bottom-5 sm:bottom-7 left-5 sm:left-7 text-white drop-shadow">
+
+      <div class="font-semibold font-rufina flex items-center gap-2 mb-1 text-sm sm:text-base md:text-lg">
+
+        <!-- Name -->
+        Khin Win War
+        <span class="font-jomolhari text-sm sm:text-base">, 30</span>
+
+        <!-- Male sticker -->
+        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-gray-300 flex items-center justify-center 
+                shadow-inner pointer-events-none" style="background: transparent; box-shadow: inset 0 0 10px #d3d3d3;">
+            <i class="fa-solid fa-mars text-[0.85rem] sm:text-base" style="color: #74C0FC;"></i>
+
+        </div>
+      </div>
+
+      <!-- Under text -->
+      <div class="opacity-90 font-rufina text-xs sm:text-sm md:text-base">
+        Just a moment!
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="flex gap-6 sm:gap-8 mt-4 sm:mt-6">
+
+    <!-- Sticker Button -->
+    <button class="action-btn">
+      <i class="fa-regular fa-star" style="color: #FFFF00;"></i>
+    </button>
+
+    <!-- Heart Button -->
+    <button class="action-btn">
+      <i class="fa-regular fa-heart fa-rotate-by" style="color: #FF002D; --fa-rotate-angle: 2deg;"></i>
+    </button>
+
+    <!-- Dislike Button -->
+    <button class="action-btn">
+      <i class="fa-regular fa-thumbs-down fa-flip-horizontal" style="color: #FFFFFF;"></i>
+    </button>
+
+  </div>
+
+<!-- 
+  <script>
+    const images = [ 
+      "img/mmainpageImage.png", 
+      "img/mmainpageImage.png", 
+      "bgimg.jpg" 
+    ];
+
+    function showImage(i) {
+      const img = document.getElementById('slideImage');
+      const bars = document.querySelectorAll('#bars div');
+
+      bars.forEach((bar, idx) => {
+        bar.classList.remove('bg-white', 'bg-black/40');
+        bar.classList.add(idx === i ? 'bg-white' : 'bg-black/40');
+      });
+
+      img.style.opacity = "0";
+      setTimeout(() => {
+        img.src = images[i];
+        img.style.opacity = "1";
+      }, 200);
+    }
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            rufina: ['Rufina', 'serif'],
+            jomolhari: ['Jomolhari', 'serif'],
+          }
+        }
+      }
+    }
+  </script> -->
+
+  <script>
+const images = [ 
+  "img/mmainpageImage.png", 
+  "img/mmainpageImage.png", 
+  "bgimg.jpg" 
+];
+
+let currentIndex = 0;
+
+function showImage(i) {
+  currentIndex = i;
+  const img = document.getElementById('slideImage');
+  const bars = document.querySelectorAll('#bars div');
+
+  bars.forEach((bar, idx) => {
+    bar.classList.remove('bg-white', 'bg-black/40');
+    bar.classList.add(idx === i ? 'bg-white' : 'bg-black/40');
+  });
+
+  img.style.opacity = "0";
+  setTimeout(() => {
+    img.src = images[i];
+    img.style.opacity = "1";
+  }, 200);
+}
+
+// ===== Swipe functionality =====
+const slideImage = document.getElementById('slideImage');
+let startX = 0;
+
+slideImage.addEventListener('touchstart', (e) => {
+  startX = e.touches[0].clientX;
+});
+
+slideImage.addEventListener('touchend', (e) => {
+  const endX = e.changedTouches[0].clientX;
+  const diffX = endX - startX;
+
+  if (Math.abs(diffX) > 50) { // minimum swipe distance
+    if (diffX < 0) {
+      // swipe left → next image
+      currentIndex = (currentIndex + 1) % images.length;
+    } else {
+      // swipe right → previous image
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+    }
+    showImage(currentIndex);
+  }
+});
+ tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          rufina: ['Rufina', 'serif'],
+          jomolhari: ['Jomolhari', 'serif'],
+        }
+      }
+    }
+  }
+</script>
+
+
+</body>
+</html>

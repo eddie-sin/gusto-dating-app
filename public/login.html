@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Account</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .animate-float { animation: float 4s ease-in-out infinite; will-change: transform; }
+  </style>
+  <style>
+
+    body {
+    margin: 0;
+    background-image: url('bgimg.jpg');
+    
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .navbar-space {
+    height: 60px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+  }
+
+  .container {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(99%);
+    border-radius: 20px;
+    padding: 60px 60px;              /* Increased padding */
+    width: 480px;                    /* Increased width from 350px */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    position: relative;
+  }
+
+
+  h2 {
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  /* Adjust input and button spacing for balance */
+  input {
+    width: 100%;                     /* full width inside wider container */
+    padding: 14px;
+    margin: 14px 0;                  /* more vertical spacing */
+    border: none;
+    border-bottom: 1px solid #000;
+    background: transparent;
+    outline: none;
+    font-size: 16px;
+    color: black;
+  }
+
+  /* Placeholder (preview text) color */
+  input::placeholder {
+    color: black; /* pink placeholder */
+    opacity: 0.8;
+  }
+
+  button {
+    background: linear-gradient(to right, #ff3366);
+    border: none;
+    padding: 10px 30px;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(to right, #f0578a);
+  }
+
+  a {
+    color: #ff3366;
+    text-decoration: none;
+    font-size: 13px;
+  }
+
+.remember {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80%;
+  margin: 25px auto -10px;  /* pushes it closer to the Login button */
+  font-size: 14px;
+  color: black;
+}
+
+
+#remember {
+  all: unset;                /* resets all browser default styles */
+  display: inline-block;
+  width: 13px;               /* perfect compact size */
+  height: 13px;
+  border: 3px solid black;
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+  transition: 0.2s ease-in-out;
+}
+
+#remember:checked::after {
+  content: "✔";
+  font-size: 9px;
+  color: black;
+  position: absolute;
+  top: -2px;
+  left: 1px;
+}
+
+
+
+  .next-btn,
+  .login-btn {
+    margin-top: 35px;
+    width: 80%;
+    padding: 12px;
+    border: none;
+    border-radius: 30px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(90deg, #ef3063, #f68229);
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .next-btn:hover,
+  .login-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(90deg, #ff3366, #ff5c8a);
+  }
+
+  /* Account + Register line */
+  /* Left-right layout for bottom line */
+  .account-register {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;                     /* matches button width for symmetry */
+    margin: 30px auto 0;
+    font-size: 15px;
+    color: black;
+  }
+
+  /* Left text (Don’t have an account?) */
+  .account-register span {
+    font-weight: 500;
+  }
+
+  /* Right text (Register) */
+  .account-register a {
+    color: #FF4D6D;
+    font-weight: 600;
+    text-decoration: none;
+    text-shadow: 0 0 6px rgba(255, 77, 109, 0.6); /* soft glow */
+    transition: all 0.3s ease;
+  }
+
+  .account-register a:hover {
+    color: #ff1e50;
+    text-shadow: 0 0 10px rgba(255, 77, 109, 0.9);
+    transform: scale(1.05);
+  }
+
+
+  .type3{
+    padding-left: 29%;
+  }
+
+  .next1{
+    margin-left: 72%;
+  }
+
+
+    </style>
+</head>
+
+<body>
+
+  <!-- Placeholder for Navigation Bar -->
+  <div class="navbar-space"></div>
+  <div class="container animate-float">
+    <h2>Login Account</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Enter your Username" required><br>
+      <input type="password" id="password" placeholder="Password" required><br>
+      <div class="remember">
+          <label for="remember">Remember Me</label>
+          <div class="type3">
+            <input type="checkbox" id="remember">
+          </div>
+      </div>
+      <button type="submit" class="next-btn">Login</button>
+      <p><a href="#">Forget Password?</a></p>
+      <div class="account-register">
+        <span>Don't have an Account?</span>
+        <a href="enter-name.html">Register</a>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    const API_BASE = '/api/v1/users';
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const remember = document.getElementById('remember').checked;
+
+      if (!username || !password) {
+        alert('⚠️ Please enter both username and password.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Login failed. Please try again.');
+        }
+
+        // Store token if remember me is checked
+        if (remember && result.token) {
+          localStorage.setItem('authToken', result.token);
+        }
+
+        alert('Login successful!');
+        // Redirect to main app or dashboard
+        window.location.href = '/';
+      } catch (error) {
+        alert(error.message || 'An error occurred during login. Please try again.');
+      }
+    });
+  </script>
+</body>
+
+</html>

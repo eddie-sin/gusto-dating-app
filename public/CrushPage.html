@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Crush Page</title> 
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&family=Oleo+Script&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&
+  family=Oleo+Script&
+  family=Itim&
+  family=Orbit&
+  family=Old+Standard+TT:wght@400;700&
+  family=Jomolhari&display=swap" rel="stylesheet">
+
+  <style>
+    .nav-box {
+      background: linear-gradient(180deg, rgba(255, 241, 244, 0.959), rgb(255, 230, 234));
+      border: 1px solid rgba(255, 255, 255, 0.884);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      font-family: 'Rufina', serif; 
+    }
+
+    .crush-card {
+      background: rgba(255, 255, 255, 0.20); 
+      backdrop-filter: blur(14px);
+      border-radius: 28px;
+      padding: 14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
+      transition: transform 0.2s ease;
+    }
+
+    .crush-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .cancel-btn {
+      background: linear-gradient(180deg,#ffeaf0,#ffd7dff1);
+      color: #c84a5a;
+      border: 1px solid rgba(200,74,90,0.12);
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-weight:600;
+      box-shadow: 0 4px 8px rgba(200,74,90,0.06);
+      font-size: 0.9rem;
+    }
+
+    .small-avatar {
+      width:44px;height:44px;border-radius:999px; object-fit:cover;
+      border:2px solid rgba(255,255,255,0.8);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .heart-svg { 
+      filter: drop-shadow(0 20px 40px rgba(255, 77, 110, 0.427));
+    }
+
+    #heartNumber { transform: translateY(-15%); }
+
+    .muted-small { 
+      color: rgba(255,255,255,0.9);
+      font-size:13px;
+      letter-spacing:0.6px; 
+    }
+
+    .oleo-font {
+      font-family: 'Oleo Script', cursive;
+    }
+
+    @media (min-width: 640px) { 
+      .grid-cols-responsive { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    }
+    @media (min-width: 768px) { 
+      .grid-cols-responsive { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) { 
+      .grid-cols-responsive { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    .right-col { padding-top: 6px; }
+  </style>
+</head>
+
+<body class="bg-cover bg-center bg-no-repeat" 
+      style="background-image: url('bgimg.jpg');">
+
+  <!-- NAV BAR -->
+  <div class="nav-box rounded-2xl px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between mb-10 gap-3 sm:gap-0">
+    <div class="flex items-center space-x-3">
+        <div class="cursor-pointer">Logo</div> 
+    </div>
+
+    <div class="flex items-center space-x-4 sm:space-x-8 text-[#7b3a43] font-medium flex-wrap justify-center">
+      <div class="cursor-pointer">Home</div>
+      <div class="cursor-pointer">Match</div>
+      <div class="cursor-pointer">Propose</div>
+      <div class="cursor-pointer">Crush</div>
+    </div>
+
+    <div>
+      <img src="https://i.pinimg.com/736x/76/07/9b/76079b98096e5da25426248dba5d72ce.jpg"
+           alt="profile" class="w-10 h-10 rounded-full border" />
+    </div>
+  </div>
+
+  <!-- TITLE -->
+  <h1 class="text-center text-4xl text-[#c82f41] mb-8" style="font-family: 'Jomolhari', serif;">
+    Crushes
+  </h1>
+  <!-- MAIN GRID -->
+  <div class="grid gap-8 grid-cols-responsive">
+
+    <!-- LEFT COLUMN -->
+    <div class="flex flex-col gap-6 items-center">
+
+      <div class="crush-card">
+        <div class="flex items-center space-x-4">
+          <img src="https://i.pinimg.com/736x/80/25/7c/80257c1c03ea35596b96ff5763f0eef1.jpg" alt="avatar" class="small-avatar"/>
+          <div class="text-black font-semibold">Khin Win War, 20</div>
+        </div>
+        <button class="cancel-btn text-black " style="font-family: 'Rufina', serif;">Cancel</button>
+      </div>
+
+      <div class="crush-card">
+        <div class="flex items-center space-x-4">
+          <img src="https://i.pinimg.com/736x/bb/65/bd/bb65bdeab14fcb2e332edcdfae569465.jpg" alt="avatar" class="small-avatar"/>
+          <div class="text-black font-semibold">Khin Win War, 20</div>
+        </div>
+        <button class="cancel-btn text-black" style="font-family: 'Rufina', serif;">Cancel</button>
+      </div>
+
+      <div class="crush-card">
+        <div class="flex items-center space-x-4">
+          <img src="https://i.pinimg.com/736x/ce/18/32/ce18326f474404bd6ea32a26653a27b2.jpg" alt="avatar" class="small-avatar"/>
+          <div class="text-black font-semibold">Khin Win War, 20</div>
+        </div>
+        <button class="cancel-btn text-black" style="font-family: 'Rufina', serif;">Cancel</button>
+      </div>
+
+      <div class="crush-card">
+        <div class="flex items-center space-x-4">
+          <img src="https://i.pinimg.com/1200x/60/cb/08/60cb08f12e3b6d3a20cfd95acd031aed.jpg" alt="avatar" class="small-avatar"/>
+          <div class="text-black font-semibold" >Khin Win War, 20</div>
+        </div>
+        <button class="cancel-btn text-black" style="font-family: 'Rufina', serif;">Cancel</button>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col flex flex-col items-center text-center">
+      <h2 class="text-3xl text-[#c92f42] mb-4" 
+          style="font-family: 'Old Standard TT', serif;">
+        Crush on you
+      </h2>
+
+      <div id="heart" class="relative w-36 h-36 sm:w-44 sm:h-44 cursor-pointer">
+        <div class="absolute inset-0 flex items-center justify-center z-10">
+          <span id="heartNumber" class="text-white text-4xl font-extrabold"
+                style="font-family: 'Itim', cursive;">
+            10
+          </span>
+
+        </div>
+
+        <svg viewBox="0 0 64 64" class="w-full h-full heart-svg">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#ff6b7a"/>
+              <stop offset="40%" stop-color="#ff435e"/>
+              <stop offset="90%" stop-color="#ff2b4a"/>
+            </linearGradient>
+
+            <radialGradient id="shine" cx="30%" cy="25%" r="60%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.95)"/>
+              <stop offset="35%" stop-color="rgba(255,255,255,0.45)"/>
+              <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+            </radialGradient>
+          </defs>
+
+          <path d="M32 58s-18-12.8-25-21.2C0 26 15 10 25 18c4 3.2 7 6.8 7 6.8s3-3.6 7-6.8c10-8 25 8 18 18.8C50 45.2 32 58 32 58z"
+                fill="url(#g1)" stroke="#ff4055" stroke-width="1.6"/>
+
+          <path d="M19 18c4.5-6 12-6 16-2 3 3 3 7 1 10" 
+                fill="none" stroke="url(#shine)" stroke-width="8" 
+                stroke-linecap="round" opacity="0.65"/>
+
+          <ellipse cx="39" cy="22" rx="8" ry="4.5" 
+                   fill="url(#shine)" opacity="0.55"
+                   transform="rotate(-18 39 22)"/>
+        </svg>
+      </div>
+
+      <p class="muted-small mt-5" style="font-family: 'Orbit', sans-serif;">
+        Someone can't stop thinking about<br>you~
+      </p>
+
+    </div>
+
+  </div> <!-- END GRID -->
+
+  <script>
+    const heart = document.getElementById('heart');
+    const heartNumber = document.getElementById('heartNumber');
+    let count = 10;
+
+    heart.addEventListener('click', () => {
+      count++;
+      heartNumber.textContent = count;
+      heart.classList.add('animate-pulse');
+      setTimeout(()=> heart.classList.remove('animate-pulse'), 300);
+    });
+  </script>
+
+</body>
+</html>

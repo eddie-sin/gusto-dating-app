@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proposals</title>
+  <!-- Tailwind (CDN for simplicity; switch to /css/tailwind.css if desired) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://rsms.me/" />
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  <style>
+    body { background: url('bgimg.jpg') center/cover no-repeat; font-family: 'Poppins', sans-serif; }
+    .glass { background: rgba(255,255,255,0.18); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.35); box-shadow: 0 8px 28px rgba(0,0,0,0.18); }
+    @keyframes float {0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .animate-float { animation: float 4s ease-in-out infinite; }
+    /* CARD */
+    .proposal-card { transition: all .28s ease; background: rgba(255,255,255,0.55); min-height:320px; }
+    .proposal-card:hover { box-shadow: 0 10px 26px rgba(255,120,150,0.35); }
+    .proposal-img { object-fit: cover; width: 100%; height: 240px; display: block; }
+    .overlay-name { position: absolute; left: 12px; bottom: 12px; z-index: 2; font-size: 15px; font-weight:600; padding:6px 12px; border-radius:14px; background:rgba(255,255,255,0.75); color:#222; }
+    .overlay-mini { position:absolute; right:12px; bottom:12px; z-index: 2; width:50px; height:50px; border-radius:50%; overflow:hidden; box-shadow:0 0 0 3px rgba(255,255,255,0.95); }
+    .action-bar { position:absolute; left:0; bottom:0; width:100%; display:flex; justify-content:center; gap:16px; padding:12px 16px; background:linear-gradient(to top,#ff99b3,#ffc2d2 70%,rgba(255,255,255,0.05)); }
+    .action-btn { font-size:14px; line-height:1; padding:12px 26px; border-radius:22px; font-weight:600; letter-spacing:.25px; border:1px solid rgba(255,255,255,0.85); box-shadow:0 2px 6px rgba(0,0,0,0.12); transition:.25s; }
+    .action-btn.accept { background:linear-gradient(135deg,#ff87a2,#ffb9c9); color:#311c25; }
+    .action-btn.deny { background:linear-gradient(135deg,#f7d5dc,#ffe9ee); color:#382129; }
+    .action-btn.cancel { background:linear-gradient(135deg,#f7d5dc,#ffe9ee); color:#382129; }
+    .action-btn:hover { transform:translateY(-3px); box-shadow:0 8px 18px rgba(255,140,170,0.45); }
+    .action-btn:hover { transform:translateY(-2px); box-shadow:0 6px 14px rgba(255,130,160,0.4); }
+    .action-btn.deny, .action-btn.cancel { background:linear-gradient(to right,#ffd0d9,#ffe4ea); }
+    .action-btn.deny:hover, .action-btn.cancel:hover { box-shadow:0 6px 14px rgba(255,180,195,0.5); }
+    .accepted-ring { box-shadow:0 0 0 3px #4ade80 !important; }
+    /* Modal */
+    .modal-overlay { background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); }
+    .modal-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,0.55); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col px-5 py-10">
+
+  <!-- RECEIVED PROPOSALS -->
+  <section class="glass animate-float rounded-3xl p-6 md:p-8 mb-10 w-full max-w-6xl mx-auto">
+    <div class="mb-4 md:mb-6 flex justify-center">
+      <h2 class="text-center text-[16px] md:text-[18px] font-medium text-gray-800 flex items-center gap-2">
+        <span class="text-[18px] md:text-[20px]">❤️</span>
+        <span>People Who Proposed You</span>
+      </h2>
+    </div>
+    <div id="receivedGrid" class="grid grid-cols-3 gap-8"></div>
+    <p id="receivedEmpty" class="text-center text-gray-600 mt-4 hidden">No one has proposed to you yet.</p>
+  </section>
+
+  <!-- SENT PROPOSALS -->
+  <section class="glass animate-float rounded-3xl p-6 md:p-8 w-full max-w-6xl mx-auto">
+    <div class="mb-4 md:mb-6 flex justify-center">
+      <h2 class="text-center text-[16px] md:text-[18px] font-medium text-gray-800 flex items-center gap-2">
+        <span class="text-[18px] md:text-[20px]">✉️</span>
+        <span>People You Proposed</span>
+      </h2>
+    </div>
+    <div id="sentGrid" class="grid grid-cols-3 gap-8"></div>
+    <p id="sentEmpty" class="text-center text-gray-600 mt-4 hidden">You haven't proposed to anyone yet.</p>
+  </section>
+
+  <!-- MODAL -->
+  <div id="profileModal" class="fixed inset-0 hidden items-center justify-center modal-overlay z-50">
+    <div class="modal-card rounded-2xl p-6 w-[92%] max-w-xl relative">
+      <button id="closeModal" class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-pink-500 text-white hover:bg-pink-600 shadow-md">×</button>
+      <div class="flex flex-col md:flex-row gap-6">
+        <img id="modalImg" src="testing.jpg" alt="profile" class="w-36 h-36 object-cover rounded-2xl shadow-md" />
+        <div class="flex-1 space-y-2">
+          <h3 id="modalName" class="text-2xl font-semibold text-gray-800"></h3>
+          <p id="modalProgram" class="text-sm text-gray-700"></p>
+          <p id="modalBatch" class="text-sm text-gray-700"></p>
+          <p id="modalMbti" class="text-sm text-gray-700"></p>
+          <p id="modalZodiac" class="text-sm text-gray-700"></p>
+          <p id="modalBio" class="text-sm text-gray-600 leading-relaxed"></p>
+          <div id="modalHobbies" class="flex flex-wrap gap-2 mt-2"></div>
+        </div>
+      </div>
+      <div id="modalActions" class="mt-6 flex gap-4"></div>
+    </div>
+  </div>
+
+  <script>
+  // Dummy data (replace with dynamic later)
+  const receivedProposals = [
+    { id: 1, name: 'Alice Tan', age: 20, program: 'HND Computing', batch: 'HND01', mbti: 'INTJ', zodiac: 'aquarius', bio: 'Loves problem solving & UI design.', hobbies: ['coding','music','reading'] },
+    { id: 2, name: 'Brian Cho', age: 21, program: 'GED', batch: 'GED18', mbti: 'ENFP', zodiac: 'leo', bio: 'Outgoing and loves travel planning.', hobbies: ['travel','gaming'] },
+    { id: 3, name: 'Celine Wu', age: 19, program: 'IGCSE', batch: 'IG22', mbti: 'INFJ', zodiac: 'virgo', bio: 'Quiet observer, creative writer.', hobbies: ['writing','photography'] },
+    { id: 4, name: 'David Lim', age: 22, program: 'HND Business', batch: 'HND02', mbti: 'ESTP', zodiac: 'aries', bio: 'Action-oriented & marketing lover.', hobbies: ['exercise','travel'] },
+    { id: 5, name: 'Eva Park', age: 20, program: 'Level 3 Foundation', batch: 'L3C32', mbti: 'ISFP', zodiac: 'cancer', bio: 'Design & calm forest walks.', hobbies: ['fashion','painting','music']  },
+    { id: 6, name: 'Frank Zhang', age: 23, program: 'GUF Foundation', batch: 'GUF05', mbti: 'ENTP', zodiac: 'sagittarius', bio: 'Debate club captain & foodie.', hobbies: ['debate','cooking'] },
+    { id: 7, name: 'Grace Lee', age: 21, program: 'PRE GED', batch: 'PG12', mbti: 'ISFJ', zodiac: 'taurus', bio: 'Loyal friend & nature lover.', hobbies: ['hiking','gardening'] },
+    { id : 8, name: 'Henry Kim', age: 22, program: 'HND Computing', batch: 'HND03', mbti: 'INTP', zodiac: 'capricorn', bio: 'Tech enthusiast & chess player.', hobbies: ['chess','programming'] },
+    { id : 9, name: 'Ivy Chen', age: 19, program: 'IGCSE', batch: 'IG23', mbti: 'ENFJ', zodiac: 'libra', bio: 'Social butterfly & volunteer.', hobbies: ['volunteering','dancing'] }
+  ];
+
+  const sentProposals = [
+    { id: 101, name: 'Derek Lim', age: 22, program: 'HND Business', batch: 'HND02', mbti: 'ESTP', zodiac: 'aries', bio: 'Action-oriented & marketing lover.', hobbies: ['exercise','travel'] },
+    { id: 102, name: 'Ella Park', age: 20, program: 'Level 3 Foundation', batch: 'L3C32', mbti: 'ISFP', zodiac: 'cancer', bio: 'Design & calm forest walks.', hobbies: ['fashion','painting','music'] }
+  ];
+
+  const receivedGrid = document.getElementById('receivedGrid');
+  const sentGrid = document.getElementById('sentGrid');
+  const receivedCount = document.getElementById('receivedCount');
+  const sentCount = document.getElementById('sentCount');
+  const receivedEmpty = document.getElementById('receivedEmpty');
+  const sentEmpty = document.getElementById('sentEmpty');
+
+  function updateCounts(){
+    receivedCount.textContent = receivedProposals.length + ' total';
+    sentCount.textContent = sentProposals.length + ' total';
+    receivedEmpty.classList.toggle('hidden', receivedProposals.length !== 0);
+    sentEmpty.classList.toggle('hidden', sentProposals.length !== 0);
+  }
+
+  function pill(label){
+    const span = document.createElement('span');
+    span.textContent = label;
+    span.className = 'px-3 py-1 rounded-full text-xs bg-pink-100 text-pink-700 font-medium border border-pink-200';
+    return span;
+  }
+
+  function card(person, type){
+    const div = document.createElement('div');
+    div.className = 'proposal-card relative rounded-xl overflow-hidden shadow-md w-full';
+
+    // IMAGE AREA
+    const imgWrapper = document.createElement('button');
+    imgWrapper.type = 'button';
+    imgWrapper.className = 'block w-full h-[240px] relative';
+    imgWrapper.innerHTML = `<img src="testing.jpg" alt="${person.name}" class="proposal-img" />`;
+    imgWrapper.addEventListener('click', ()=> openModal(person, type));
+
+    // NAME OVERLAY
+    const nameOverlay = document.createElement('div');
+    nameOverlay.className = 'overlay-name';
+    nameOverlay.textContent = person.name;
+    imgWrapper.appendChild(nameOverlay);
+
+    // SMALL PROFILE CIRCLE (can reuse same img)
+    const mini = document.createElement('div');
+    mini.className = 'overlay-mini bg-white';
+    mini.innerHTML = `<img src="testing.jpg" alt="mini ${person.name}" class="w-full h-full object-cover" />`;
+    imgWrapper.appendChild(mini);
+
+    // ACTION BAR
+    const actionBar = document.createElement('div');
+    actionBar.className = 'action-bar';
+
+    if(type === 'received'){
+      const accept = document.createElement('button');
+      accept.className = 'action-btn accept';
+      accept.textContent = 'Accept';
+      accept.addEventListener('click', (e)=>{ e.stopPropagation(); acceptProposal(person.id); });
+      const deny = document.createElement('button');
+      deny.className = 'action-btn deny';
+      deny.textContent = 'Deny';
+      deny.addEventListener('click', (e)=>{ e.stopPropagation(); denyProposal(person.id); });
+      actionBar.append(accept, deny);
+    } else {
+      const cancel = document.createElement('button');
+      cancel.className = 'action-btn cancel';
+      cancel.textContent = 'Cancel';
+      cancel.addEventListener('click', (e)=>{ e.stopPropagation(); cancelProposal(person.id); });
+      actionBar.append(cancel);
+    }
+
+    div.append(imgWrapper, actionBar);
+    return div;
+  }
+
+  function render(){
+    receivedGrid.innerHTML='';
+    sentGrid.innerHTML='';
+    receivedProposals.forEach(p=> receivedGrid.appendChild(card(p,'received')));
+    sentProposals.forEach(p=> sentGrid.appendChild(card(p,'sent')));
+    updateCounts();
+  }
+
+  // Actions
+  function acceptProposal(id){
+    const idx = receivedProposals.findIndex(p=>p.id===id);
+    if(idx>-1){
+      // mark accepted visually (simple approach)
+      const accepted = receivedProposals[idx];
+      accepted.accepted = true;
+      alert('Accepted proposal from '+accepted.name);
+      render();
+    }
+  }
+  function denyProposal(id){
+    const idx = receivedProposals.findIndex(p=>p.id===id);
+    if(idx>-1){
+      const denied = receivedProposals.splice(idx,1)[0];
+      alert('Denied proposal from '+denied.name);
+      render();
+    }
+  }
+  function cancelProposal(id){
+    const idx = sentProposals.findIndex(p=>p.id===id);
+    if(idx>-1){
+      const canceled = sentProposals.splice(idx,1)[0];
+      alert('Canceled your proposal to '+canceled.name);
+      render();
+    }
+  }
+
+  // Modal logic
+  const modal = document.getElementById('profileModal');
+  const closeModalBtn = document.getElementById('closeModal');
+  const modalName = document.getElementById('modalName');
+  const modalProgram = document.getElementById('modalProgram');
+  const modalBatch = document.getElementById('modalBatch');
+  const modalMbti = document.getElementById('modalMbti');
+  const modalZodiac = document.getElementById('modalZodiac');
+  const modalBio = document.getElementById('modalBio');
+  const modalHobbies = document.getElementById('modalHobbies');
+  const modalActions = document.getElementById('modalActions');
+
+  function openModal(person, type){
+    modalName.textContent = person.name + (person.age? ' • ' + person.age: '');
+    modalProgram.textContent = 'Program: ' + person.program;
+    modalBatch.textContent = 'Batch: ' + person.batch;
+    modalMbti.textContent = 'MBTI: ' + (person.mbti||'—');
+    modalZodiac.textContent = 'Zodiac: ' + (person.zodiac||'—');
+    modalBio.textContent = person.bio || 'No bio provided.';
+    modalHobbies.innerHTML='';
+    (person.hobbies||[]).forEach(h=> modalHobbies.appendChild(pill(h)));
+
+    // Contextual actions (mirror card actions for convenience)
+    modalActions.innerHTML='';
+    if(type==='received'){
+      const a=document.createElement('button'); a.textContent='Accept'; a.className='btn-soft px-4 py-2 rounded-full text-sm text-green-700 hover:bg-green-100'; a.onclick=()=>{acceptProposal(person.id); closeModal();};
+      const d=document.createElement('button'); d.textContent='Deny'; d.className='btn-soft px-4 py-2 rounded-full text-sm text-red-700 hover:bg-red-100'; d.onclick=()=>{denyProposal(person.id); closeModal();};
+      modalActions.append(a,d);
+    } else {
+      const c=document.createElement('button'); c.textContent='Cancel Proposal'; c.className='btn-soft px-4 py-2 rounded-full text-sm text-red-700 hover:bg-red-100'; c.onclick=()=>{cancelProposal(person.id); closeModal();};
+      modalActions.append(c);
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeModal(){
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  closeModalBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+
+  render();
+  </script>
+</body>
+</html>

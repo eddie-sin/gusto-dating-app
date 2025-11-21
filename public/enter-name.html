@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enter Your Name</title>
+
+  <!-- External stylesheet & fonts -->
+  <link rel="preconnect" href="https://rsms.me/" />
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+
+  <style>
+    /* ========== GENERAL STYLES ========== */
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('bgimg.jpg') center/cover no-repeat;
+    }
+
+    /* ========== CONTAINER ========== */
+    .container1 {
+      background:  rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(99%);
+      border-radius: 20px;
+      padding: 40px;
+      width: 350px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ========== ANIMATIONS ========== */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .animate-float { animation: float 4s ease-in-out infinite; will-change: transform; }
+
+    /* ========== INPUT FIELDS ========== */
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-bottom: 1px solid #000;
+      background: transparent;
+      outline: none;
+      font-size: 15px;
+      color: black;
+      transition: border-bottom-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Placeholder (preview text) */
+    input::placeholder {
+      color: black;
+      opacity: 0.7;
+    }
+
+    /* Underline turns pink when focused or valid */
+    input:focus {
+      border-bottom-color: green;
+      box-shadow: none; /* remove pink glow */
+    }
+
+    /* Red underline for invalid (non-letter input) */
+    input:not(:placeholder-shown):invalid {
+      border-bottom-color: red;
+      box-shadow: none;
+    }
+
+    /* ========== BUTTON ========== */
+    button {
+      background: linear-gradient(to right, #ff3366, #f68229);
+      border: none;
+      padding: 10px 30px;
+      color: white;
+      border-radius: 25px;
+      cursor: pointer;
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(to right, #ff4d6d, #ff8c66);
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.4);
+    }
+
+    /* ========== LAYOUT HELPERS ========== */
+    .next1 {
+      margin-left: 72%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container1 animate-float">
+    <p style="font-family: Inter; font-size: x-large; color: black; font-weight: 600;">Enter Your Name!</p>
+    <form id="nameForm" novalidate>
+      <input type="text" id="firstName" placeholder="First Name" required><br>
+      <input type="text" id="lastName" placeholder="Last Name" required><br>
+      <input type="text" id="nickname" placeholder="Nickname (Display Name)" maxlength="40" required><br>
+      <div class="next1">
+        <button id="nextBtn" type="button">Next</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const nameForm = document.getElementById('nameForm');
+      const nextBtn = document.getElementById('nextBtn');
+      const firstNameInput = document.getElementById('firstName');
+      const lastNameInput = document.getElementById('lastName');
+
+      function showError(input, message) {
+        input.style.borderBottomColor = 'red';
+        const existingError = input.parentNode.querySelector('.error-msg');
+        if (existingError) existingError.remove();
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-msg';
+        errorDiv.textContent = message;
+        errorDiv.style.color = 'red';
+        errorDiv.style.fontSize = '12px';
+        errorDiv.style.marginTop = '4px';
+        errorDiv.style.textAlign = 'left';
+        input.parentNode.appendChild(errorDiv);
+        setTimeout(() => {
+          errorDiv.remove();
+          input.style.borderBottomColor = '';
+        }, 3000);
+      }
+
+      function handleSubmit(e) {
+        if (e) e.preventDefault();
+        const firstName = firstNameInput.value.trim();
+        const lastName = lastNameInput.value.trim();
+        const nickname = document.getElementById('nickname').value.trim();
+
+        // Clear previous errors
+        document.querySelectorAll('.error-msg').forEach(el => el.remove());
+        firstNameInput.style.borderBottomColor = '';
+        lastNameInput.style.borderBottomColor = '';
+        document.getElementById('nickname').style.borderBottomColor = '';
+
+        // Validation
+        if (!firstName) {
+          showError(firstNameInput, 'First name is required');
+          return;
+        }
+        if (firstName.length > 40) {
+          showError(firstNameInput, 'First name must be 40 characters or less');
+          return;
+        }
+        // Allow international letters, spaces, hyphens and apostrophes
+        if (!/^[\p{L}\s\-']+$/u.test(firstName)) {
+          showError(firstNameInput, 'First name can include letters, spaces, hyphens and apostrophes only');
+          return;
+        }
+
+        if (!lastName) {
+          showError(lastNameInput, 'Last name is required');
+          return;
+        }
+        if (lastName.length > 40) {
+          showError(lastNameInput, 'Last name must be 40 characters or less');
+          return;
+        }
+        if (!/^[\p{L}\s\-']+$/u.test(lastName)) {
+          showError(lastNameInput, 'Last name can include letters, spaces, hyphens and apostrophes only');
+          return;
+        }
+
+        const fullName = firstName + ' ' + lastName;
+        if (fullName.length > 80) {
+          showError(lastNameInput, 'Full name must be 80 characters or less');
+          return;
+        }
+
+        if (!nickname) {
+          showError(document.getElementById('nickname'), 'Nickname is required');
+          return;
+        }
+        if (nickname.length > 40) {
+          showError(document.getElementById('nickname'), 'Nickname must be 40 characters or less');
+          return;
+        }
+
+        // Store and navigate
+        localStorage.setItem('firstName', firstName);
+        localStorage.setItem('lastName', lastName);
+        localStorage.setItem('nickname', nickname);
+        window.location.href = 'birthday.html';
+      }
+
+      // Bind both submit and button click for robustness
+      nameForm.addEventListener('submit', handleSubmit);
+      nextBtn.addEventListener('click', handleSubmit);
+    });
+  </script>
+</body>
+</html>

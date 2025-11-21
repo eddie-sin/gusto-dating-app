@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Photos to Profile</title>
+
+  <!-- External stylesheet & fonts -->
+  <link rel="preconnect" href="https://rsms.me/" />
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  
+  <style>
+    /* ========== ANIMATIONS ========== */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .animate-float { animation: float 4s ease-in-out infinite; will-change: transform; }
+
+    /* ========== BODY ========== */
+    body {
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-image: url('bgimg.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      margin: 0;
+    }
+
+    /* ========== CARD CONTAINER ========== */
+    .card {
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      width: 85%;
+      max-width: 900px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+      font-family: "Inter", sans-serif;
+      font-size: 24px;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #555;
+      margin-bottom: 25px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .subtitle img {
+      width: 2em;
+      height: 2em;
+      vertical-align: middle;
+    }
+
+
+    /* ========== PHOTO UPLOAD BOXES ========== */
+    .photo-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .photo-box {
+      width: 200px;
+      height: 200px;
+      border: 2px solid #FF4D6D;
+      border-radius: 15px;
+      background-color: transparent;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.3s;
+    }
+
+    .photo-box:hover {
+      border-color: #ff6f91;
+      background-color: rgba(255, 240, 245, 0.9);
+    }
+
+    .upload-area {
+      text-align: center;
+      color: black;
+    }
+
+    .upload-area .plus {
+      font-size: 45px;
+      color: black;
+      display: block;
+      margin-bottom: 5px;
+      transition: transform 0.2s ease;
+    }
+
+    .photo-box:hover .plus {
+      transform: scale(1.1);
+    }
+
+    .preview {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 15px;
+    }
+
+    .remove {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .remove:hover {
+      background: red;
+    }
+
+    /* ========== NEXT BUTTON ========== */
+    .btn-container {
+      padding-left: 600px;
+      padding-top: 50px;
+    }
+
+
+    #nextBtn {
+      padding: 10px 25px;
+      font-size: 16px;
+      background: linear-gradient(to right, #ff6f91, #ff9671);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    #nextBtn:hover {
+      background: linear-gradient(to right, #ff9671, #ff6f91);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Back Button -->
+  <button onclick="window.location.href='contact_number.html'" class="absolute top-6 left-6 bg-white/70 backdrop-blur-xl border border-white/60 shadow-lg text-black text-sm font-medium hover:scale-105 transition px-4 py-2 rounded-full z-50">
+    ← Back
+  </button>
+  <div class="card animate-float">
+    <h2>Add Photos to Profile</h2>
+    <p class="subtitle">
+      <img src="index-heart.png" alt="heart" />
+      Selected Photos
+    </p>
+
+    <div class="photo-row">
+      <div class="photo-box" id="box1">
+        <div class="upload-area">
+          <span class="plus">+</span>
+          <p>Tap to add</p>
+        </div>
+        <input type="file" id="photo1" accept="image/*" hidden>
+        <div class="preview" id="preview1"></div>
+        <button class="remove" id="remove1">❌</button>
+      </div>
+
+      <div class="photo-box" id="box2">
+        <div class="upload-area">
+          <span class="plus">+</span>
+          <p>Tap to add</p>
+        </div>
+        <input type="file" id="photo2" accept="image/*" hidden>
+        <div class="preview" id="preview2"></div>
+        <button class="remove" id="remove2">❌</button>
+      </div>
+
+      <div class="photo-box" id="box3">
+        <div class="upload-area">
+          <span class="plus">+</span>
+          <p>Tap to add</p>
+        </div>
+        <input type="file" id="photo3" accept="image/*" hidden>
+        <div class="preview" id="preview3"></div>
+        <button class="remove" id="remove3">❌</button>
+      </div>
+
+      <div class="photo-box" id="box4">
+        <div class="upload-area">
+          <span class="plus">+</span>
+          <p>Tap to add</p>
+        </div>
+        <input type="file" id="photo4" accept="image/*" hidden>
+        <div class="preview" id="preview4"></div>
+        <button class="remove" id="remove4">❌</button>
+      </div>
+
+      <div class="photo-box" id="box5">
+        <div class="upload-area">
+          <span class="plus">+</span>
+          <p>Tap to add</p>
+        </div>
+        <input type="file" id="photo5" accept="image/*" hidden>
+        <div class="preview" id="preview5"></div>
+        <button class="remove" id="remove5">❌</button>
+      </div>
+    </div>
+
+    <div class="btn-container">
+      <button id="nextBtn">Next</button>
+    </div>
+  </div>
+
+  <script>
+    function setupPhotoBox(boxId, inputId, previewId, removeId) {
+      const box = document.getElementById(boxId);
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      const removeBtn = document.getElementById(removeId);
+      const uploadArea = box.querySelector(".upload-area");
+
+      box.addEventListener("click", (e) => {
+        if (e.target === removeBtn) return;
+        input.click();
+      });
+
+      input.addEventListener("change", () => {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          preview.innerHTML = `<img src="${e.target.result}" alt="photo">`;
+          uploadArea.style.display = "none";
+          removeBtn.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      });
+
+      removeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        input.value = "";
+        preview.innerHTML = "";
+        uploadArea.style.display = "block";
+        removeBtn.style.display = "none";
+      });
+    }
+
+    setupPhotoBox("box1", "photo1", "preview1", "remove1");
+    setupPhotoBox("box2", "photo2", "preview2", "remove2");
+    setupPhotoBox("box3", "photo3", "preview3", "remove3");
+    setupPhotoBox("box4", "photo4", "preview4", "remove4");
+    setupPhotoBox("box5", "photo5", "preview5", "remove5");
+
+    document.getElementById("nextBtn").addEventListener("click", async () => {
+      const photos = [];
+      const promises = [];
+      
+      for (let i = 1; i <= 5; i++) {
+        const input = document.getElementById(`photo${i}`);
+        if (input.files && input.files[0]) {
+          const promise = new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              photos.push(e.target.result);
+              resolve();
+            };
+            reader.onerror = () => resolve();
+            reader.readAsDataURL(input.files[0]);
+          });
+          promises.push(promise);
+        }
+      }
+      
+      if (promises.length === 0) {
+        alert("⚠️ Please upload at least 3 photos before continuing.");
+        return;
+      }
+      
+      await Promise.all(promises);
+      
+      if (photos.length < 3) {
+        alert("⚠️ Please upload at least 3 photos.");
+        return;
+      }
+      if (photos.length > 5) {
+        alert("⚠️ You can upload a maximum of 5 photos.");
+        return;
+      }
+      
+      localStorage.setItem('photos', JSON.stringify(photos));
+      window.location.href = 'hobby.html';
+    });
+  </script>
+</body>
+</html>
