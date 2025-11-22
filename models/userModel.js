@@ -7,18 +7,44 @@ const SALT_ROUNDS = 12;
 const userSchema = new mongoose.Schema(
   {
     /* SECTION-A: Profile/Public Personal */
-    nickname: { type: String, required: true, trim: true, maxlength: 40 },
-    dob: { type: Date, required: true },
-    gender: { type: String, enum: ["male", "female", "lgbt"], required: true },
-    sexuality: { type: String, enum: ["male", "female", "both"], required: true },
-    bio: { type: String, maxlength: 500, default: "" },
+    nickname: {
+      type: String,
+      required: [true, "Please enter your nickname"],
+      trim: true,
+      maxlength: [40, "Your nickname cannot be more than 40 characters"],
+    },
+    dob: {
+      type: Date,
+      required: [true, "Please enter your date of birth"],
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ["male", "female", "lgbt"],
+        message: "That gender option is not available",
+      },
+      required: [true, "Please select your gender"],
+    },
+    sexuality: {
+      type: String,
+      enum: {
+        values: ["male", "female", "both"],
+        message: "That sexuality option is not available",
+      },
+      required: [true, "Please select your sexuality/interest"],
+    },
+
+    bio: {
+      type: String,
+      maxlength: [500, "Your bio cannot be longer than 500 characters"],
+      default: "",
+    },
     hobbies: {
       type: [String],
       validate: {
-        validator: (arr) => arr.length >= 1 && arr.length <= 5,
-        message: "You must enter between 1 and 5 hobbies.",
+        validator: (arr) => !arr || arr.length <= 5,
+        message: "Hobbies cannot be more than 5",
       },
-      required: true,
     },
     heightFt: { type: Number },
     heightIn: { type: Number },
@@ -26,9 +52,28 @@ const userSchema = new mongoose.Schema(
     mbti: { type: String, trim: true },
 
     /* SECTION-B: Verification */
-    name: { type: String, required: true, trim: true, maxlength: 80 },
-    batch: { type: String, required: true, trim: true },
-    contact: { type: String, required: true, trim: true, unique: true },
+    name: {
+      type: String,
+      required: [true, "Please enter your full-name"],
+      trim: true,
+    },
+    program: {
+      type: String,
+      required: [true, "Please enter your program"],
+      trim: true,
+    },
+    batch: {
+      type: String,
+      required: [true, "Please enter your batch"],
+      trim: true,
+    },
+    contact: {
+      type: String,
+      required: [true, "Please enter your contact number"],
+      trim: true,
+      unique: true,
+    },
+
     photos: {
       type: [
         {
@@ -37,41 +82,53 @@ const userSchema = new mongoose.Schema(
         },
       ],
       validate: {
-        validator: (arr) => Array.isArray(arr) && arr.length >= 3 && arr.length <= 5,
+        validator: (arr) =>
+          Array.isArray(arr) && arr.length >= 3 && arr.length <= 5,
         message: "Please upload between 3 and 5 photos",
       },
-      required: true,
+      required: [true, "Please upload your beautiful photos"],
     },
     studentIdPhoto: {
       type: {
         fileId: { type: String, required: true },
         url: { type: String, required: true },
       },
-      required: true,
+      required: [true, "Please upload your student ID"],
       select: false,
     },
 
     /* SECTION-C: Authentication */
     username: {
       type: String,
-      required: true,
+      required: [true, "Please enter username"],
       unique: true,
-      lowercase: true,
+      lowercase: [true, "Username should be in lowercase"],
       trim: true,
-      minlength: 3,
-      maxlength: 30,
+      minlength: [3, "Username should at least contains 3 letters"],
+      maxlength: [30, "Username should not be longer than 30 chatacters"],
       validate: {
         validator: (v) => /^[a-z0-9._]+$/.test(v),
-        message: "Username may contain lowercase letters, numbers, dot and underscore only.",
+        message:
+          "Username may contain lowercase letters, numbers, dot and underscore only.",
       },
     },
-    password: { type: String, required: true, minlength: 8, select: false },
+    password: {
+      type: String,
+      required: [true, "Please enter password"],
+      minlength: [8, "Password should be at least 8 characters long"],
+      select: false,
+    },
     passwordChangedAt: { type: Date },
     passwordResetToken: { type: String, select: false },
     passwordResetExpires: { type: Date },
 
     /* SECTION-D: Admin Workflow */
-    status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending", required: true },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+      required: true,
+    },
     approvedBy: { type: mongoose.Schema.ObjectId, ref: "Admin" },
 
     /* SECTION-E: Backend Workflow */
@@ -135,7 +192,10 @@ userSchema.pre("save", async function (next) {
 });
 
 /* INSTANCE METHODS */
-userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
@@ -149,9 +209,10 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 
 /* STATIC HELPER FOR ADMIN ACTIONS */
 userSchema.statics.removeStudentIdPhoto = async function (userId) {
-  return await this.findByIdAndUpdate(userId, { $unset: { studentIdPhoto: 1 } });
+  return await this.findByIdAndUpdate(userId, {
+    $unset: { studentIdPhoto: 1 },
+  });
 };
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
-
