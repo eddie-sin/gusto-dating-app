@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Review & Submit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .animate-float { animation: float 4s ease-in-out infinite; will-change: transform; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('bgimg.jpg') center/cover no-repeat fixed;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .error-message {
+      background: rgba(244, 63, 94, 0.1);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: #dc2626;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .success-message {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #16a34a;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .info-value {
+      color: #666;
+      text-align: right;
+      max-width: 60%;
+      word-break: break-word;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, #ff3366, #f68229);
+      border: none;
+      padding: 12px 30px;
+      color: white;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      background: linear-gradient(to right, #ff4d6d, #ff8c66);
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      padding: 12px 30px;
+      color: #333;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    .btn-secondary:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-danger {
+      background: rgba(220, 38, 38, 0.2);
+      border: 1px solid rgba(220, 38, 38, 0.4);
+      padding: 12px 30px;
+      color: #dc2626;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    .btn-danger:hover {
+      transform: scale(1.05);
+      background: rgba(220, 38, 38, 0.3);
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="glass rounded-3xl p-8 w-full max-w-2xl animate-float">
+    <h2 class="text-2xl font-bold text-center mb-2 text-gray-800">Review Your Information</h2>
+    <p class="text-center text-gray-600 mb-8 text-sm">Please review all your information before submitting. You can start over if needed.</p>
+
+    <div id="errorContainer"></div>
+    <div id="successContainer"></div>
+
+    <div class="glass rounded-2xl p-6 mb-6 max-h-96 overflow-y-auto">
+      <div id="reviewContent"></div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+      <button id="restartBtn" class="btn-danger w-full sm:w-auto">Start Over</button>
+      <button id="submitBtn" class="btn-primary w-full sm:w-auto">
+        <span id="submitText">Submit Registration</span>
+        <span id="submitLoader" class="loading hidden"></span>
+      </button>
+      <button id="loginBtn" class="btn-secondary w-full sm:w-auto hidden">Go to Login</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api/v1/users';
+
+    function showError(message) {
+      const container = document.getElementById('errorContainer');
+      container.innerHTML = `<div class="error-message">${message}</div>`;
+      setTimeout(() => container.innerHTML = '', 5000);
+    }
+
+    function showSuccess(message) {
+      const container = document.getElementById('successContainer');
+      container.innerHTML = `<div class="success-message">${message}</div>`;
+      setTimeout(() => container.innerHTML = '', 5000);
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return 'Not provided';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function formatGender(gender) {
+      const map = { male: 'Male', female: 'Female', lgbt: 'LGBT' };
+      return map[gender] || gender;
+    }
+
+    function formatSexuality(sexuality) {
+      const map = { male: 'Male', female: 'Female', both: 'Both' };
+      return map[sexuality] || sexuality;
+    }
+
+    function loadReviewData() {
+      const data = {
+        name: localStorage.getItem('firstName') + ' ' + localStorage.getItem('lastName'),
+        nickname: localStorage.getItem('nickname'),
+        dob: localStorage.getItem('dob'),
+        batch: localStorage.getItem('batch'),
+        program: localStorage.getItem('program'),
+        gender: localStorage.getItem('gender'),
+        sexuality: localStorage.getItem('sexuality'),
+        contact: localStorage.getItem('contact'),
+        hobbies: JSON.parse(localStorage.getItem('hobbies') || '[]'),
+        heightFt: localStorage.getItem('heightFt'),
+        heightIn: localStorage.getItem('heightIn'),
+        zodiac: localStorage.getItem('zodiac'),
+        mbti: localStorage.getItem('mbti'),
+        bio: localStorage.getItem('bio'),
+        username: localStorage.getItem('username'),
+        photos: JSON.parse(localStorage.getItem('photos') || '[]'),
+        studentIdPhoto: localStorage.getItem('studentIdPhoto')
+      };
+
+      const content = document.getElementById('reviewContent');
+      content.innerHTML = `
+        <div class="info-item">
+          <span class="info-label">Full Name:</span>
+          <span class="info-value">${data.name || 'Not provided'}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Nickname:</span>
+          <span class="info-value">${data.nickname || 'Not provided'}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Date of Birth:</span>
+          <span class="info-value">${formatDate(data.dob)}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Program:</span>
+          <span class="info-value">${data.program || 'Not provided'}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Batch:</span>
+          <span class="info-value">${data.batch || 'Not provided'}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Gender:</span>
+          <span class="info-value">${formatGender(data.gender)}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Sexuality:</span>
+          <span class="info-value">${formatSexuality(data.sexuality)}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Contact:</span>
+          <span class="info-value">${data.contact || 'Not provided'}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Hobbies:</span>
+          <span class="info-value">${data.hobbies.length > 0 ? data.hobbies.join(', ') : 'Not provided'}</span>
+        </div>
+        ${data.heightFt && data.heightIn ? `
+        <div class="info-item">
+          <span class="info-label">Height:</span>
+          <span class="info-value">${data.heightFt}' ${data.heightIn}"</span>
+        </div>
+        ` : ''}
+        ${data.zodiac ? `
+        <div class="info-item">
+          <span class="info-label">Zodiac:</span>
+          <span class="info-value">${data.zodiac}</span>
+        </div>
+        ` : ''}
+        ${data.mbti ? `
+        <div class="info-item">
+          <span class="info-label">MBTI:</span>
+          <span class="info-value">${data.mbti}</span>
+        </div>
+        ` : ''}
+        ${data.bio ? `
+        <div class="info-item">
+          <span class="info-label">Bio:</span>
+          <span class="info-value">${data.bio}</span>
+        </div>
+        ` : ''}
+        <div class="info-item">
+          <span class="info-label">Username:</span>
+          <span class="info-value">${data.username || 'Not provided'}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Photos:</span>
+          <span class="info-value">${data.photos.length} photo(s) uploaded</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Student ID:</span>
+          <span class="info-value">${data.studentIdPhoto ? 'Uploaded' : 'Not provided'}</span>
+        </div>
+      `;
+    }
+
+    function validateData() {
+      const required = {
+        name: localStorage.getItem('firstName') && localStorage.getItem('lastName'),
+        nickname: localStorage.getItem('nickname'),
+        dob: localStorage.getItem('dob'),
+        batch: localStorage.getItem('batch'),
+        gender: localStorage.getItem('gender'),
+        sexuality: localStorage.getItem('sexuality'),
+        contact: localStorage.getItem('contact'),
+        hobbies: JSON.parse(localStorage.getItem('hobbies') || '[]').length >= 1,
+        photos: JSON.parse(localStorage.getItem('photos') || '[]').length >= 3,
+        studentIdPhoto: localStorage.getItem('studentIdPhoto'),
+        username: localStorage.getItem('username'),
+        password: localStorage.getItem('password')
+      };
+
+      const missing = Object.entries(required).filter(([key, value]) => !value).map(([key]) => key);
+      if (missing.length > 0) {
+        showError(`Missing required fields: ${missing.join(', ')}`);
+        return false;
+      }
+
+      const hobbies = JSON.parse(localStorage.getItem('hobbies') || '[]');
+      if (hobbies.length < 1 || hobbies.length > 5) {
+        showError('Please select between 1 and 5 hobbies.');
+        return false;
+      }
+
+      const photos = JSON.parse(localStorage.getItem('photos') || '[]');
+      if (photos.length < 3 || photos.length > 5) {
+        showError('Please upload between 3 and 5 photos.');
+        return false;
+      }
+
+      const username = localStorage.getItem('username');
+      if (username.length < 3 || username.length > 30) {
+        showError('Username must be between 3 and 30 characters.');
+        return false;
+      }
+      if (!/^[a-z0-9._]+$/.test(username)) {
+        showError('Username may contain lowercase letters, numbers, dot and underscore only.');
+        return false;
+      }
+
+      const password = localStorage.getItem('password');
+      if (password.length < 8) {
+        showError('Password must be at least 8 characters long.');
+        return false;
+      }
+
+      return true;
+    }
+
+    async function submitRegistration() {
+      if (!validateData()) return;
+
+      const submitBtn = document.getElementById('submitBtn');
+      const submitText = document.getElementById('submitText');
+      const submitLoader = document.getElementById('submitLoader');
+      
+      submitBtn.disabled = true;
+      submitText.textContent = 'Submitting...';
+      submitLoader.classList.remove('hidden');
+
+      try {
+        const formData = new FormData();
+
+        // Add text fields
+        formData.append('name', localStorage.getItem('firstName') + ' ' + localStorage.getItem('lastName'));
+        formData.append('nickname', localStorage.getItem('nickname'));
+        formData.append('dob', localStorage.getItem('dob'));
+        formData.append('batch', localStorage.getItem('batch'));
+        formData.append('gender', localStorage.getItem('gender'));
+        formData.append('sexuality', localStorage.getItem('sexuality'));
+        formData.append('contact', localStorage.getItem('contact'));
+        formData.append('username', localStorage.getItem('username'));
+        formData.append('password', localStorage.getItem('password'));
+
+        const hobbies = JSON.parse(localStorage.getItem('hobbies') || '[]');
+        formData.append('hobbies', JSON.stringify(hobbies));
+
+        const heightFt = localStorage.getItem('heightFt');
+        const heightIn = localStorage.getItem('heightIn');
+        if (heightFt) formData.append('heightFt', heightFt);
+        if (heightIn) formData.append('heightIn', heightIn);
+
+        const zodiac = localStorage.getItem('zodiac');
+        if (zodiac) formData.append('zodiac', zodiac);
+
+        const mbti = localStorage.getItem('mbti');
+        if (mbti) formData.append('mbti', mbti);
+
+        const bio = localStorage.getItem('bio');
+        if (bio) formData.append('bio', bio);
+
+        // Convert base64 photos to files
+        const photoData = JSON.parse(localStorage.getItem('photos') || '[]');
+        for (let i = 0; i < photoData.length; i++) {
+          const base64 = photoData[i];
+          const response = await fetch(base64);
+          const blob = await response.blob();
+          const file = new File([blob], `photo_${i}.jpg`, { type: blob.type || 'image/jpeg' });
+          formData.append('photos', file);
+        }
+
+        // Convert student ID photo
+        const studentIdBase64 = localStorage.getItem('studentIdPhoto');
+        if (studentIdBase64) {
+          const response = await fetch(studentIdBase64);
+          const blob = await response.blob();
+          const file = new File([blob], 'studentId.jpg', { type: blob.type || 'image/jpeg' });
+          formData.append('studentIdPhoto', file);
+        }
+
+        const response = await fetch(`${API_BASE}/signup`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Registration failed. Please try again.');
+        }
+
+        showSuccess('Registration successful! Your account is pending approval.');
+        document.getElementById('loginBtn').classList.remove('hidden');
+        submitBtn.classList.add('hidden');
+
+        // Clear localStorage after successful submission
+        setTimeout(() => {
+          localStorage.clear();
+        }, 3000);
+
+      } catch (error) {
+        showError(error.message || 'An error occurred. Please try again.');
+        submitBtn.disabled = false;
+        submitText.textContent = 'Submit Registration';
+        submitLoader.classList.add('hidden');
+      }
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', submitRegistration);
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to start over? All your data will be cleared.')) {
+        localStorage.clear();
+        window.location.href = 'enter-name.html';
+      }
+    });
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      window.location.href = 'login.html';
+    });
+
+    // Load review data on page load
+    loadReviewData();
+  </script>
+</body>
+</html>

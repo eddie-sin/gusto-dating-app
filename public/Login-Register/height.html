@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Height Selection</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      background-image: url('bgimg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ✨ MBTI Gradient Button Style */
+    .mbti-btn {
+      position: relative;
+      background: radial-gradient(
+          circle at 30% 100%,
+          rgba(255, 255, 255, 0.55) 0%,
+          rgba(255, 255, 255, 0.25) 35%,
+          rgba(255, 182, 193, 0.18) 60%,
+          rgba(255, 160, 180, 0.1) 80%,
+          rgba(255, 150, 170, 0.05) 100%
+        ),
+        rgba(255, 192, 203, 0.25);
+      border-radius: 1.2rem;
+      color: #111;
+      font-weight: 500;
+      transition: all 0.25s ease-in-out;
+      overflow: hidden;
+      z-index: 1;
+      box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.6),
+        inset 0 -1px 3px rgba(255, 255, 255, 0.4);
+    }
+
+    .mbti-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1.4px;
+      background: linear-gradient(
+        150deg,
+        rgba(255, 255, 255, 0.9),
+        rgba(255, 190, 210, 0.65)
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: -1;
+    }
+
+    .mbti-btn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 18px rgba(255, 180, 200, 0.85);
+    }
+
+    .card {
+      width: 500px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(15px);
+      border-radius: 25px;
+      padding: 50px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .animate-float { animation: float 4s ease-in-out infinite; will-change: transform; }
+
+    h2 {
+      font-size: 22px;
+      color: #000;
+      margin-bottom: 35px;
+      font-weight: 500;
+    }
+
+    .heart-bg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 320px;
+      height: 280px;
+      background: radial-gradient(circle at center, rgba(255, 77, 109, 0.3), transparent 70%);
+      clip-path: path("M24 80 C24 24, 128 -24, 256 80 C384 -24, 488 24, 488 80 C488 216, 256 424, 256 424 C256 424, 24 216, 24 80 Z");
+      z-index: 0;
+    }
+
+    .height-picker {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      gap: 80px;
+      margin-top: 20px;
+    }
+
+    .column {
+      text-align: center;
+    }
+
+    .column label {
+      font-size: 15px;
+      color: #222;
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .scroll {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 18px;
+      color: #333;
+      height: 90px;
+      overflow-y: scroll;
+      scrollbar-width: none;
+      position: relative;
+      scroll-snap-type: y mandatory;
+    }
+
+    .scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .scroll div {
+      line-height: 35px;
+      transition: all 0.2s ease;
+      opacity: 0.4;
+      scroll-snap-align: center;
+    }
+
+    .scroll div.active {
+      font-size: 26px;
+      opacity: 1;
+      font-weight: bold;
+      color: #000;
+      border-bottom: 2px solid black;
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 45px;
+      position: relative;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Back Button -->
+  <div class="w-full max-w-[880px] mb-6 px-4 sm:px-6">
+    <a href="#"
+       class="mbti-btn flex items-center justify-start font-medium 
+              w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px]
+              px-4 sm:px-6 text-base sm:text-lg transition-all duration-200"
+    >
+      <i class="fa-solid fa-arrow-left mr-2 text-lg sm:text-xl"></i>
+      <span class="font-serif leading-none">Back</span>
+    </a>
+  </div>
+
+  <!-- Main Card -->
+  <div class="card animate-float">
+    <h2>What's your height?</h2>
+    <div class="heart-bg"></div>
+
+    <div class="height-picker">
+      <div class="column">
+        <label>Feet</label>
+        <div class="scroll" id="feet"></div>
+      </div>
+
+      <div class="column">
+        <label>Inches</label>
+        <div class="scroll" id="inches"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button id="skipBtn" class="mbti-btn w-[110px] h-[40px] sm:h-[45px] text-sm sm:text-base">Skip</button>
+      <button id="nextBtn" class="mbti-btn w-[110px] h-[40px] sm:h-[45px] text-sm sm:text-base">Next</button>
+    </div>
+  </div>
+
+  <script>
+    // Infinite scroll function
+    function createInfiniteScroll(containerId, range) {
+      const container = document.getElementById(containerId);
+      const fullList = [];
+      for (let i = 0; i < 3; i++) {
+        for (let n = 0; n <= range; n++) {
+          const div = document.createElement("div");
+          div.textContent = n.toString().padStart(2, '0');
+          if (n === 5 && i === 1) div.classList.add("active");
+          fullList.push(div);
+        }
+      }
+      fullList.forEach(d => container.appendChild(d));
+
+      // Start scroll at middle section
+      const itemHeight = 35;
+      container.scrollTop = container.scrollHeight / 3;
+
+      // Infinite looping + highlight
+      container.addEventListener("scroll", () => {
+        const totalHeight = container.scrollHeight;
+        const sectionHeight = totalHeight / 3;
+
+        if (container.scrollTop <= sectionHeight * 0.1) {
+          container.scrollTop += sectionHeight;
+        } else if (container.scrollTop >= sectionHeight * 1.9) {
+          container.scrollTop -= sectionHeight;
+        }
+
+        const center = container.scrollTop + container.clientHeight / 2;
+        const items = container.querySelectorAll("div");
+        let closest = null, closestDist = Infinity;
+
+        items.forEach(item => {
+          const mid = item.offsetTop + item.offsetHeight / 2;
+          const dist = Math.abs(center - mid);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closest = item;
+          }
+        });
+
+        items.forEach(i => i.classList.remove("active"));
+        if (closest) closest.classList.add("active");
+      });
+    }
+
+    createInfiniteScroll("feet", 12);
+    createInfiniteScroll("inches", 12);
+
+    function getSelectedValue(containerId) {
+      const container = document.getElementById(containerId);
+      const center = container.scrollTop + container.clientHeight / 2;
+      const items = container.querySelectorAll("div");
+      let closest = null, closestDist = Infinity;
+      items.forEach(item => {
+        const mid = item.offsetTop + item.offsetHeight / 2;
+        const dist = Math.abs(center - mid);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = item;
+        }
+      });
+      return closest ? parseInt(closest.textContent) : null;
+    }
+
+    document.getElementById('skipBtn').addEventListener('click', () => {
+      localStorage.removeItem('heightFt');
+      localStorage.removeItem('heightIn');
+      window.location.href = 'bio.html';
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      const feet = getSelectedValue("feet");
+      const inches = getSelectedValue("inches");
+      
+      if (feet !== null && inches !== null) {
+        localStorage.setItem('heightFt', feet);
+        localStorage.setItem('heightIn', inches);
+      }
+      window.location.href = 'bio.html';
+    });
+  </script>
+
+</body>
+</html>
