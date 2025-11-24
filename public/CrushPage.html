@@ -1,223 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Crush Page</title> 
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Crushes</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&family=Oleo+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&family=Oleo+Script&family=Itim&family=Orbit&family=Old+Standard+TT:wght@400;700&family=Jomolhari&display=swap" rel="stylesheet">
 
-  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&family=Oleo+Script&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&
-  family=Oleo+Script&
-  family=Itim&
-  family=Orbit&
-  family=Old+Standard+TT:wght@400;700&
-  family=Jomolhari&display=swap" rel="stylesheet">
+<style>
+body {
+  background: url('bgimg.jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Rufina', serif;
+}
 
-  <style>
-    .nav-box {
-      background: linear-gradient(180deg, rgba(255, 241, 244, 0.959), rgb(255, 230, 234));
-      border: 1px solid rgba(255, 255, 255, 0.884);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-      font-family: 'Rufina', serif; 
-    }
+/* Navbar background*/
+.nav-box {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(14px);
+}
 
-    .crush-card {
-      background: rgba(255, 255, 255, 0.20); 
-      backdrop-filter: blur(14px);
-      border-radius: 28px;
-      padding: 14px 18px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      width: 100%;
-      max-width: 400px;
-      margin: auto;
-      transition: transform 0.2s ease;
-    }
+/* Columns */
+.column-box {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 28px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+}
 
-    .crush-card:hover {
-      transform: translateY(-4px);
-    }
+.scrollable {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
 
-    .cancel-btn {
-      background: linear-gradient(180deg,#ffeaf0,#ffd7dff1);
-      color: #c84a5a;
-      border: 1px solid rgba(200,74,90,0.12);
-      padding: 8px 18px;
-      border-radius: 999px;
-      font-weight:600;
-      box-shadow: 0 4px 8px rgba(200,74,90,0.06);
-      font-size: 0.9rem;
-    }
+/* Headers (both titles same style) */
+.column-title {
+  font-size: 2.5rem;
+  color: #c92f42;
+  margin-bottom: 8px;
+  font-family: 'Old Standard TT', serif;
+  text-align: center;
+}
 
-    .small-avatar {
-      width:44px;height:44px;border-radius:999px; object-fit:cover;
-      border:2px solid rgba(255,255,255,0.8);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    }
+/* Reminder box outside column */
+.reminder-box {
+  margin-top: 12px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(14px);
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 12px 18px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: rgba(255,255,255);
+}
 
-    .heart-svg { 
-      filter: drop-shadow(0 20px 40px rgba(255, 77, 110, 0.427));
-    }
+/* Crush Cards */
+.crush-card {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(14px);
+  border-radius: 28px;
+  padding: 14px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width: 100%;
+  margin-bottom: 12px;
+  opacity:0;
+  transform: translateY(20px);
+  animation: slideIn 0.4s forwards;
+}
+@keyframes slideIn {
+  to { opacity:1; transform:translateY(0); }
+}
 
-    #heartNumber { transform: translateY(-15%); }
+/* Empty state */
+.empty-state {
+  height: 200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.25rem;
+  color:white;
+  font-weight:600;
+  text-align:center;
+}
 
-    .muted-small { 
-      color: rgba(255,255,255,0.9);
-      font-size:13px;
-      letter-spacing:0.6px; 
-    }
+/* Cancel Button */
+.cancel-btn {
+  background: linear-gradient(180deg,#ffeaf0,#ffd7dff1);
+  color: #c84a5a;
+  border: 1px solid rgba(200,74,90,0.12);
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight:600;
+  font-size: 0.9rem;
+}
 
-    .oleo-font {
-      font-family: 'Oleo Script', cursive;
-    }
+/* Avatar */
+.small-avatar {
+  width:44px;height:44px;border-radius:999px; object-fit:cover;
+  border:2px solid rgba(255,255,255,0.8);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
 
-    @media (min-width: 640px) { 
-      .grid-cols-responsive { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-    }
-    @media (min-width: 768px) { 
-      .grid-cols-responsive { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    @media (min-width: 1024px) { 
-      .grid-cols-responsive { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
+/* Heart animation */
+@keyframes heartBeat {
+  0%,100% { transform: scale(1); }
+  25%,75% { transform: scale(1.2); }
+  50% { transform: scale(1.4); }
+}
 
-    .right-col { padding-top: 6px; }
-  </style>
+.heart-bg {
+  animation: heartBeat 1.2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Crush On You card */
+.crush-on-you {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(14px);
+  border-radius:28px;
+  padding: 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  animation: popIn 0.6s ease forwards;
+  opacity:0;
+}
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity:0; }
+  60% { transform: scale(1.05); opacity:1; }
+  100% { transform: scale(1); opacity:1; }
+}
+
+/* Responsive grid */
+.grid-cols-responsive {
+  display: grid;
+  gap: 2rem;
+}
+@media (min-width: 1024px) { .grid-cols-responsive { grid-template-columns: 1fr 1fr; } }
+</style>
 </head>
 
-<body class="bg-cover bg-center bg-no-repeat" 
-      style="background-image: url('bgimg.jpg');">
+<body>
 
-  <!-- NAV BAR -->
-  <div class="nav-box rounded-2xl px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between mb-10 gap-3 sm:gap-0">
-    <div class="flex items-center space-x-3">
-        <div class="cursor-pointer">Logo</div> 
-    </div>
+<!-- NAVBAR -->
+<div class="nav-box rounded-2xl px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between mb-10 gap-3 sm:gap-0">
+  <div class="flex items-center space-x-3">
+      <div class="cursor-pointer font-bold text-white">Logo</div> 
+  </div>
+  <div class="flex items-center space-x-4 sm:space-x-8 text-[#7b3a43] font-medium flex-wrap justify-center">
+    <div class="cursor-pointer">Home</div>
+    <div class="cursor-pointer">Match</div>
+    <div class="cursor-pointer">Propose</div>
+    <div class="cursor-pointer">Crush</div>
+  </div>
+  <div>
+    <img src="https://i.pinimg.com/736x/76/07/9b/76079b98096e5da25426248dba5d72ce.jpg"
+         alt="profile" class="w-10 h-10 rounded-full border" />
+  </div>
+</div>
 
-    <div class="flex items-center space-x-4 sm:space-x-8 text-[#7b3a43] font-medium flex-wrap justify-center">
-      <div class="cursor-pointer">Home</div>
-      <div class="cursor-pointer">Match</div>
-      <div class="cursor-pointer">Propose</div>
-      <div class="cursor-pointer">Crush</div>
-    </div>
+<!-- MAIN TITLE -->
+<h1 class="text-center text-6xl text-[#c82f41] mb-8" style="font-family: 'Jomolhari', serif;">
+  Crushes
+</h1>
 
-    <div>
-      <img src="https://i.pinimg.com/736x/76/07/9b/76079b98096e5da25426248dba5d72ce.jpg"
-           alt="profile" class="w-10 h-10 rounded-full border" />
+<!-- GRID COLUMNS -->
+<div class="grid grid-cols-responsive px-4 lg:px-16 gap-6">
+
+  <!-- LEFT COLUMN -->
+  <div>
+    <div class="column-box">
+      <h2 class="column-title">People You’ve Crushed</h2>
+      <div id="crush-left-column" class="scrollable">
+        <p class="text-placeholder">Loading your crushes...</p>
+      </div>
     </div>
+    <div class="reminder-box">You can cancel a crush only after 24 hours.</div>
   </div>
 
-  <!-- TITLE -->
-  <h1 class="text-center text-4xl text-[#c82f41] mb-8" style="font-family: 'Jomolhari', serif;">
-    Crushes
-  </h1>
-  <!-- MAIN GRID -->
-  <div class="grid gap-8 grid-cols-responsive">
-
-    <!-- LEFT COLUMN -->
-    <div class="flex flex-col gap-6 items-center">
-
-      <div class="crush-card">
-        <div class="flex items-center space-x-4">
-          <img src="https://i.pinimg.com/736x/80/25/7c/80257c1c03ea35596b96ff5763f0eef1.jpg" alt="avatar" class="small-avatar"/>
-          <div class="text-black font-semibold">Khin Win War, 20</div>
-        </div>
-        <button class="cancel-btn text-black " style="font-family: 'Rufina', serif;">Cancel</button>
+  <!-- RIGHT COLUMN -->
+  <div class="crush-on-you">
+    <h2 class="column-title">Crush On You</h2>
+    <div id="heart" class="relative w-36 h-36 mt-2">
+      <svg viewBox="0 0 64 64" class="w-full h-full heart-bg">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#ff6b7a"/>
+            <stop offset="40%" stop-color="#ff435e"/>
+            <stop offset="90%" stop-color="#ff2b4a"/>
+          </linearGradient>
+        </defs>
+        <path d="M32 58s-18-12.8-25-21.2C0 26 15 10 25 18c4 3.2 7 6.8 7 6.8s3-3.6 7-6.8c10-8 25 8 18 18.8C50 45.2 32 58 32 58z"
+              fill="url(#g1)" stroke="#ff4055" stroke-width="1.6"/>
+      </svg>
+      <div class="absolute inset-0 flex items-center justify-center z-10">
+        <span id="heartNumber" class="text-white text-4xl font-extrabold" style="font-family: 'Itim', cursive;">0</span>
       </div>
-
-      <div class="crush-card">
-        <div class="flex items-center space-x-4">
-          <img src="https://i.pinimg.com/736x/bb/65/bd/bb65bdeab14fcb2e332edcdfae569465.jpg" alt="avatar" class="small-avatar"/>
-          <div class="text-black font-semibold">Khin Win War, 20</div>
-        </div>
-        <button class="cancel-btn text-black" style="font-family: 'Rufina', serif;">Cancel</button>
-      </div>
-
-      <div class="crush-card">
-        <div class="flex items-center space-x-4">
-          <img src="https://i.pinimg.com/736x/ce/18/32/ce18326f474404bd6ea32a26653a27b2.jpg" alt="avatar" class="small-avatar"/>
-          <div class="text-black font-semibold">Khin Win War, 20</div>
-        </div>
-        <button class="cancel-btn text-black" style="font-family: 'Rufina', serif;">Cancel</button>
-      </div>
-
-      <div class="crush-card">
-        <div class="flex items-center space-x-4">
-          <img src="https://i.pinimg.com/1200x/60/cb/08/60cb08f12e3b6d3a20cfd95acd031aed.jpg" alt="avatar" class="small-avatar"/>
-          <div class="text-black font-semibold" >Khin Win War, 20</div>
-        </div>
-        <button class="cancel-btn text-black" style="font-family: 'Rufina', serif;">Cancel</button>
-      </div>
-
     </div>
+    <p class="mt-5 text-white">~~Someone can't stop thinking about you~~</p>
+  </div>
 
-    <!-- RIGHT COLUMN -->
-    <div class="right-col flex flex-col items-center text-center">
-      <h2 class="text-3xl text-[#c92f42] mb-4" 
-          style="font-family: 'Old Standard TT', serif;">
-        Crush on you
-      </h2>
+</div>
 
-      <div id="heart" class="relative w-36 h-36 sm:w-44 sm:h-44 cursor-pointer">
-        <div class="absolute inset-0 flex items-center justify-center z-10">
-          <span id="heartNumber" class="text-white text-4xl font-extrabold"
-                style="font-family: 'Itim', cursive;">
-            10
-          </span>
+<script>
+const API_BASE = '/api/v1/crushes';
+const crushContainer = document.getElementById('crush-left-column');
+const heartNumber = document.getElementById('heartNumber');
 
-        </div>
+async function fetchMyCrushes() {
+  try {
+    const res = await fetch(`${API_BASE}/my`);
+    if (!res.ok) throw new Error('Failed to fetch crushes');
+    const data = await res.json();
+    return data.data || [];
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
 
-        <svg viewBox="0 0 64 64" class="w-full h-full heart-svg">
-          <defs>
-            <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stop-color="#ff6b7a"/>
-              <stop offset="40%" stop-color="#ff435e"/>
-              <stop offset="90%" stop-color="#ff2b4a"/>
-            </linearGradient>
+async function fetchCrushedMeCount() {
+  try {
+    const res = await fetch(`${API_BASE}/me`);
+    if (!res.ok) throw new Error('Failed to fetch count');
+    const data = await res.json();
+    return data.crushCount || 0;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+}
 
-            <radialGradient id="shine" cx="30%" cy="25%" r="60%">
-              <stop offset="0%" stop-color="rgba(255,255,255,0.95)"/>
-              <stop offset="35%" stop-color="rgba(255,255,255,0.45)"/>
-              <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-            </radialGradient>
-          </defs>
+function renderCrushCards(crushes) {
+  crushContainer.innerHTML = '';
+  if (crushes.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = 'You haven’t crushed anyone yet.';
+    crushContainer.appendChild(empty);
+    return;
+  }
 
-          <path d="M32 58s-18-12.8-25-21.2C0 26 15 10 25 18c4 3.2 7 6.8 7 6.8s3-3.6 7-6.8c10-8 25 8 18 18.8C50 45.2 32 58 32 58z"
-                fill="url(#g1)" stroke="#ff4055" stroke-width="1.6"/>
-
-          <path d="M19 18c4.5-6 12-6 16-2 3 3 3 7 1 10" 
-                fill="none" stroke="url(#shine)" stroke-width="8" 
-                stroke-linecap="round" opacity="0.65"/>
-
-          <ellipse cx="39" cy="22" rx="8" ry="4.5" 
-                   fill="url(#shine)" opacity="0.55"
-                   transform="rotate(-18 39 22)"/>
-        </svg>
+  crushes.forEach((crush, index) => {
+    const card = document.createElement('div');
+    card.className = 'crush-card';
+    card.style.animationDelay = `${index * 0.08}s`;
+    card.innerHTML = `
+      <div class="flex items-center space-x-4">
+        <img src="${crush.photos?.[0]?.url || 'https://i.pinimg.com/736x/76/07/9b/76079b98096e5da25426248dba5d72ce.jpg'}" alt="avatar" class="small-avatar"/>
+        <div class="text-white font-semibold">${crush.nickname || 'Unknown'}, ${crush.age || 20}</div>
       </div>
-
-      <p class="muted-small mt-5" style="font-family: 'Orbit', sans-serif;">
-        Someone can't stop thinking about<br>you~
-      </p>
-
-    </div>
-
-  </div> <!-- END GRID -->
-
-  <script>
-    const heart = document.getElementById('heart');
-    const heartNumber = document.getElementById('heartNumber');
-    let count = 10;
-
-    heart.addEventListener('click', () => {
-      count++;
-      heartNumber.textContent = count;
-      heart.classList.add('animate-pulse');
-      setTimeout(()=> heart.classList.remove('animate-pulse'), 300);
+      <button class="cancel-btn">Cancel</button>
+    `;
+    card.querySelector('button').addEventListener('click', async () => {
+      try {
+        await fetch(`${API_BASE}/${crush._id}`, { method: 'DELETE' });
+        card.remove();
+      } catch (err) {
+        alert('Cannot cancel crush now');
+      }
     });
-  </script>
+    crushContainer.appendChild(card);
+  });
+}
+
+async function initCrushPage() {
+  const myCrushes = await fetchMyCrushes();
+  renderCrushCards(myCrushes);
+
+  const count = await fetchCrushedMeCount();
+  heartNumber.textContent = count;
+
+  // Heart pop effect
+  heartNumber.style.transform = 'scale(0.8)';
+  setTimeout(()=> heartNumber.style.transform='scale(1.2)', 100);
+  setTimeout(()=> heartNumber.style.transform='scale(1)', 400);
+}
+
+document.addEventListener('DOMContentLoaded', initCrushPage);
+</script>
 
 </body>
 </html>
