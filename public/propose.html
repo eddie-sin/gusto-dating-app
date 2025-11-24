@@ -65,7 +65,7 @@
     <div class="modal-card rounded-2xl p-6 w-[92%] max-w-xl relative">
       <button id="closeModal" class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-pink-500 text-white hover:bg-pink-600 shadow-md">×</button>
       <div class="flex flex-col md:flex-row gap-6">
-        <img id="modalImg" src="testing.jpg" alt="profile" class="w-36 h-36 object-cover rounded-2xl shadow-md" />
+        <img id="modalImg" alt="profile" class="w-36 h-36 object-cover rounded-2xl shadow-md" />
         <div class="flex-1 space-y-2">
           <h3 id="modalName" class="text-2xl font-semibold text-gray-800"></h3>
           <p id="modalProgram" class="text-sm text-gray-700"></p>
@@ -81,37 +81,19 @@
   </div>
 
   <script>
-  // Dummy data (replace with dynamic later)
-  const receivedProposals = [
-    { id: 1, name: 'Alice Tan', age: 20, program: 'HND Computing', batch: 'HND01', mbti: 'INTJ', zodiac: 'aquarius', bio: 'Loves problem solving & UI design.', hobbies: ['coding','music','reading'] },
-    { id: 2, name: 'Brian Cho', age: 21, program: 'GED', batch: 'GED18', mbti: 'ENFP', zodiac: 'leo', bio: 'Outgoing and loves travel planning.', hobbies: ['travel','gaming'] },
-    { id: 3, name: 'Celine Wu', age: 19, program: 'IGCSE', batch: 'IG22', mbti: 'INFJ', zodiac: 'virgo', bio: 'Quiet observer, creative writer.', hobbies: ['writing','photography'] },
-    { id: 4, name: 'David Lim', age: 22, program: 'HND Business', batch: 'HND02', mbti: 'ESTP', zodiac: 'aries', bio: 'Action-oriented & marketing lover.', hobbies: ['exercise','travel'] },
-    { id: 5, name: 'Eva Park', age: 20, program: 'Level 3 Foundation', batch: 'L3C32', mbti: 'ISFP', zodiac: 'cancer', bio: 'Design & calm forest walks.', hobbies: ['fashion','painting','music']  },
-    { id: 6, name: 'Frank Zhang', age: 23, program: 'GUF Foundation', batch: 'GUF05', mbti: 'ENTP', zodiac: 'sagittarius', bio: 'Debate club captain & foodie.', hobbies: ['debate','cooking'] },
-    { id: 7, name: 'Grace Lee', age: 21, program: 'PRE GED', batch: 'PG12', mbti: 'ISFJ', zodiac: 'taurus', bio: 'Loyal friend & nature lover.', hobbies: ['hiking','gardening'] },
-    { id : 8, name: 'Henry Kim', age: 22, program: 'HND Computing', batch: 'HND03', mbti: 'INTP', zodiac: 'capricorn', bio: 'Tech enthusiast & chess player.', hobbies: ['chess','programming'] },
-    { id : 9, name: 'Ivy Chen', age: 19, program: 'IGCSE', batch: 'IG23', mbti: 'ENFJ', zodiac: 'libra', bio: 'Social butterfly & volunteer.', hobbies: ['volunteering','dancing'] }
-  ];
-
-  const sentProposals = [
-    { id: 101, name: 'Derek Lim', age: 22, program: 'HND Business', batch: 'HND02', mbti: 'ESTP', zodiac: 'aries', bio: 'Action-oriented & marketing lover.', hobbies: ['exercise','travel'] },
-    { id: 102, name: 'Ella Park', age: 20, program: 'Level 3 Foundation', batch: 'L3C32', mbti: 'ISFP', zodiac: 'cancer', bio: 'Design & calm forest walks.', hobbies: ['fashion','painting','music'] }
-  ];
-
+  const API_BASE = '/api/v1/proposes';
   const receivedGrid = document.getElementById('receivedGrid');
   const sentGrid = document.getElementById('sentGrid');
-  const receivedCount = document.getElementById('receivedCount');
-  const sentCount = document.getElementById('sentCount');
   const receivedEmpty = document.getElementById('receivedEmpty');
   const sentEmpty = document.getElementById('sentEmpty');
 
-  function updateCounts(){
-    receivedCount.textContent = receivedProposals.length + ' total';
-    sentCount.textContent = sentProposals.length + ' total';
-    receivedEmpty.classList.toggle('hidden', receivedProposals.length !== 0);
-    sentEmpty.classList.toggle('hidden', sentProposals.length !== 0);
-  }
+  const authHeader = () => {
+    const token = localStorage.getItem('authToken');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
+  let receivedProposals = [];
+  let sentProposals = [];
 
   function pill(label){
     const span = document.createElement('span');
@@ -120,48 +102,69 @@
     return span;
   }
 
-  function card(person, type){
+  function normalizeUrl(u){
+    if(!u) return null;
+    if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('data:')) return u;
+    if (u.startsWith('//')) return 'https:' + u;
+    if (u.startsWith('ik.imagekit.io')) return 'https://' + u;
+    return u; // relative path like bgimg.jpg
+  }
+
+  function userPrimaryPhoto(user){
+    if (!user) return 'bgimg.jpg';
+    const photos = Array.isArray(user.photos) ? user.photos : [];
+    if (photos.length === 0) return 'bgimg.jpg';
+    const first = photos[0];
+    const url = typeof first === 'string' ? first : first?.url;
+    return normalizeUrl(url) || 'bgimg.jpg';
+  }
+
+  function displayName(user){
+    return user?.nickname || user?.name || 'Unknown';
+  }
+
+  function card(item, type){
+    const isReceived = type === 'received';
+    const user = isReceived ? item.from : item.to;
     const div = document.createElement('div');
     div.className = 'proposal-card relative rounded-xl overflow-hidden shadow-md w-full';
 
-    // IMAGE AREA
     const imgWrapper = document.createElement('button');
     imgWrapper.type = 'button';
     imgWrapper.className = 'block w-full h-[240px] relative';
-    imgWrapper.innerHTML = `<img src="testing.jpg" alt="${person.name}" class="proposal-img" />`;
-    imgWrapper.addEventListener('click', ()=> openModal(person, type));
+    const photo = userPrimaryPhoto(user);
+    const name = displayName(user);
+    imgWrapper.innerHTML = `<img src="${photo}" alt="${name}" class="proposal-img" onerror="this.onerror=null;this.src='bgimg.jpg';" />`;
+    imgWrapper.addEventListener('click', ()=> openModal(item, type));
 
-    // NAME OVERLAY
     const nameOverlay = document.createElement('div');
     nameOverlay.className = 'overlay-name';
-    nameOverlay.textContent = person.name;
+    nameOverlay.textContent = name;
     imgWrapper.appendChild(nameOverlay);
 
-    // SMALL PROFILE CIRCLE (can reuse same img)
     const mini = document.createElement('div');
     mini.className = 'overlay-mini bg-white';
-    mini.innerHTML = `<img src="testing.jpg" alt="mini ${person.name}" class="w-full h-full object-cover" />`;
+    mini.innerHTML = `<img src="${photo}" alt="mini ${name}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='bgimg.jpg';" />`;
     imgWrapper.appendChild(mini);
 
-    // ACTION BAR
     const actionBar = document.createElement('div');
     actionBar.className = 'action-bar';
 
-    if(type === 'received'){
+    if(isReceived){
       const accept = document.createElement('button');
       accept.className = 'action-btn accept';
       accept.textContent = 'Accept';
-      accept.addEventListener('click', (e)=>{ e.stopPropagation(); acceptProposal(person.id); });
+      accept.addEventListener('click', async (e)=>{ e.stopPropagation(); await acceptProposal(item._id); });
       const deny = document.createElement('button');
       deny.className = 'action-btn deny';
       deny.textContent = 'Deny';
-      deny.addEventListener('click', (e)=>{ e.stopPropagation(); denyProposal(person.id); });
+      deny.addEventListener('click', async (e)=>{ e.stopPropagation(); await denyProposal(item._id); });
       actionBar.append(accept, deny);
     } else {
       const cancel = document.createElement('button');
       cancel.className = 'action-btn cancel';
       cancel.textContent = 'Cancel';
-      cancel.addEventListener('click', (e)=>{ e.stopPropagation(); cancelProposal(person.id); });
+      cancel.addEventListener('click', async (e)=>{ e.stopPropagation(); await cancelProposal(item._id); });
       actionBar.append(cancel);
     }
 
@@ -174,35 +177,118 @@
     sentGrid.innerHTML='';
     receivedProposals.forEach(p=> receivedGrid.appendChild(card(p,'received')));
     sentProposals.forEach(p=> sentGrid.appendChild(card(p,'sent')));
-    updateCounts();
+    receivedEmpty.classList.toggle('hidden', receivedProposals.length !== 0);
+    sentEmpty.classList.toggle('hidden', sentProposals.length !== 0);
   }
 
-  // Actions
-  function acceptProposal(id){
-    const idx = receivedProposals.findIndex(p=>p.id===id);
-    if(idx>-1){
-      // mark accepted visually (simple approach)
-      const accepted = receivedProposals[idx];
-      accepted.accepted = true;
-      alert('Accepted proposal from '+accepted.name);
+  async function parseSafe(res){
+    try { return await res.json(); } catch { return null; }
+  }
+
+  async function loadData(){
+    try{
+      const token = localStorage.getItem('authToken');
+      const headersBase = { 'Content-Type': 'application/json', ...authHeader() };
+      // 1) Received first
+      let recRes = await fetch(`${API_BASE}/received`, { headers: headersBase });
+      if (recRes.status === 401) {
+        const back = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/login.html?redirect=${back}`;
+        return;
+      }
+      let recJson = await parseSafe(recRes);
+      if(!recRes.ok){
+        // If token existed, clear and retry once without header (use cookie)
+        if ((recRes.status === 401 || recRes.status === 500) && token) {
+          localStorage.removeItem('authToken');
+          recRes = await fetch(`${API_BASE}/received`, { headers: { 'Content-Type': 'application/json' } });
+          if (recRes.status === 401) {
+            const back = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `/login.html?redirect=${back}`;
+            return;
+          }
+          recJson = await parseSafe(recRes);
+        }
+        if(!recRes.ok){
+          const msg = (recJson && (recJson.message || recJson.error?.message)) || 'Unknown error';
+          alert(`[${recRes.status}] GET /proposes/received failed: ${msg}`);
+          return;
+        }
+      }
+
+      // 2) Sent next
+      let sentRes = await fetch(`${API_BASE}/sent`, { headers: headersBase });
+      if (sentRes.status === 401) {
+        const back = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/login.html?redirect=${back}`;
+        return;
+      }
+      let sentJson = await parseSafe(sentRes);
+      if(!sentRes.ok){
+        if ((sentRes.status === 401 || sentRes.status === 500) && token) {
+          localStorage.removeItem('authToken');
+          sentRes = await fetch(`${API_BASE}/sent`, { headers: { 'Content-Type': 'application/json' } });
+          if (sentRes.status === 401) {
+            const back = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `/login.html?redirect=${back}`;
+            return;
+          }
+          sentJson = await parseSafe(sentRes);
+        }
+        if(!sentRes.ok){
+          const msg = (sentJson && (sentJson.message || sentJson.error?.message)) || 'Unknown error';
+          alert(`[${sentRes.status}] GET /proposes/sent failed: ${msg}`);
+          return;
+        }
+      }
+
+      receivedProposals = (recJson && recJson.data) || [];
+      sentProposals = (sentJson && sentJson.data) || [];
       render();
+    }catch(err){
+      alert((err && err.message) || 'Failed to load proposals');
     }
   }
-  function denyProposal(id){
-    const idx = receivedProposals.findIndex(p=>p.id===id);
-    if(idx>-1){
-      const denied = receivedProposals.splice(idx,1)[0];
-      alert('Denied proposal from '+denied.name);
-      render();
-    }
+
+  async function acceptProposal(proposeId){
+    try{
+      const res = await fetch(`${API_BASE}/${proposeId}/respond`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ action: 'accept' })
+      });
+      const json = await res.json();
+      if(!res.ok) throw new Error(json.message || 'Failed to accept');
+      await loadData();
+      alert('Accepted. You are now matched!');
+    } catch(err){ alert(err.message || 'Failed to accept'); }
   }
-  function cancelProposal(id){
-    const idx = sentProposals.findIndex(p=>p.id===id);
-    if(idx>-1){
-      const canceled = sentProposals.splice(idx,1)[0];
-      alert('Canceled your proposal to '+canceled.name);
-      render();
-    }
+
+  async function denyProposal(proposeId){
+    try{
+      const res = await fetch(`${API_BASE}/${proposeId}/respond`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ action: 'deny' })
+      });
+      const json = await res.json();
+      if(!res.ok) throw new Error(json.message || 'Failed to deny');
+      await loadData();
+      alert('Denied the proposal.');
+    } catch(err){ alert(err.message || 'Failed to deny'); }
+  }
+
+  async function cancelProposal(proposeId){
+    try{
+      const res = await fetch(`${API_BASE}/${proposeId}`, {
+        method: 'DELETE',
+        headers: { ...authHeader() }
+      });
+      const json = await res.json().catch(()=>({}));
+      if(!res.ok) throw new Error(json.message || 'Failed to cancel');
+      await loadData();
+      alert('Canceled your proposal.');
+    } catch(err){ alert(err.message || 'Failed to cancel'); }
   }
 
   // Modal logic
@@ -217,24 +303,28 @@
   const modalHobbies = document.getElementById('modalHobbies');
   const modalActions = document.getElementById('modalActions');
 
-  function openModal(person, type){
-    modalName.textContent = person.name + (person.age? ' • ' + person.age: '');
-    modalProgram.textContent = 'Program: ' + person.program;
-    modalBatch.textContent = 'Batch: ' + person.batch;
-    modalMbti.textContent = 'MBTI: ' + (person.mbti||'—');
-    modalZodiac.textContent = 'Zodiac: ' + (person.zodiac||'—');
-    modalBio.textContent = person.bio || 'No bio provided.';
+  function openModal(item, type){
+    const user = type==='received' ? item.from : item.to;
+    const name = displayName(user);
+    modalName.textContent = name + (user?.age ? ' • ' + user.age : '');
+    modalProgram.textContent = user?.program ? ('Program: ' + user.program) : '';
+    modalBatch.textContent = user?.batch ? ('Batch: ' + user.batch) : '';
+    modalMbti.textContent = 'MBTI: ' + (user?.mbti||'—');
+    modalZodiac.textContent = 'Zodiac: ' + (user?.zodiac||'—');
+    modalBio.textContent = user?.bio || 'No bio provided.';
     modalHobbies.innerHTML='';
-    (person.hobbies||[]).forEach(h=> modalHobbies.appendChild(pill(h)));
+    (user?.hobbies||[]).forEach(h=> modalHobbies.appendChild(pill(h)));
+    const modalImgEl = document.getElementById('modalImg');
+    modalImgEl.src = userPrimaryPhoto(user);
+    modalImgEl.onerror = function(){ this.onerror=null; this.src='bgimg.jpg'; };
 
-    // Contextual actions (mirror card actions for convenience)
     modalActions.innerHTML='';
     if(type==='received'){
-      const a=document.createElement('button'); a.textContent='Accept'; a.className='btn-soft px-4 py-2 rounded-full text-sm text-green-700 hover:bg-green-100'; a.onclick=()=>{acceptProposal(person.id); closeModal();};
-      const d=document.createElement('button'); d.textContent='Deny'; d.className='btn-soft px-4 py-2 rounded-full text-sm text-red-700 hover:bg-red-100'; d.onclick=()=>{denyProposal(person.id); closeModal();};
+      const a=document.createElement('button'); a.textContent='Accept'; a.className='btn-soft px-4 py-2 rounded-full text-sm text-green-700 hover:bg-green-100'; a.onclick=async()=>{await acceptProposal(item._id); closeModal();};
+      const d=document.createElement('button'); d.textContent='Deny'; d.className='btn-soft px-4 py-2 rounded-full text-sm text-red-700 hover:bg-red-100'; d.onclick=async()=>{await denyProposal(item._id); closeModal();};
       modalActions.append(a,d);
     } else {
-      const c=document.createElement('button'); c.textContent='Cancel Proposal'; c.className='btn-soft px-4 py-2 rounded-full text-sm text-red-700 hover:bg-red-100'; c.onclick=()=>{cancelProposal(person.id); closeModal();};
+      const c=document.createElement('button'); c.textContent='Cancel Proposal'; c.className='btn-soft px-4 py-2 rounded-full text-sm text-red-700 hover:bg-red-100'; c.onclick=async()=>{await cancelProposal(item._id); closeModal();};
       modalActions.append(c);
     }
 
@@ -250,7 +340,7 @@
   closeModalBtn.addEventListener('click', closeModal);
   modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
 
-  render();
+  loadData();
   </script>
 </body>
 </html>

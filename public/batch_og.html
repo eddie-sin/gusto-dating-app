@@ -161,7 +161,7 @@
         programBtn.querySelector("span:last-child").textContent = "▼";
       });
 
-      // Select program
+      // Select Program
       document.querySelectorAll("#programList li").forEach((li) => {
         li.addEventListener("click", () => {
           programBtn.querySelector("span:first-child").textContent =
@@ -174,10 +174,12 @@
 
       // Next button with shake effect
       const batchInput = document.getElementById("batchInput");
+
       document.getElementById("nextBtn").addEventListener("click", () => {
         const program =
           programBtn.querySelector("span:first-child").textContent;
         const batch = batchInput.value.trim();
+        
         if (program === "Programs" || batch === "") {
           [programBtn, batchInput].forEach((el) => el.classList.add("shake"));
           setTimeout(() => {

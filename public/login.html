@@ -267,8 +267,9 @@
             }
 
             alert("Login successful!");
-            // Redirect to main app or dashboard
-            window.location.href = "/";
+            const params = new URLSearchParams(window.location.search);
+            const redirectTo = params.get('redirect');
+            window.location.href = redirectTo || "/";
           } catch (error) {
             alert(
               error.message ||

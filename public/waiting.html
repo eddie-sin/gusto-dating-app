@@ -299,11 +299,11 @@
         name: localStorage.getItem('firstName') && localStorage.getItem('lastName'),
         nickname: localStorage.getItem('nickname'),
         dob: localStorage.getItem('dob'),
+        program: localStorage.getItem('program'),
         batch: localStorage.getItem('batch'),
         gender: localStorage.getItem('gender'),
         sexuality: localStorage.getItem('sexuality'),
         contact: localStorage.getItem('contact'),
-        hobbies: JSON.parse(localStorage.getItem('hobbies') || '[]').length >= 1,
         photos: JSON.parse(localStorage.getItem('photos') || '[]').length >= 3,
         studentIdPhoto: localStorage.getItem('studentIdPhoto'),
         username: localStorage.getItem('username'),
@@ -317,10 +317,6 @@
       }
 
       const hobbies = JSON.parse(localStorage.getItem('hobbies') || '[]');
-      if (hobbies.length < 1 || hobbies.length > 5) {
-        showError('Please select between 1 and 5 hobbies.');
-        return false;
-      }
 
       const photos = JSON.parse(localStorage.getItem('photos') || '[]');
       if (photos.length < 3 || photos.length > 5) {
@@ -365,6 +361,7 @@
         formData.append('name', localStorage.getItem('firstName') + ' ' + localStorage.getItem('lastName'));
         formData.append('nickname', localStorage.getItem('nickname'));
         formData.append('dob', localStorage.getItem('dob'));
+        formData.append('program', localStorage.getItem('program'));
         formData.append('batch', localStorage.getItem('batch'));
         formData.append('gender', localStorage.getItem('gender'));
         formData.append('sexuality', localStorage.getItem('sexuality'));

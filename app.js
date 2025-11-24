@@ -4,6 +4,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 const xssSanitizer = require("./utils/xssSanitizer");
@@ -20,6 +21,7 @@ const app = express();
    MIDDLEWARES
 ========================== */
 app.use(express.json({ limit: "10kb" })); // parse JSON
+app.use(cookieParser()); // parse cookies (for jwt)
 app.use(morgan("dev")); // logging
 
 const limiter = rateLimit({

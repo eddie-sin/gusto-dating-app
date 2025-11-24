@@ -58,6 +58,20 @@ exports.signup = catchAsync(async (req, res, next) => {
   let studentIdPhotoUrl = null;
 
   try {
+    // Normalize critical required text fields early
+    if (typeof req.body.program === 'undefined') req.body.program = '';
+    if (typeof req.body.batch === 'undefined') req.body.batch = '';
+    req.body.program = req.body.program.toString().trim();
+    req.body.batch = req.body.batch.toString().trim();
+    if (req.body.program.toLowerCase() === 'undefined' || req.body.program.toLowerCase() === 'null') req.body.program = '';
+    if (req.body.batch.toLowerCase() === 'undefined' || req.body.batch.toLowerCase() === 'null') req.body.batch = '';
+
+    if (!req.body.program) {
+      return next(new AppError("Please enter your program", 400));
+    }
+    if (!req.body.batch) {
+      return next(new AppError("Please enter your batch", 400));
+    }
     // Handle photo uploads (3-5 photos required)
     if (req.files?.photos?.length > 0) {
       if (req.files.photos.length < 3 || req.files.photos.length > 5) {
@@ -134,6 +148,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       zodiac: req.body.zodiac || "",
       mbti: req.body.mbti || "",
       name: req.body.name,
+      program: req.body.program,
       batch: req.body.batch,
       contact: req.body.contact,
       photos: photoUrls,

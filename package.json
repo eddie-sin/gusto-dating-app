@@ -14,6 +14,7 @@
   "description": "A Node.js and Express-based backend for a college community dating app",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
     "crypto": "^1.0.1",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
