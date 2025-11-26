@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jomolhari&family=Rufina:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="feed.css" />
+  </head>
+  <body
+    class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6"
+    style="background: linear-gradient(to bottom, #ffcad4 24%, #ff4d6d 100%)"
+  >
+    <!-- CARD -->
+    <div
+      class="relative w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-lg h-[400px] sm:h-[550px] md:h-[580px] lg:h-[580px] bg-white rounded-3xl shadow-xl overflow-hidden mb-4"
+    >
+      <!-- Switch bars on image -->
+      <div
+        class="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20"
+        id="bars"
+      >
+        <div
+          class="switch-h w-16 sm:w-24 md:w-28 rounded-full bg-white cursor-pointer"
+        ></div>
+
+        <div
+          class="switch-h w-16 sm:w-24 md:w-28 rounded-full bg-black/40 cursor-pointer"
+        ></div>
+
+        <div
+          class="switch-h w-16 sm:w-24 md:w-28 rounded-full bg-black/40 cursor-pointer"
+        ></div>
+      </div>
+
+      <!-- Image -->
+      <img
+        id="slideImage"
+        src="catMeow.jpg"
+        class="w-full h-full object-cover transition-opacity duration-500 opacity-100"
+      />
+
+      <!-- Bottom text inside image -->
+      <div
+        class="absolute bottom-5 sm:bottom-7 left-5 sm:left-7 text-white drop-shadow"
+      >
+        <div
+          class="font-semibold font-rufina flex items-center gap-2 mb-1 text-sm sm:text-base md:text-lg"
+        >
+          <!-- Name -->
+          Khin Win War
+          <span class="font-jomolhari text-sm sm:text-base">, 30</span>
+
+          <!-- Male sticker -->
+          <div
+            class="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-gray-300 flex items-center justify-center shadow-inner pointer-events-none"
+            style="background: transparent; box-shadow: inset 0 0 10px #d3d3d3"
+          >
+            <i
+              class="fa-solid fa-mars text-[0.85rem] sm:text-base"
+              style="color: #74c0fc"
+            ></i>
+          </div>
+        </div>
+
+        <!-- Under text -->
+        <div class="opacity-90 font-rufina text-xs sm:text-sm md:text-base">
+          Just a moment!
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="flex gap-6 sm:gap-8 mt-4 sm:mt-6">
+      <!-- Sticker Button -->
+      <button class="action-btn">
+        <i class="fa-regular fa-star" style="color: #ffff00"></i>
+      </button>
+
+      <!-- Heart Button -->
+      <button class="action-btn">
+        <i
+          class="fa-regular fa-heart fa-rotate-by"
+          style="color: #ff002d; --fa-rotate-angle: 2deg"
+        ></i>
+      </button>
+
+      <!-- Dislike Button -->
+      <button class="action-btn">
+        <i
+          class="fa-regular fa-thumbs-down fa-flip-horizontal"
+          style="color: #ffffff"
+        ></i>
+      </button>
+    </div>
+  </body>
+</html>

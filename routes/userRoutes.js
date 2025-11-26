@@ -19,7 +19,7 @@ router.post("/login", authController.login);
 /* ============================================================
    PROTECTED ROUTES (requires login)
    ============================================================ */
-router.use(authController.protect);
+/* router.use(authController.protect); */
 
 // Update password (must be logged in)
 router.patch("/updatePassword", authController.updatePassword);

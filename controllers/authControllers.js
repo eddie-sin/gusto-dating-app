@@ -59,12 +59,20 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   try {
     // Normalize critical required text fields early
-    if (typeof req.body.program === 'undefined') req.body.program = '';
-    if (typeof req.body.batch === 'undefined') req.body.batch = '';
+    if (typeof req.body.program === "undefined") req.body.program = "";
+    if (typeof req.body.batch === "undefined") req.body.batch = "";
     req.body.program = req.body.program.toString().trim();
     req.body.batch = req.body.batch.toString().trim();
-    if (req.body.program.toLowerCase() === 'undefined' || req.body.program.toLowerCase() === 'null') req.body.program = '';
-    if (req.body.batch.toLowerCase() === 'undefined' || req.body.batch.toLowerCase() === 'null') req.body.batch = '';
+    if (
+      req.body.program.toLowerCase() === "undefined" ||
+      req.body.program.toLowerCase() === "null"
+    )
+      req.body.program = "";
+    if (
+      req.body.batch.toLowerCase() === "undefined" ||
+      req.body.batch.toLowerCase() === "null"
+    )
+      req.body.batch = "";
 
     if (!req.body.program) {
       return next(new AppError("Please enter your program", 400));
@@ -78,25 +86,42 @@ exports.signup = catchAsync(async (req, res, next) => {
         return next(new AppError("Please upload between 3 and 5 photos", 400));
       }
 
-      const rawUsername = (req.body.username || "").toString().trim().toLowerCase();
-      const userSegment = rawUsername.replace(/[^a-z0-9._-]/g, "_") || `user_${Date.now()}`;
+      const rawUsername = (req.body.username || "")
+        .toString()
+        .trim()
+        .toLowerCase();
+      const userSegment =
+        rawUsername.replace(/[^a-z0-9._-]/g, "_") || `user_${Date.now()}`;
       const baseFolder = `/gusto/users/${userSegment}`;
       const photosFolder = `${baseFolder}/photos`;
 
       const uploadPromises = req.files.photos.map(async (file, idx) => {
         tempFiles.push(file.path);
-        const fileName = `photo_${Date.now()}_${Math.random()}_${idx}${path.extname(file.originalname)}`;
+        const fileName = `photo_${Date.now()}_${Math.random()}_${idx}${path.extname(
+          file.originalname
+        )}`;
         return await uploadToImageKit(file.path, fileName, photosFolder);
       });
 
       photoUrls = await Promise.all(uploadPromises);
     } else if (req.body.photos) {
       // Backward compatibility: if photos provided as array of objects with fileId/url
-      const parsedPhotos = typeof req.body.photos === "string" ? JSON.parse(req.body.photos) : req.body.photos;
-      if (Array.isArray(parsedPhotos) && parsedPhotos.every(p => p.fileId && p.url)) {
+      const parsedPhotos =
+        typeof req.body.photos === "string"
+          ? JSON.parse(req.body.photos)
+          : req.body.photos;
+      if (
+        Array.isArray(parsedPhotos) &&
+        parsedPhotos.every((p) => p.fileId && p.url)
+      ) {
         photoUrls = parsedPhotos;
       } else {
-        return next(new AppError("Invalid photos format. Expected array of {fileId, url} objects", 400));
+        return next(
+          new AppError(
+            "Invalid photos format. Expected array of {fileId, url} objects",
+            400
+          )
+        );
       }
     } else {
       return next(new AppError("Please upload between 3 and 5 photos", 400));
@@ -104,21 +129,35 @@ exports.signup = catchAsync(async (req, res, next) => {
 
     // Handle student ID photo
     if (req.files?.studentIdPhoto?.length > 0) {
-  const rawUsername2 = (req.body.username || "").toString().trim().toLowerCase();
-  const userSegment2 = rawUsername2.replace(/[^a-z0-9._-]/g, "_") || `user_${Date.now()}`;
-  const baseFolder2 = `/gusto/users/${userSegment2}`;
-  const idFolder = `${baseFolder2}/studentID`;
-  const file = req.files.studentIdPhoto[0];
-  tempFiles.push(file.path);
-  const fileName = `studentId_${Date.now()}_${Math.random()}${path.extname(file.originalname)}`;
-  studentIdPhotoUrl = await uploadToImageKit(file.path, fileName, idFolder);
+      const rawUsername2 = (req.body.username || "")
+        .toString()
+        .trim()
+        .toLowerCase();
+      const userSegment2 =
+        rawUsername2.replace(/[^a-z0-9._-]/g, "_") || `user_${Date.now()}`;
+      const baseFolder2 = `/gusto/users/${userSegment2}`;
+      const idFolder = `${baseFolder2}/studentID`;
+      const file = req.files.studentIdPhoto[0];
+      tempFiles.push(file.path);
+      const fileName = `studentId_${Date.now()}_${Math.random()}${path.extname(
+        file.originalname
+      )}`;
+      studentIdPhotoUrl = await uploadToImageKit(file.path, fileName, idFolder);
     } else if (req.body.studentIdPhoto) {
       // Backward compatibility: if studentIdPhoto provided as object with fileId/url
-      const parsed = typeof req.body.studentIdPhoto === "string" ? JSON.parse(req.body.studentIdPhoto) : req.body.studentIdPhoto;
+      const parsed =
+        typeof req.body.studentIdPhoto === "string"
+          ? JSON.parse(req.body.studentIdPhoto)
+          : req.body.studentIdPhoto;
       if (parsed && parsed.fileId && parsed.url) {
         studentIdPhotoUrl = parsed;
       } else {
-        return next(new AppError("Invalid studentIdPhoto format. Expected {fileId, url} object", 400));
+        return next(
+          new AppError(
+            "Invalid studentIdPhoto format. Expected {fileId, url} object",
+            400
+          )
+        );
       }
     } else {
       return next(new AppError("Student ID photo is required", 400));
@@ -127,13 +166,20 @@ exports.signup = catchAsync(async (req, res, next) => {
     // Parse hobbies
     let hobbies = [];
     if (req.body.hobbies) {
-      hobbies = typeof req.body.hobbies === "string" ? JSON.parse(req.body.hobbies) : req.body.hobbies;
+      hobbies =
+        typeof req.body.hobbies === "string"
+          ? JSON.parse(req.body.hobbies)
+          : req.body.hobbies;
       if (!Array.isArray(hobbies)) hobbies = [hobbies];
     }
 
     // Parse height
-    const heightFt = req.body.heightFt ? parseInt(req.body.heightFt) : undefined;
-    const heightIn = req.body.heightIn ? parseInt(req.body.heightIn) : undefined;
+    const heightFt = req.body.heightFt
+      ? parseInt(req.body.heightFt)
+      : undefined;
+    const heightIn = req.body.heightIn
+      ? parseInt(req.body.heightIn)
+      : undefined;
 
     // Create user
     const newUser = await User.create({
@@ -158,11 +204,11 @@ exports.signup = catchAsync(async (req, res, next) => {
     });
 
     // Clean temp files
-    await Promise.all(tempFiles.map(f => fs.unlink(f).catch(() => {})));
+    await Promise.all(tempFiles.map((f) => fs.unlink(f).catch(() => {})));
 
     createAndSendToken(newUser, 201, res);
   } catch (err) {
-    await Promise.all(tempFiles.map(f => fs.unlink(f).catch(() => {})));
+    await Promise.all(tempFiles.map((f) => fs.unlink(f).catch(() => {})));
     next(err);
   }
 });
@@ -170,15 +216,20 @@ exports.signup = catchAsync(async (req, res, next) => {
 // LOGIN — Authenticate user
 exports.login = catchAsync(async (req, res, next) => {
   const { username, password } = req.body;
-  if (!username || !password) return next(new AppError("Please provide username and password", 400));
+  if (!username || !password)
+    return next(new AppError("Please provide username and password", 400));
 
   const user = await User.findOne({ username }).select("+password");
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Incorrect username or password", 401));
   }
 
-  if (user.status === "pending") return next(new AppError("Your account is pending approval by admin.", 403));
-  if (user.status === "rejected") return next(new AppError("Your account has been rejected by admin.", 403));
+  if (user.status === "pending")
+    return next(
+      new AppError("Your account is pending approval by admin.", 403)
+    );
+  if (user.status === "rejected")
+    return next(new AppError("Your account has been rejected by admin.", 403));
 
   createAndSendToken(user, 200, res);
 });
@@ -186,7 +237,8 @@ exports.login = catchAsync(async (req, res, next) => {
 // PROTECT — middleware
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
-  if (req.headers.authorization?.startsWith("Bearer")) token = req.headers.authorization.split(" ")[1];
+  if (req.headers.authorization?.startsWith("Bearer"))
+    token = req.headers.authorization.split(" ")[1];
   else if (req.cookies.jwt) token = req.cookies.jwt;
 
   if (!token) return next(new AppError("You are not logged in!", 401));
@@ -197,11 +249,15 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (!currentUser) return next(new AppError("User no longer exists", 401));
 
   if (typeof currentUser.changedPasswordAfter !== "function") {
-    return next(new AppError("User model missing changedPasswordAfter method", 500));
+    return next(
+      new AppError("User model missing changedPasswordAfter method", 500)
+    );
   }
 
   if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(new AppError("Password recently changed. Please log in again.", 401));
+    return next(
+      new AppError("Password recently changed. Please log in again.", 401)
+    );
   }
 
   req.user = currentUser;

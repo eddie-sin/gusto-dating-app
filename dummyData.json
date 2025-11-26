@@ -1,0 +1,41 @@
+{
+  "nickname": "akari-01",
+  "dob": "2005-9-16",
+  "gender": "female",
+  "sexuality": "male",
+
+  "bio": "GirlFriend of Eddie",
+  "hobbies": ["eddie1", "eddie2", "eddie3"],
+  "heightFt": 5,
+  "heightIn": 10,
+  "zodiac": "Virgo",
+  "mbti": "INTP",
+
+  "name": "Htet Shoon Lae-1",
+  "program": "Computer Science",
+  "batch": "CS-28",
+  "contact": "09123456785",
+
+  "photos": [
+    {
+      "fileId": "photo1_dog001",
+      "url": "https://plus.unsplash.com/premium_photo-1675848493910-5474ee04c3e3?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+      "fileId": "photo2_cat001",
+      "url": "https://images.unsplash.com/photo-1574144611937-0df059b5ef3e?q=80&w=464&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+      "fileId": "photo3_fox001",
+      "url": "https://plus.unsplash.com/premium_photo-1675848493910-5474ee04c3e3?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    }
+  ],
+
+  "studentIdPhoto": {
+    "fileId": "sid_001",
+    "url": "https://cdn.example.com/studentid/sid001.jpg"
+  },
+
+  "username": "eddieAkari4",
+  "password": "password12345"
+}

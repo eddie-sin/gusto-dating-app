@@ -12,7 +12,8 @@ const getAllowedGenders = (sexuality) => {
 };
 
 exports.getFeedChunk = catchAsync(async (req, res, next) => {
-  const userId = req.user.id;
+  /* const userId = req.user.id; */
+  const userId = "69272da9896f3340881009ec";
   const currentUser = await User.findById(userId);
 
   if (!currentUser) {
@@ -20,6 +21,7 @@ exports.getFeedChunk = catchAsync(async (req, res, next) => {
   }
 
   const allowedGenders = getAllowedGenders(currentUser.sexuality);
+  console.log(allowedGenders);
 
   const dislikedUsers = await Dislike.find({ user: currentUser._id }).select(
     "target"
