@@ -40,8 +40,18 @@ app.use(
       directives: {
         "default-src": ["'self'"],
         // Allow inline scripts and attribute handlers (e.g., onclick) used across public/*.html
-        "script-src": ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://cdn.tailwindcss.com"],
-        "script-src-elem": ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://cdn.tailwindcss.com"],
+        "script-src": [
+          "'self'",
+          "'unsafe-inline'",
+          "https://unpkg.com",
+          "https://cdn.tailwindcss.com",
+        ],
+        "script-src-elem": [
+          "'self'",
+          "'unsafe-inline'",
+          "https://unpkg.com",
+          "https://cdn.tailwindcss.com",
+        ],
         "script-src-attr": ["'unsafe-inline'"],
         "img-src": ["'self'", "data:", "https://ik.imagekit.io"],
         "connect-src": [
@@ -49,8 +59,21 @@ app.use(
           "https://upload.imagekit.io",
           "https://ik.imagekit.io",
         ],
-        "style-src": ["'self'", "'unsafe-inline'", "https://rsms.me", "https://cdn.tailwindcss.com", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
-        "font-src": ["'self'", "data:", "https://rsms.me", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+        "style-src": [
+          "'self'",
+          "'unsafe-inline'",
+          "https://rsms.me",
+          "https://cdn.tailwindcss.com",
+          "https://fonts.googleapis.com",
+          "https://cdnjs.cloudflare.com",
+        ],
+        "font-src": [
+          "'self'",
+          "data:",
+          "https://rsms.me",
+          "https://fonts.gstatic.com",
+          "https://cdnjs.cloudflare.com",
+        ],
         "frame-ancestors": ["'self'"],
       },
     },
@@ -75,7 +98,7 @@ const proposeRouter = require("./routes/proposeRoutes");
 const imageRouter = require("./routes/imageRoutes");
 const crushRouter = require("./routes/crhRoutes");
 const matchRouter = require("./routes/matchRoutes");
-
+const tempRegisterRouter = require("./routes/tempRegisterRoutes");
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/admins", adminRouter);
@@ -84,7 +107,7 @@ app.use("/api/v1/proposes", proposeRouter);
 app.use("/api/v1/images", imageRouter);
 app.use("/api/v1/crushes", crushRouter);
 app.use("/api/v1/matches", matchRouter);
-
+app.use("/api/v1/register", tempRegisterRouter);
 
 /* Serve Admin UI Pages */
 app.get("/admin", (req, res) => {
