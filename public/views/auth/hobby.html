@@ -12,7 +12,7 @@
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background-image: url("bgimg.jpg");
+      background-image: url("/img/bgimg.jpg");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -210,10 +210,6 @@
       const selected = document.querySelectorAll('.pill-selected');
       const hobbies = Array.from(selected).map(pill => pill.dataset.hobby);
       
-      if (hobbies.length < 1) {
-        alert('⚠️ Please select at least 1 hobby.');
-        return;
-      }
       if (hobbies.length > 5) {
         alert('⚠️ You can select a maximum of 5 hobbies.');
         return;

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://rsms.me/" />
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
   <style>
-    body { background: url('bgimg.jpg') center/cover no-repeat; font-family: 'Poppins', sans-serif; }
+    body { background: url('/img/bgimg.jpg') center/cover no-repeat; font-family: 'Poppins', sans-serif; }
     .glass { background: rgba(255,255,255,0.18); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.35); box-shadow: 0 8px 28px rgba(0,0,0,0.18); }
     @keyframes float {0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
     .animate-float { animation: float 4s ease-in-out infinite; }
@@ -107,16 +107,16 @@
     if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('data:')) return u;
     if (u.startsWith('//')) return 'https:' + u;
     if (u.startsWith('ik.imagekit.io')) return 'https://' + u;
-    return u; // relative path like bgimg.jpg
+    return u; // relative path like /img/bgimg.jpg
   }
 
   function userPrimaryPhoto(user){
-    if (!user) return 'bgimg.jpg';
+    if (!user) return '/img/bgimg.jpg';
     const photos = Array.isArray(user.photos) ? user.photos : [];
-    if (photos.length === 0) return 'bgimg.jpg';
+    if (photos.length === 0) return '/img/bgimg.jpg';
     const first = photos[0];
     const url = typeof first === 'string' ? first : first?.url;
-    return normalizeUrl(url) || 'bgimg.jpg';
+    return normalizeUrl(url) || '/img/bgimg.jpg';
   }
 
   function displayName(user){
@@ -134,7 +134,7 @@
     imgWrapper.className = 'block w-full h-[240px] relative';
     const photo = userPrimaryPhoto(user);
     const name = displayName(user);
-    imgWrapper.innerHTML = `<img src="${photo}" alt="${name}" class="proposal-img" onerror="this.onerror=null;this.src='bgimg.jpg';" />`;
+    imgWrapper.innerHTML = `<img src="${photo}" alt="${name}" class="proposal-img" onerror="this.onerror=null;this.src='/img/bgimg.jpg';" />`;
     imgWrapper.addEventListener('click', ()=> openModal(item, type));
 
     const nameOverlay = document.createElement('div');
@@ -144,7 +144,7 @@
 
     const mini = document.createElement('div');
     mini.className = 'overlay-mini bg-white';
-    mini.innerHTML = `<img src="${photo}" alt="mini ${name}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='bgimg.jpg';" />`;
+    mini.innerHTML = `<img src="${photo}" alt="mini ${name}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='/img/bgimg.jpg';" />`;
     imgWrapper.appendChild(mini);
 
     const actionBar = document.createElement('div');
@@ -193,7 +193,7 @@
       let recRes = await fetch(`${API_BASE}/received`, { headers: headersBase });
       if (recRes.status === 401) {
         const back = encodeURIComponent(window.location.pathname + window.location.search);
-        window.location.href = `/login.html?redirect=${back}`;
+        window.location.href = `/views/auth/login.html?redirect=${back}`;
         return;
       }
       let recJson = await parseSafe(recRes);
@@ -204,7 +204,7 @@
           recRes = await fetch(`${API_BASE}/received`, { headers: { 'Content-Type': 'application/json' } });
           if (recRes.status === 401) {
             const back = encodeURIComponent(window.location.pathname + window.location.search);
-            window.location.href = `/login.html?redirect=${back}`;
+            window.location.href = `/views/auth/login.html?redirect=${back}`;
             return;
           }
           recJson = await parseSafe(recRes);
@@ -220,7 +220,7 @@
       let sentRes = await fetch(`${API_BASE}/sent`, { headers: headersBase });
       if (sentRes.status === 401) {
         const back = encodeURIComponent(window.location.pathname + window.location.search);
-        window.location.href = `/login.html?redirect=${back}`;
+        window.location.href = `/views/auth/login.html?redirect=${back}`;
         return;
       }
       let sentJson = await parseSafe(sentRes);
@@ -230,7 +230,7 @@
           sentRes = await fetch(`${API_BASE}/sent`, { headers: { 'Content-Type': 'application/json' } });
           if (sentRes.status === 401) {
             const back = encodeURIComponent(window.location.pathname + window.location.search);
-            window.location.href = `/login.html?redirect=${back}`;
+            window.location.href = `/views/auth/login.html?redirect=${back}`;
             return;
           }
           sentJson = await parseSafe(sentRes);
@@ -316,7 +316,7 @@
     (user?.hobbies||[]).forEach(h=> modalHobbies.appendChild(pill(h)));
     const modalImgEl = document.getElementById('modalImg');
     modalImgEl.src = userPrimaryPhoto(user);
-    modalImgEl.onerror = function(){ this.onerror=null; this.src='bgimg.jpg'; };
+    modalImgEl.onerror = function(){ this.onerror=null; this.src='/img/bgimg.jpg'; };
 
     modalActions.innerHTML='';
     if(type==='received'){

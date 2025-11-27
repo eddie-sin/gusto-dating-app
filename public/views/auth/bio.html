@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Height Selection</title>
+  <title>Enter Bio</title>
 
   <!-- Tailwind CSS -->
   <link rel="stylesheet" href="/css/tailwind.css" />
@@ -19,7 +19,7 @@
       margin: 0;
       font-family: 'Poppins', sans-serif;
       height: 100vh;
-      background-image: url('bgimg.jpg');
+      background-image: url('/img/bgimg.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -83,18 +83,18 @@
       text-align: center;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
       position: relative;
+      animation: float 6s ease-in-out infinite;
     }
 
     @keyframes float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-10px); }
     }
-    .animate-float { animation: float 4s ease-in-out infinite; will-change: transform; }
 
     h2 {
       font-size: 22px;
       color: #000;
-      margin-bottom: 35px;
+      margin-bottom: 45px;
       font-weight: 500;
     }
 
@@ -110,57 +110,41 @@
       z-index: 0;
     }
 
-    .height-picker {
+    .bio-section {
       position: relative;
       z-index: 1;
+      margin-top: 10px;
+      text-align: left;
+    }
+
+    .bio-label {
       display: flex;
-      justify-content: center;
-      gap: 80px;
-      margin-top: 20px;
-    }
-
-    .column {
-      text-align: center;
-    }
-
-    .column label {
-      font-size: 15px;
-      color: #222;
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .scroll {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 18px;
-      color: #333;
-      height: 90px;
-      overflow-y: scroll;
-      scrollbar-width: none;
-      position: relative;
-      scroll-snap-type: y mandatory;
-    }
-
-    .scroll::-webkit-scrollbar {
-      display: none;
-    }
-
-    .scroll div {
-      line-height: 35px;
-      transition: all 0.2s ease;
-      opacity: 0.4;
-      scroll-snap-align: center;
-    }
-
-    .scroll div.active {
-      font-size: 26px;
-      opacity: 1;
-      font-weight: bold;
+      justify-content: space-between;
+      font-size: 14px;
       color: #000;
-      border-bottom: 2px solid black;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #000;
+      outline: none;
+      resize: none;
+      height: 30px;
+      font-size: 15px;
+      color: #000;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #333;
+      opacity: 0.7;
+      text-align: right;
+      margin-top: 6px;
     }
 
     .btn-row {
@@ -177,7 +161,7 @@
 
   <!-- Back Button -->
   <div class="w-full max-w-[880px] mb-6 px-4 sm:px-6">
-    <a href="zodiac.html"
+    <a href="height.html"
        class="mbti-btn flex items-center justify-start font-medium 
               w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px]
               px-4 sm:px-6 text-base sm:text-lg transition-all duration-200"
@@ -188,20 +172,17 @@
   </div>
 
   <!-- Main Card -->
-  <div class="card animate-float">
-    <h2>What's your height?</h2>
+  <div class="card">
+    <h2>Enter Bio</h2>
     <div class="heart-bg"></div>
 
-    <div class="height-picker">
-      <div class="column">
-        <label>Feet</label>
-        <div class="scroll" id="feet"></div>
+    <div class="bio-section">
+      <div class="bio-label">
+        <span>Describe yourself</span>
+        <span id="charCount">500</span>
       </div>
-
-      <div class="column">
-        <label>Inches</label>
-        <div class="scroll" id="inches"></div>
-      </div>
+      <textarea id="bioInput" maxlength="500" placeholder=""></textarea>
+      <p class="hint">You can edit it later...</p>
     </div>
 
     <div class="btn-row">
@@ -211,87 +192,33 @@
   </div>
 
   <script>
-    // Infinite scroll function
-    function createInfiniteScroll(containerId, range) {
-      const container = document.getElementById(containerId);
-      const fullList = [];
-      for (let i = 0; i < 3; i++) {
-        for (let n = 0; n <= range; n++) {
-          const div = document.createElement("div");
-          div.textContent = n.toString().padStart(2, '0');
-          if (n === 5 && i === 1) div.classList.add("active");
-          fullList.push(div);
-        }
+    const textarea = document.getElementById("bioInput");
+    const counter = document.getElementById("charCount");
+
+    textarea.addEventListener("input", () => {
+      const remaining = 500 - textarea.value.length;
+      counter.textContent = remaining;
+      if (remaining < 0) {
+        textarea.value = textarea.value.substring(0, 500);
+        counter.textContent = 0;
       }
-      fullList.forEach(d => container.appendChild(d));
-
-      // Start scroll at middle section
-      const itemHeight = 35;
-      container.scrollTop = container.scrollHeight / 3;
-
-      // Infinite looping + highlight
-      container.addEventListener("scroll", () => {
-        const totalHeight = container.scrollHeight;
-        const sectionHeight = totalHeight / 3;
-
-        if (container.scrollTop <= sectionHeight * 0.1) {
-          container.scrollTop += sectionHeight;
-        } else if (container.scrollTop >= sectionHeight * 1.9) {
-          container.scrollTop -= sectionHeight;
-        }
-
-        const center = container.scrollTop + container.clientHeight / 2;
-        const items = container.querySelectorAll("div");
-        let closest = null, closestDist = Infinity;
-
-        items.forEach(item => {
-          const mid = item.offsetTop + item.offsetHeight / 2;
-          const dist = Math.abs(center - mid);
-          if (dist < closestDist) {
-            closestDist = dist;
-            closest = item;
-          }
-        });
-
-        items.forEach(i => i.classList.remove("active"));
-        if (closest) closest.classList.add("active");
-      });
-    }
-
-    createInfiniteScroll("feet", 12);
-    createInfiniteScroll("inches", 12);
-
-    function getSelectedValue(containerId) {
-      const container = document.getElementById(containerId);
-      const center = container.scrollTop + container.clientHeight / 2;
-      const items = container.querySelectorAll("div");
-      let closest = null, closestDist = Infinity;
-      items.forEach(item => {
-        const mid = item.offsetTop + item.offsetHeight / 2;
-        const dist = Math.abs(center - mid);
-        if (dist < closestDist) {
-          closestDist = dist;
-          closest = item;
-        }
-      });
-      return closest ? parseInt(closest.textContent) : null;
-    }
+    });
 
     document.getElementById('skipBtn').addEventListener('click', () => {
-      localStorage.removeItem('heightFt');
-      localStorage.removeItem('heightIn');
-      window.location.href = 'bio.html';
+      localStorage.removeItem('bio');
+      window.location.href = 'MBTI.html';
     });
 
     document.getElementById('nextBtn').addEventListener('click', () => {
-      const feet = getSelectedValue("feet");
-      const inches = getSelectedValue("inches");
-      
-      if (feet !== null && inches !== null) {
-        localStorage.setItem('heightFt', feet);
-        localStorage.setItem('heightIn', inches);
+      const bio = textarea.value.trim();
+      if (bio.length > 500) {
+        alert('⚠️ Bio must be 500 characters or less.');
+        return;
       }
-      window.location.href = 'bio.html';
+      if (bio) {
+        localStorage.setItem('bio', bio);
+      }
+      window.location.href = 'MBTI.html';
     });
   </script>
 

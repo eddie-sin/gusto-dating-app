@@ -1,7 +1,7 @@
 const images = [
   "img/mmainpageImage.png",
   "img/mmainpageImage.png",
-  "bgimg.jpg",
+  "/img/bgimg.jpg",
 ];
 
 let currentIndex = 0;
