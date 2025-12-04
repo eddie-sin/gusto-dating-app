@@ -5,16 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Perfect Match</title>
 
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap" rel="stylesheet">
 
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&display=swap" rel="stylesheet" />
 
   <style>
     body {
       margin: 0;
       padding: 0;
       font-family: "Poppins", sans-serif;
-      background-image: url("/img/bgimg.jpg"); /* page bg */
+      background-image: url("../../img/bgimg.jpg"); /* page bg */
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -24,101 +27,316 @@
       align-items: center;
     }
 
+    /* JS helper – only affects animation of thumbs track */
+    .thumbs-track {
+      transition: transform 0.3s ease-out;
+      will-change: transform;
+    }
+
+    .dot-active {
+      background-color: #ffffff !important;
+      opacity: 1 !important;
+    }
+
+    .dot-inactive {
+      background-color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    /* Make slider controls obviously clickable */
+    .slider-dots,
+    .slider-dots [data-dot],
+    .thumbs-container,
+    .thumbs-container button {
+      cursor: pointer;
+    }
+
+    /* Normalize thumbnail sizes explicitly */
+    .thumbs-container img {
+      width: 160px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 20px;
+      display: block; /* remove inline-image gaps */
+    }
   </style>
 </head>
 
 <body>
+  <!-- Vertical list of cards (dynamic later via JS) -->
+  <div id="matchList" class="w-full flex flex-col items-center gap-12 py-10"></div>
 
-  <!-- MAIN CARD -->
-  <div
-    class="relative w-[90vw] max-w-[1200px]
-           h-[520px] md:h-[580px] lg:h-[620px]
-           rounded-[32px] overflow-hidden">
+  <script>
+    // ========= 1. AUTH & DATA FETCH =========
+    function authHeader() {
+      const token = localStorage.getItem('authToken');
+      return token ? { Authorization: `Bearer ${token}` } : {};
+    }
 
-    <!-- BACKGROUND IMAGE (50% see-through) -->
-    <img
-      src="img/match-list-img1.png"
-      class="absolute inset-0 w-full h-full object-cover opacity-50" />
+    async function fetchMyMatches() {
+      const res = await fetch('/api/v1/matches/me', {
+        headers: { 'Content-Type': 'application/json', ...authHeader() }
+      });
+      if (res.status === 401) {
+        const back = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/views/auth/login.html?redirect=${back}`;
+        return [];
+      }
+      if (!res.ok) throw new Error('Failed to load matches');
+      const json = await res.json();
+      return (json && json.data) || [];
+    }
 
-    <!-- CONTENT LAYER -->
-    <div class="relative z-10 w-full h-full">
+    // Helper: normalize URLs like in feed.html
+    function normalizeUrl(u) {
+      if (!u) return null;
+      if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('data:')) return u;
+      if (u.startsWith('//')) return 'https:' + u;
+      if (u.startsWith('ik.imagekit.io')) return 'https://' + u;
+      return u;
+    }
 
-      <!-- TITLE -->
-      <h1
-        class="absolute top-6 left-[80px]
-               text-white font-extrabold drop-shadow-2xl
-               text-[56px] leading-[60px]
-               md:text-[72px] md:leading-[78px]
-               lg:text-[80px] lg:leading-[86px]">
-        Perfect <br />
-        <span style="color: #57ffd8;">Match!</span>
-      </h1>
+    // Helper: pick up to 3 random photos from a user's photos array
+    function pickRandomThree(photos) {
+      if (!Array.isArray(photos) || photos.length === 0) return [];
+      const shuffled = [...photos].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, 3).map(ph => (typeof ph === 'string' ? ph : ph?.url)).map(normalizeUrl).filter(Boolean);
+    }
 
-      <!-- INFO BOX -->
-      <div
-        class="absolute right-[100px] top-[30%]
-              bg-white/25 backdrop-blur-xl
-              border border-white/60
-              rounded-[30px] shadow-2xl
-              px-8 py-6
-              w-[400px] h-[300px]
-              flex flex-col justify-center items-center
-              text-white text-center">
+    // ========= 2. RENDER ONE MATCH CARD =========
+    function createMatchCard(match, index) {
+      const photos = pickRandomThree(match.photos);
+      const dotsHtml = photos
+        .map((_, i) =>
+          i === 0
+            ? `<div class="w-[60px] h-2 rounded-full bg-white" data-dot="${i}"></div>`
+            : `<div class="w-3 h-3 rounded-full bg-white/60" data-dot="${i}"></div>`
+        )
+        .join("");
 
-        <!-- NAME -->
-        <p
-          class="text-[34px] mb-2 drop-shadow-md"
-          style="
-            font-family: 'Gasoek One', sans-serif;
-            -webkit-text-stroke: 0.1px #FF395D;
-            color: white;
-          "
-        >
-          Kaung Zaw Hein
-        </p>
+      const thumbsHtml = photos
+        .map(src => `
+          <img src="${src}" onerror="this.onerror=null;this.src='/img/bgimg.jpg';"
+               class="w-[160px] h-[120px] rounded-[20px] object-cover shadow-[0_10px_25px_rgba(0,0,0,0.35)]" />`)
+        .join("");
 
+      // Build bio lines: bio, zodiac, batch, phone
+      const bioLines = [
+        match.bio || '',
+        match.zodiac || '',
+        match.batch || '',
+        match.phone || ''
+      ].filter(Boolean);
 
-        <!-- DIVIDER -->
-        <div class="w-[85%] h-[2px] bg-white/70 my-3"></div>
+      return `
+        <div class="match-card relative w-[90vw] max-w-[1200px]
+                    h-[520px] md:h-[580px] lg:h-[620px]
+                    rounded-[32px] overflow-hidden transform scale-90 md:scale-95">
 
-        <!-- BIO TEXT -->
-        <div
-          class="space-y-3 text-[16px] md:text-[18px] lg:text-[20px] leading-relaxed opacity-95"
-          style="font-family: 'Rufina', serif;"
-        >
-          <p>I'm Gay! hel kg ma yal Nga Hla lar</p>
-          <p>Aries</p>
-          <p>HND–57</p>
-          <p>09–123456789</p>
+          <!-- BACKGROUND IMAGE (50% see-through) -->
+          <img src="${photos[0] || '/img/bgimg.jpg'}" onerror="this.onerror=null;this.src='/img/bgimg.jpg';"
+               class="js-bg absolute inset-0 w-full h-full object-cover opacity-50 z-0" />
+
+          <!-- CONTENT LAYER -->
+          <div class="match-content relative z-10 w-full h-full">
+
+            <!-- TITLE -->
+            <h1 class="absolute top-6 left-[80px]
+                       text-white font-extrabold drop-shadow-2xl
+                       text-[56px] leading-[60px]
+                       md:text-[72px] md:leading-[78px]
+                       lg:text-[80px] lg:leading-[86px]">
+              Perfect <br />
+              <span style="color: #57ffd8;">Match!</span>
+            </h1>
+
+            <!-- INFO BOX -->
+            <div class="absolute right-[100px] top-[30%]
+                       bg-white/25 backdrop-blur-xl
+                       border border-white/60
+                       rounded-[30px] shadow-2xl
+                       px-8 py-6
+                       w-[400px] h-[300px]
+                       flex flex-col justify-center items-center
+                       text-white text-center">
+
+              <!-- NAME -->
+              <p class="text-[34px] mb-2 drop-shadow-md"
+                 style="font-family: 'Gasoek One', sans-serif;
+                        -webkit-text-stroke: 0.1px #FF395D;
+                        color: white;">
+                ${match.nickname || 'Anonymous'}
+              </p>
+
+              <!-- DIVIDER -->
+              <div class="w-[85%] h-[2px] bg-white/70 my-3"></div>
+
+              <!-- BIO TEXT -->
+              <div class="space-y-3 text-[16px] md:text-[18px] lg:text-[20px] leading-relaxed opacity-95"
+                   style="font-family: 'Rufina', serif;">
+                ${bioLines.map(line => `<p>${line}</p>`).join('')}
+              </div>
+            </div>
+
+            <!-- BOTTOM THUMBNAILS -->
+            <div class="thumbs-container absolute left-[100px] flex gap-6 overflow-hidden z-30"
+                 style="bottom: 1.5rem; top: auto; width: 344px; height: 130px;">
+              <div class="thumbs-track flex gap-6" data-slides>
+                ${thumbsHtml}
+              </div>
+            </div>
+
+            <!-- DOTS -->
+            <div class="slider-dots absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
+              ${dotsHtml}
+            </div>
+
+          </div>
         </div>
-      </div>
+      `;
+    }
 
+    // ========= 3. INITIALIZE =========
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const matches = await fetchMyMatches();
+        const listEl = document.getElementById("matchList");
+        listEl.innerHTML = matches.map((m, i) => createMatchCard(m, i)).join("");
 
-      <!-- BOTTOM THUMBNAILS -->
-      <div class="absolute bottom-20 left-[100px] flex gap-6">
-        <img
-          src="img/match-list-img2.png"
-          class="w-[160px] h-[120px] rounded-[20px]
-                 object-cover
-                 shadow-[0_10px_25px_rgba(0,0,0,0.35)]" />
+        const cards = Array.from(listEl.querySelectorAll(".match-card"));
+        cards.forEach((cardEl, index) => {
+          initMatchSlider(cardEl, matches[index]);
+        });
+      } catch (e) {
+        console.error("Failed to load matches:", e);
+        // Optionally show a friendly no‑matches message
+        const listEl = document.getElementById("matchList");
+        listEl.innerHTML = `<p class="text-white text-center mt-10">No matches found.</p>`;
+      }
+    });
 
-        <img
-          src="img/match-list-img3.png"
-          class="w-[160px] h-[120px] rounded-[20px]
-                 object-cover
-                 shadow-[0_10px_25px_rgba(0,0,0,0.35)]" />
-      </div>
+    // ========= 4. SLIDER BEHAVIOR FOR ONE CARD (background + thumbs) =========
+    function initMatchSlider(cardEl, match) {
+      const bgImg = cardEl.querySelector(".js-bg");
+      const track = cardEl.querySelector(".thumbs-track");
+      const thumbs = Array.from(track.querySelectorAll("img"));
+      const dots = Array.from(cardEl.querySelectorAll("[data-dot]"));
+      const thumbsContainer = cardEl.querySelector(".thumbs-container");
+      const dotsContainer = cardEl.querySelector(".slider-dots");
 
-      <!-- DOTS -->
-      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
-        <div class="w-[60px] h-2 rounded-full bg-white"></div>
-        <div class="w-3 h-3 rounded-full bg-white/60"></div>
-        <div class="w-3 h-3 rounded-full bg-white/40"></div>
-        <div class="w-3 h-3 rounded-full bg-white/40"></div>
-      </div>
+      if (!bgImg || !track || thumbs.length === 0 || dots.length === 0) return;
 
-    </div>
-  </div>
+      let currentIndex = 0;
+      const visibleThumbs = 2;
+      let slideOffset = 0;
+      let windowStart = 0;
 
+      function measureOffset() {
+        slideOffset = 184; // 160 width + 24 gap
+      }
+
+      function updateDots() {
+        dots.forEach((dot, idx) => {
+          dot.classList.remove("dot-active", "dot-inactive");
+          if (idx === currentIndex) {
+            dot.classList.add("dot-active");
+          } else {
+            dot.classList.add("dot-inactive");
+          }
+        });
+      }
+
+      function updateBackground() {
+        const photos = pickRandomThree(match.photos);
+        const src = photos[currentIndex] || photos[0] || '/img/bgimg.jpg';
+        bgImg.src = src;
+      }
+
+      function updateThumbWindow() {
+        const maxStart = Math.max(0, thumbs.length - visibleThumbs);
+        windowStart = Math.max(0, Math.min(windowStart, maxStart));
+        if (!slideOffset) measureOffset();
+        const x = -windowStart * slideOffset;
+        track.style.transform = `translateX(${x}px)`;
+      }
+
+      function ensureCurrentVisible() {
+        const maxStart = Math.max(0, thumbs.length - visibleThumbs);
+        if (currentIndex < windowStart) {
+          windowStart = currentIndex;
+        } else if (currentIndex > windowStart + visibleThumbs - 1) {
+          windowStart = currentIndex - (visibleThumbs - 1);
+        }
+        windowStart = Math.max(0, Math.min(windowStart, maxStart));
+        updateThumbWindow();
+      }
+
+      function goTo(index, syncThumbWindow = true) {
+        const photos = pickRandomThree(match.photos);
+        const maxIndex = photos.length - 1;
+        currentIndex = Math.max(0, Math.min(index, maxIndex));
+        if (syncThumbWindow) {
+          if (!slideOffset) measureOffset();
+          ensureCurrentVisible();
+        }
+        updateDots();
+        updateBackground();
+      }
+
+      // Events: dots and thumbs
+      dots.forEach((dot, idx) => {
+        dot.addEventListener("click", () => goTo(idx));
+      });
+      thumbs.forEach((img, idx) => {
+        img.style.cursor = "pointer";
+        img.addEventListener("click", () => goTo(idx));
+      });
+
+      // Full-card swipe to change background
+      let startX = 0;
+      let isDragging = false;
+
+      function onStart(clientX) {
+        isDragging = true;
+        startX = clientX;
+      }
+
+      function onEnd(clientX) {
+        if (!isDragging) return;
+        isDragging = false;
+        const dx = clientX - startX;
+        const threshold = 40;
+        if (dx > threshold) {
+          goTo(currentIndex - 1, false);
+        } else if (dx < -threshold) {
+          goTo(currentIndex + 1, false);
+        }
+      }
+
+      cardEl.addEventListener("mousedown", (e) => {
+        if (thumbsContainer && thumbsContainer.contains(e.target)) return;
+        if (dotsContainer && dotsContainer.contains(e.target)) return;
+        onStart(e.clientX);
+      });
+      window.addEventListener("mouseup", (e) => onEnd(e.clientX));
+
+      cardEl.addEventListener("touchstart", (e) => {
+        if (e.touches.length > 0) {
+          const target = e.target;
+          if (thumbsContainer && thumbsContainer.contains(target)) return;
+          if (dotsContainer && dotsContainer.contains(target)) return;
+          onStart(e.touches[0].clientX);
+        }
+      }, { passive: true });
+      cardEl.addEventListener("touchend", (e) => {
+        const touch = e.changedTouches[0];
+        onEnd(touch.clientX);
+      }, { passive: true });
+
+      // Initial state
+      measureOffset();
+      updateThumbWindow();
+      goTo(0);
+    }
+  </script>
 </body>
 </html>
