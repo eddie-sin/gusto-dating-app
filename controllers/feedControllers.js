@@ -12,8 +12,7 @@ const getAllowedGenders = (sexuality) => {
 };
 
 exports.getFeedChunk = catchAsync(async (req, res, next) => {
-  /* const userId = req.user.id; */
-  const userId = "69272da9896f3340881009ec";
+  const userId = req.user.id;
   const currentUser = await User.findById(userId);
 
   if (!currentUser) {
@@ -51,7 +50,7 @@ exports.getFeedChunk = catchAsync(async (req, res, next) => {
   if (unseen.length < 5 && currentUser.shownProfiles.length > 0) {
     const half = Math.floor(currentUser.shownProfiles.length / 2);
     currentUser.shownProfiles.splice(0, half);
-    await currentUser.save();
+    await currentUser.save({ validateBeforeSave: false });
 
     // recalc unseen after shrinking history
     unseen = allCandidates.filter(
@@ -69,7 +68,7 @@ exports.getFeedChunk = catchAsync(async (req, res, next) => {
 
   // 6️⃣ Save these 5 into shownProfiles history
   currentUser.shownProfiles.push(...chunk.map((u) => u._id.toString()));
-  await currentUser.save();
+  await currentUser.save({ validateBeforeSave: false });
 
   // 7️⃣ Fetch full user docs to return (exclude sensitive fields)
   const profiles = await User.find({

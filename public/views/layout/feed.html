@@ -1,201 +1,1081 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.tailwindcss.com"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Jomolhari&family=Rufina:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <title>Feed Page</title>
 
-  <style>
-    .switch-h { height: 0.2rem; }
-
-    .action-btn {
-      width: 3.5rem;
-      height: 3.5rem;
-      background: transparent;
-      border: 2px solid #d3d3d3;
-      border-radius: 9999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      box-shadow: 
-        inset 0 5px 8px -4px #d3d3d3,
-        inset 0 -5px 8px -4px #d3d3d3,
-        inset 2px 0 8px -4px #d3d3d3,
-        inset -2px 0 8px -4px #d3d3d3;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .action-btn:hover {
-      box-shadow: inset 0 0 10px #d3d3d3;
-    }
-  </style>
-</head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6"
-      style="background: linear-gradient(to bottom, #FFCAD4 24%, #FF4D6D 100%);">
-
-  <!-- CARD -->
-<div class="relative w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-lg h-[400px] sm:h-[550px] md:h-[580px] lg:h-[580px] bg-white rounded-3xl shadow-xl overflow-hidden mb-4">
-
-    <!-- Switch bars on image -->
-    <div class="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20" id="bars">
-      <div class="switch-h w-16 sm:w-24 md:w-28 rounded-full bg-white cursor-pointer" onclick="showImage(0)"></div>
-      <div class="switch-h w-16 sm:w-24 md:w-28 rounded-full bg-black/40 cursor-pointer" onclick="showImage(1)"></div>
-      <div class="switch-h w-16 sm:w-24 md:w-28 rounded-full bg-black/40 cursor-pointer" onclick="showImage(2)"></div>
-
-    </div>
-
-    <!-- Image -->
-    <img id="slideImage" src="img/mmainpageImage.png"
-         class="w-full h-full object-cover transition-opacity duration-500 opacity-100" />
-
-    <!-- Bottom text inside image -->
-    <div class="absolute bottom-5 sm:bottom-7 left-5 sm:left-7 text-white drop-shadow">
-
-      <div class="font-semibold font-rufina flex items-center gap-2 mb-1 text-sm sm:text-base md:text-lg">
-
-        <!-- Name -->
-        Khin Win War
-        <span class="font-jomolhari text-sm sm:text-base">, 30</span>
-
-        <!-- Male sticker -->
-        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-gray-300 flex items-center justify-center 
-                shadow-inner pointer-events-none" style="background: transparent; box-shadow: inset 0 0 10px #d3d3d3;">
-            <i class="fa-solid fa-mars text-[0.85rem] sm:text-base" style="color: #74C0FC;"></i>
-
-        </div>
-      </div>
-
-      <!-- Under text -->
-      <div class="opacity-90 font-rufina text-xs sm:text-sm md:text-base">
-        Just a moment!
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ACTION BUTTONS -->
-  <div class="flex gap-6 sm:gap-8 mt-4 sm:mt-6">
-
-    <!-- Sticker Button -->
-    <button class="action-btn">
-      <i class="fa-regular fa-star" style="color: #FFFF00;"></i>
-    </button>
-
-    <!-- Heart Button -->
-    <button class="action-btn">
-      <i class="fa-regular fa-heart fa-rotate-by" style="color: #FF002D; --fa-rotate-angle: 2deg;"></i>
-    </button>
-
-    <!-- Dislike Button -->
-    <button class="action-btn">
-      <i class="fa-regular fa-thumbs-down fa-flip-horizontal" style="color: #FFFFFF;"></i>
-    </button>
-
-  </div>
-
-<!-- 
-  <script>
-    const images = [ 
-      "img/mmainpageImage.png", 
-      "img/mmainpageImage.png", 
-      "bgimg.jpg" 
-    ];
-
-    function showImage(i) {
-      const img = document.getElementById('slideImage');
-      const bars = document.querySelectorAll('#bars div');
-
-      bars.forEach((bar, idx) => {
-        bar.classList.remove('bg-white', 'bg-black/40');
-        bar.classList.add(idx === i ? 'bg-white' : 'bg-black/40');
-      });
-
-      img.style.opacity = "0";
-      setTimeout(() => {
-        img.src = images[i];
-        img.style.opacity = "1";
-      }, 200);
-    }
-
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            rufina: ['Rufina', 'serif'],
-            jomolhari: ['Jomolhari', 'serif'],
-          }
-        }
-      }
-    }
-  </script> -->
-
-  <script>
-const images = [ 
-  "img/mmainpageImage.png", 
-  "img/mmainpageImage.png", 
-  "/img/bgimg.jpg" 
-];
-
-let currentIndex = 0;
-
-function showImage(i) {
-  currentIndex = i;
-  const img = document.getElementById('slideImage');
-  const bars = document.querySelectorAll('#bars div');
-
-  bars.forEach((bar, idx) => {
-    bar.classList.remove('bg-white', 'bg-black/40');
-    bar.classList.add(idx === i ? 'bg-white' : 'bg-black/40');
-  });
-
-  img.style.opacity = "0";
-  setTimeout(() => {
-    img.src = images[i];
-    img.style.opacity = "1";
-  }, 200);
+    <style>
+      /* =========================================
+   1. GLOBAL & FONTS
+   ========================================= */
+@font-face {
+  font-family: "Rufina";
+  src: url("../../fonts/Rufina-Regular.ttf") format("truetype");
+  font-weight: 400;
 }
 
-// ===== Swipe functionality =====
-const slideImage = document.getElementById('slideImage');
-let startX = 0;
+/* Center variant for confirmation modal */
+.modal-center {
+  align-items: center;
+}
+@font-face {
+  font-family: "Rufina";
+  src: url("../../fonts/Rufina-Bold.ttf") format("truetype");
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Jomolhari";
+  src: url("../../fonts/Jomolhari-Regular.ttf") format("truetype");
+  font-weight: normal;
+}
 
-slideImage.addEventListener('touchstart', (e) => {
-  startX = e.touches[0].clientX;
-});
+body {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom, #ffcad4 24%, #ff4d6d 100%);
+  overflow: hidden; /* Important for the scroll effect */
+  font-family: "Jomolhari", serif;
+}
 
-slideImage.addEventListener('touchend', (e) => {
-  const endX = e.changedTouches[0].clientX;
-  const diffX = endX - startX;
+/* =========================================
+   2. FEED CONTAINER (The Stack)
+   ========================================= */
+.feed-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 650px; /* Adjusted height to fit card + buttons */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
+}
 
-  if (Math.abs(diffX) > 50) { // minimum swipe distance
-    if (diffX < 0) {
-      // swipe left → next image
-      currentIndex = (currentIndex + 1) % images.length;
-    } else {
-      // swipe right → previous image
-      currentIndex = (currentIndex - 1 + images.length) % images.length;
-    }
-    showImage(currentIndex);
+/* =========================================
+   3. CARD STYLES
+   ========================================= */
+.card-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  height: 550px;
+  background: white;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  margin-bottom: 1.5rem;
+}
+
+/* Overlay to darken bottom part */
+.card::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Switch bars */
+.bars {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+  width: 90%;
+  max-width: 340px;
+}
+
+.switch-h {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.switch-h.active {
+  background: white;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+/* Images */
+.card-image-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+/* Bottom info */
+.bottom-info {
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  z-index: 3;
+  cursor: pointer;
+}
+
+.name-age {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Rufina", serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+  transition: transform 0.2s;
+}
+
+.name-age:hover {
+  transform: translateX(5px);
+}
+
+.age {
+  font-family: "Jomolhari", serif;
+  font-weight: normal;
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.gender {
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gender i {
+  color: white;
+  font-size: 0.8rem;
+}
+
+.subtitle {
+  font-family: "Rufina", serif;
+  opacity: 0.9;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.action-btn {
+  width: 3.8rem;
+  height: 3.8rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(5px);
+  border: 2px solid white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+  background: white;
+}
+
+.action-btn i.fa-star {
+  color: #ffff00;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+.action-btn:hover i.fa-star {
+  color: #ffd700;
+}
+
+.action-btn i.fa-heart {
+  transform: rotate(2deg);
+}
+.action-btn:hover i.fa-heart {
+  color: #ff002d;
+}
+
+.action-btn i.fa-thumbs-down {
+  transform: scaleX(-1);
+}
+.action-btn:hover i.fa-thumbs-down {
+  color: #555;
+}
+
+/* =========================================
+   4. SCROLL ANIMATIONS (TIKTOK STYLE)
+   ========================================= */
+
+/* State: The card currently being viewed */
+.card-wrapper.current {
+  transform: translateY(0);
+  opacity: 1;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+/* State: The card is moving UP and OUT */
+.card-wrapper.slide-out {
+  transform: translateY(-120%) scale(0.9);
+  opacity: 0.5;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* State: The NEW card waiting below */
+.card-wrapper.next-waiting {
+  transform: translateY(120%); /* Start below screen */
+  opacity: 1;
+  z-index: 6; /* On top of current */
+  pointer-events: none;
+}
+
+/* =========================================
+   5. MODAL CSS (Unchanged from original)
+   ========================================= */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: flex-end;
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-});
- tailwind.config = {
-    theme: {
-      extend: {
-        fontFamily: {
-          rufina: ['Rufina', 'serif'],
-          jomolhari: ['Jomolhari', 'serif'],
-        }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: #fff;
+  width: 100%;
+  max-width: 450px;
+  height: 85vh;
+  border-radius: 32px 32px 0 0;
+  padding: 30px 25px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 500px) {
+  .modal {
+    align-items: center;
+  }
+  .modal-content {
+    height: auto;
+    max-height: 85vh;
+    border-radius: 32px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.modal-header h2 {
+  margin: 0;
+  font-family: "Rufina", serif;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.modal-close {
+  background: #f0f0f0;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #555;
+  transition: background 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-close:hover {
+  background: #e0e0e0;
+  color: #ff4d6d;
+}
+
+.modal-photos {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-snap-type: x mandatory;
+}
+.modal-photos::-webkit-scrollbar {
+  height: 4px;
+}
+.modal-photos::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 10px;
+}
+.modal-photos img {
+  width: 110px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 16px;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-family: "Rufina", serif;
+  font-size: 1.1rem;
+  color: #888;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.modal-section {
+  margin-bottom: 24px;
+}
+.bio-text {
+  font-family: "Jomolhari", serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #444;
+  margin: 0;
+}
+.divider {
+  border: 0;
+  height: 1px;
+  background: #eee;
+  margin: 20px 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.grid-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 16px;
+  border: 1px solid #f0f0f0;
+  transition: transform 0.2s;
+}
+.grid-item:hover {
+  transform: translateY(-2px);
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+.grid-item .icon {
+  width: 36px;
+  height: 36px;
+  background: #fff0f3;
+  color: #ff4d6d;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+}
+.grid-text {
+  display: flex;
+  flex-direction: column;
+}
+.grid-text .label {
+  font-size: 0.75rem;
+  color: #888;
+  font-family: "Rufina", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.grid-text .value {
+  font-size: 1rem;
+  color: #222;
+  font-weight: 600;
+}
+
+.hobbies-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.hobby-pill {
+  padding: 8px 16px;
+  background: #fff0f3;
+  color: #ff4d6d;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 77, 109, 0.1);
+}
+.hidden-field {
+  display: none !important;
+}
+
+@media (max-width: 500px) {
+  .card {
+    max-width: 90%;
+    height: 520px;
+  }
+}
+    </style>
+  </head>
+  <body>
+    <div id="feed-container" class="feed-container"></div>
+
+    <div id="userModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalNameDisplay">User Profile</h2>
+          <button id="modalClose" class="modal-close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-photos" id="modalPhotos"></div>
+        </div>
+
+        <div class="modal-section bio-section">
+          <h3 class="section-title">About</h3>
+          <p id="modalBio" class="bio-text"></p>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="modal-section">
+          <h3 class="section-title">Details</h3>
+          <div class="info-grid">
+            <div class="grid-item">
+              <i class="fa-solid fa-cake-candles icon"></i>
+              <div class="grid-text">
+                <span class="label">Age</span>
+                <span class="value" id="modalAge"></span>
+              </div>
+            </div>
+
+            <div class="grid-item">
+              <i class="fa-solid fa-venus-mars icon"></i>
+              <div class="grid-text">
+                <span class="label">Gender</span>
+                <span class="value" id="modalGender"></span>
+              </div>
+            </div>
+
+            <div class="grid-item" id="itemHeight">
+              <i class="fa-solid fa-ruler-vertical icon"></i>
+              <div class="grid-text">
+                <span class="label">Height</span>
+                <span class="value" id="modalHeight"></span>
+              </div>
+            </div>
+
+            <div class="grid-item" id="itemZodiac">
+              <i class="fa-solid fa-star icon"></i>
+              <div class="grid-text">
+                <span class="label">Zodiac</span>
+                <span class="value" id="modalZodiac"></span>
+              </div>
+            </div>
+
+            <div class="grid-item" id="itemMBTI">
+              <i class="fa-solid fa-brain icon"></i>
+              <div class="grid-text">
+                <span class="label">MBTI</span>
+                <span class="value" id="modalMBTI"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-section" id="sectionHobbies">
+          <h3 class="section-title">Interests</h3>
+          <div class="hobbies-container" id="modalHobbies"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation Modal (centered, independent of userModal) -->
+    <div id="confirmModal" class="modal modal-center" style="display:none;">
+      <div class="modal-content" style="max-width: 360px; height: auto; border-radius: 28px;">
+        <div class="modal-header" style="margin-bottom:12px;">
+          <h2 id="confirmTitle" style="font-size:1.4rem;">Confirm Action</h2>
+          <button id="confirmClose" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p id="confirmMessage" class="bio-text" style="margin-bottom:18px;"></p>
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+          <button id="confirmCancelBtn" class="action-btn" style="width:auto; height:auto; padding:10px 16px; color:#222; border-color:#eee; background:#f7f7f7;">Cancel</button>
+          <button id="confirmOkBtn" class="action-btn" style="width:auto; height:auto; padding:10px 16px; background:linear-gradient(135deg,#ff87a2,#ffb9c9); color:#311c25;">Continue</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // feed.js
+
+// 1. DATA: List of Users
+const usersData = [];
+
+const feedContainer = document.getElementById("feed-container");
+let globalUserIndex = 0;
+
+// ----------------------------------------------------
+// CLASS: FeedCard
+// Encapsulates logic for a single card instance
+// ----------------------------------------------------
+class FeedCard {
+  constructor(userData) {
+    this.user = userData;
+    this.currentImageIndex = 0;
+    this.autoSlideInterval = null;
+    this.element = this.createDOM(); // Create HTML Element
+    this.attachEvents();
+    if (Array.isArray(this.user.photos) && this.user.photos.length > 1) {
+      this.startAutoSlide();
+    }
+  }
+
+  createDOM() {
+    const wrapper = document.createElement("div");
+    wrapper.className = "card-wrapper next-waiting"; // Start hidden below
+
+    // Generate Bars HTML based on photo count
+    let barsHtml = "";
+    const photoCount = Array.isArray(this.user.photos) ? this.user.photos.length : 0;
+    for (let idx = 0; idx < photoCount; idx++) {
+      barsHtml += `<div class="switch-h ${idx === 0 ? "active" : ""}"></div>`;
+    }
+
+    const firstPhoto = (this.user.photos && this.user.photos[0]) || '/img/bgimg.jpg';
+
+    wrapper.innerHTML = `
+        <div class="card">
+            <div class="bars">${barsHtml}</div>
+            
+            <div class="card-image-container">
+               <img src="${firstPhoto}" class="card-image active-img" onerror="this.onerror=null;this.src='/img/bgimg.jpg';" />
+            </div>
+
+            <div class="bottom-info">
+                <div class="name-age">
+                    ${this.user.name}
+                    ${this.user.age != null ? `<span class="age">, ${this.user.age}</span>` : ''}
+                    <div class="gender">
+                        <i class="fa-solid ${this.user.icon}"></i>
+                    </div>
+                </div>
+                <div class="subtitle">${this.user.subtitle}</div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn btn-star"><i class="fa-regular fa-star"></i></button>
+            <button class="action-btn btn-like"><i class="fa-regular fa-heart"></i></button>
+            <button class="action-btn btn-pass"><i class="fa-regular fa-thumbs-down"></i></button>
+        </div>
+    `;
+
+    return wrapper;
+  }
+
+  attachEvents() {
+    // 1. Image Slider Logic (Bars & Touch)
+    const bars = this.element.querySelectorAll(".switch-h");
+    const card = this.element.querySelector(".card");
+
+    // Tap on bars
+    bars.forEach((bar, idx) => {
+      bar.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.switchImage(idx, idx > this.currentImageIndex ? "left" : "right");
+        this.resetAutoSlide();
+      });
+    });
+
+    // Tap/Touch logic for card images
+    let startX = 0;
+    card.addEventListener("touchstart", (e) => (startX = e.touches[0].clientX));
+    card.addEventListener("touchend", (e) => {
+      const endX = e.changedTouches[0].clientX;
+      const diff = endX - startX;
+      if (Math.abs(diff) > 50) {
+        if (diff < 0) this.nextImage();
+        else this.prevImage();
+        this.resetAutoSlide();
       }
+    });
+
+    // 2. Open Modal Trigger
+    const infoTrigger = this.element.querySelector(".bottom-info");
+    infoTrigger.addEventListener("click", () => {
+      openModal(this.user);
+    });
+
+    // 3. Action Buttons
+    const btnPass = this.element.querySelector(".btn-pass");
+    btnPass.addEventListener("click", () => {
+      handleNextProfile(); // Trigger global scroll
+    });
+
+    const btnStar = this.element.querySelector(".btn-star");
+    const btnLike = this.element.querySelector(".btn-like");
+
+    if (btnStar) {
+      btnStar.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        openConfirm({
+          title: 'Crush this user?',
+          message: `You are about to add ${this.user.name} to your crush list.`,
+          onConfirm: async () => {
+            btnStar.disabled = true;
+            try { await crushUser(this.user.id); } finally { btnStar.disabled = false; }
+          },
+        });
+      });
+    }
+
+    if (btnLike) {
+      btnLike.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        openConfirm({
+          title: 'Send a proposal?',
+          message: `You are about to propose to ${this.user.name}.`,
+          onConfirm: async () => {
+            btnLike.disabled = true;
+            try { await proposeUser(this.user.id); } finally { btnLike.disabled = false; }
+          },
+        });
+      });
     }
   }
-</script>
 
+  // --- Image Slider Methods ---
+  switchImage(index, direction) {
+    const total = Array.isArray(this.user.photos) ? this.user.photos.length : 0;
+    if (total <= 1) return;
+    if (index === this.currentImageIndex) return;
+    if (index < 0 || index >= total) return;
 
-</body>
+    const container = this.element.querySelector(".card-image-container");
+    const currentImg = container.querySelector(".active-img");
+    const bars = this.element.querySelectorAll(".switch-h");
+
+    // Create New Image
+    const newImg = document.createElement("img");
+    const nextSrc = (this.user.photos && this.user.photos[index]) || '/img/bgimg.jpg';
+    newImg.src = nextSrc;
+    newImg.className = "card-image";
+    // Set initial position for animation
+    newImg.style.transform =
+      direction === "left" ? "translateX(100%)" : "translateX(-100%)";
+    newImg.style.opacity = "1";
+
+    container.appendChild(newImg);
+
+    // Animate
+    // 1. Move old image out
+    currentImg.style.transform =
+      direction === "left" ? "translateX(-100%)" : "translateX(100%)";
+
+    // 2. Move new image in (slight delay to allow DOM render)
+    setTimeout(() => {
+      newImg.style.transform = "translateX(0)";
+    }, 10);
+
+    // Cleanup
+    setTimeout(() => {
+      if (currentImg && currentImg.parentNode) currentImg.remove();
+      newImg.classList.add("active-img");
+    }, 400);
+
+    this.currentImageIndex = index;
+    bars.forEach((bar, i) => bar.classList.toggle("active", i === index));
+  }
+
+  nextImage() {
+    const total = this.user.photos.length;
+    if (total <= 1) return;
+    const nextIndex = (this.currentImageIndex + 1) % total;
+    this.switchImage(nextIndex, "left");
+  }
+
+  prevImage() {
+    const total = this.user.photos.length;
+    if (total <= 1) return;
+    const prevIndex = (this.currentImageIndex - 1 + total) % total;
+    this.switchImage(prevIndex, "right");
+  }
+
+  startAutoSlide() {
+    if (!Array.isArray(this.user.photos) || this.user.photos.length <= 1) return;
+    this.autoSlideInterval = setInterval(() => this.nextImage(), 5000);
+  }
+
+  resetAutoSlide() {
+    clearInterval(this.autoSlideInterval);
+    this.startAutoSlide();
+  }
+}
+
+// ----------------------------------------------------
+// GLOBAL FEED LOGIC
+// ----------------------------------------------------
+
+let currentCardInstance = null;
+
+// Auth header helper (same approach as propose.html)
+function authHeader() {
+  const token = localStorage.getItem('authToken');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function fetchChunk() {
+  const headersBase = { 'Content-Type': 'application/json', ...authHeader() };
+  let res = await fetch('/api/v1/users/feed/chunk', { headers: headersBase });
+  if (res.status === 401) {
+    const back = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.href = `/views/auth/login.html?redirect=${back}`;
+    return;
+  }
+  if (!res.ok) throw new Error('Failed to load feed');
+  const json = await res.json();
+  const profiles = json.data || [];
+  const mapped = profiles.map(mapProfileToUiModel);
+  usersData.push(...mapped);
+}
+
+function mapProfileToUiModel(p) {
+  const normalizeUrl = (u) => {
+    if (!u) return null;
+    if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('data:')) return u;
+    if (u.startsWith('//')) return 'https:' + u;
+    if (u.startsWith('ik.imagekit.io')) return 'https://' + u;
+    return u;
+  };
+  const photos = Array.isArray(p.photos)
+    ? p.photos
+        .map(ph => (typeof ph === 'string' ? ph : ph?.url))
+        .map(normalizeUrl)
+        .filter(Boolean)
+    : [];
+  const height = p.heightFt != null && p.heightIn != null
+    ? `${p.heightFt}\' ${p.heightIn}\"`
+    : undefined;
+  const genderLabel = p.gender ? p.gender.charAt(0).toUpperCase() + p.gender.slice(1) : '';
+  const icon = p.gender === 'male' ? 'fa-mars' : (p.gender === 'female' ? 'fa-venus' : 'fa-venus-mars');
+  return {
+    id: p._id,
+    name: p.nickname || '',
+    photos,
+    age: p.age,
+    gender: genderLabel,
+    icon,
+    bio: p.bio || '',
+    hobbies: p.hobbies || [],
+    height,
+    zodiac: p.zodiac || '',
+    mbti: p.mbti || '',
+    subtitle: p.mbti || p.zodiac || '',
+  };
+}
+
+async function initFeed() {
+  if (usersData.length === 0) {
+    try {
+      await fetchChunk();
+    } catch (e) {
+      console.error(e);
+      return;
+    }
+  }
+  // Load first user
+  loadUser(globalUserIndex);
+}
+
+function loadUser(index) {
+  if (usersData.length === 0) return;
+  const data = usersData[index % usersData.length];
+  const newCard = new FeedCard(data);
+
+  feedContainer.appendChild(newCard.element);
+
+  // Small delay to allow CSS to register "next-waiting" before removing it for animation
+  setTimeout(() => {
+    newCard.element.classList.remove("next-waiting");
+    newCard.element.classList.add("current");
+  }, 50);
+
+  currentCardInstance = newCard;
+}
+
+async function handleNextProfile() {
+  if (!currentCardInstance) return;
+
+  const oldCardElement = currentCardInstance.element;
+
+  // 1. Animate Old Card Up & Out
+  oldCardElement.classList.remove("current");
+  oldCardElement.classList.add("slide-out");
+
+  // 2. Load Next Card (It will animate In from bottom automatically via CSS logic in loadUser)
+  globalUserIndex++;
+
+  // If we're about to wrap soon, prefetch a new chunk
+  if (globalUserIndex >= usersData.length - 1) {
+    try { await fetchChunk(); } catch (_) {}
+  }
+
+  loadUser(globalUserIndex);
+
+  // 3. Remove Old Card from DOM after animation finishes
+  setTimeout(() => {
+    oldCardElement.remove();
+  }, 600); // matches CSS transition time
+}
+
+// ----------------------------------------------------
+// ACTIONS: Crush (star) and Propose (heart)
+// ----------------------------------------------------
+async function crushUser(targetId) {
+  if (!targetId) return;
+  const headersBase = { 'Content-Type': 'application/json', ...authHeader() };
+  let res = await fetch(`/api/v1/crushes/${encodeURIComponent(targetId)}`, {
+    method: 'POST',
+    headers: headersBase,
+  });
+  if (res.status === 401) {
+    const back = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.href = `/views/auth/login.html?redirect=${back}`;
+    return;
+  }
+  // Ignore non-auth errors to avoid noisy popups; proceed to next profile
+  try { await res.json(); } catch {}
+  handleNextProfile();
+}
+
+async function proposeUser(targetId) {
+  if (!targetId) return;
+  const headersBase = { 'Content-Type': 'application/json', ...authHeader() };
+  let res = await fetch(`/api/v1/proposes/${encodeURIComponent(targetId)}`, {
+    method: 'POST',
+    headers: headersBase,
+  });
+  if (res.status === 401) {
+    const back = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.href = `/views/auth/login.html?redirect=${back}`;
+    return;
+  }
+  // Ignore non-auth errors to avoid noisy popups; proceed to next profile
+  try { await res.json(); } catch {}
+  handleNextProfile();
+}
+
+// ----------------------------------------------------
+// CONFIRMATION MODAL
+// ----------------------------------------------------
+const confirmModal = document.getElementById('confirmModal');
+const confirmTitle = document.getElementById('confirmTitle');
+const confirmMessage = document.getElementById('confirmMessage');
+const confirmOkBtn = document.getElementById('confirmOkBtn');
+const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+const confirmClose = document.getElementById('confirmClose');
+
+let confirmCallback = null;
+
+function openConfirm({ title, message, onConfirm }){
+  confirmTitle.textContent = title || 'Confirm Action';
+  confirmMessage.textContent = message || '';
+  confirmCallback = typeof onConfirm === 'function' ? onConfirm : null;
+  confirmModal.style.display = 'flex';
+}
+
+function closeConfirm(){
+  confirmModal.style.display = 'none';
+  confirmCallback = null;
+}
+
+confirmOkBtn.addEventListener('click', async ()=>{
+  const cb = confirmCallback;
+  closeConfirm();
+  if (cb) await cb();
+});
+confirmCancelBtn.addEventListener('click', closeConfirm);
+confirmClose.addEventListener('click', closeConfirm);
+confirmModal.addEventListener('click', (e)=>{ if (e.target === confirmModal) closeConfirm(); });
+
+// ----------------------------------------------------
+// MODAL LOGIC (Existing logic adapted)
+// ----------------------------------------------------
+const modal = document.getElementById("userModal");
+const modalClose = document.getElementById("modalClose");
+
+// Elements inside modal
+const modalName = document.getElementById("modalNameDisplay");
+const modalPhotos = document.getElementById("modalPhotos");
+const modalBio = document.getElementById("modalBio");
+const modalAge = document.getElementById("modalAge");
+const modalGender = document.getElementById("modalGender");
+const modalHeight = document.getElementById("modalHeight");
+const modalZodiac = document.getElementById("modalZodiac");
+const modalMBTI = document.getElementById("modalMBTI");
+const modalHobbies = document.getElementById("modalHobbies");
+const itemHeight = document.getElementById("itemHeight");
+const itemZodiac = document.getElementById("itemZodiac");
+const itemMBTI = document.getElementById("itemMBTI");
+const sectionHobbies = document.getElementById("sectionHobbies");
+
+function openModal(user) {
+  modalName.textContent = user.name;
+  modalBio.textContent = user.bio;
+  modalAge.textContent = user.age;
+  modalGender.textContent = user.gender;
+
+  modalPhotos.innerHTML = "";
+  const normalizeUrl = (u) => {
+    if (!u) return null;
+    if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('data:')) return u;
+    if (u.startsWith('//')) return 'https:' + u;
+    if (u.startsWith('ik.imagekit.io')) return 'https://' + u;
+    return u;
+  };
+  (user.photos || []).forEach((src) => {
+    const safe = normalizeUrl(src) || '/img/bgimg.jpg';
+    const img = document.createElement("img");
+    img.src = safe;
+    img.onerror = function(){ this.onerror=null; this.src='/img/bgimg.jpg'; };
+    modalPhotos.appendChild(img);
+  });
+
+  if (user.height) {
+    modalHeight.textContent = user.height;
+    itemHeight.classList.remove("hidden-field");
+  } else {
+    itemHeight.classList.add("hidden-field");
+  }
+
+  if (user.zodiac) {
+    modalZodiac.textContent = user.zodiac;
+    itemZodiac.classList.remove("hidden-field");
+  } else {
+    itemZodiac.classList.add("hidden-field");
+  }
+
+  if (user.mbti) {
+    modalMBTI.textContent = user.mbti;
+    itemMBTI.classList.remove("hidden-field");
+  } else {
+    itemMBTI.classList.add("hidden-field");
+  }
+
+  modalHobbies.innerHTML = "";
+  if (user.hobbies && user.hobbies.length > 0) {
+    sectionHobbies.classList.remove("hidden-field");
+    user.hobbies.forEach((hobby) => {
+      const tag = document.createElement("div");
+      tag.className = "hobby-pill";
+      tag.textContent = hobby;
+      modalHobbies.appendChild(tag);
+    });
+  } else {
+    sectionHobbies.classList.add("hidden-field");
+  }
+
+  modal.style.display = "flex";
+}
+
+modalClose.addEventListener("click", () => {
+  modal.style.display = "none";
+});
+
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.style.display = "none";
+  }
+});
+
+// Initialize
+initFeed();
+
+    </script>
+  </body>
 </html>

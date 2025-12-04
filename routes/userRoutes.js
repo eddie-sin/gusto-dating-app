@@ -25,7 +25,7 @@ router.post("/login", authController.login);
 router.patch("/updatePassword", authController.updatePassword);
 
 // Get a chunk (5 profiles) for feed
-router.get("/feed/chunk", feedController.getFeedChunk);
+router.get("/feed/chunk", authController.protect, feedController.getFeedChunk);
 
 // Upload user media (photos + studentIdPhoto) -> stores into ImageKit under gusto/users/{username}/...
 router.post(
