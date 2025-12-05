@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Partner</title>
+
+  <!-- Global Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts from all pages -->
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&family=Oleo+Script&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&family=Oleo+Script&family=Itim&family=Orbit&family=Old+Standard+TT:wght@400;700&family=Jomolhari&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://rsms.me/" />
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+
+  <style>
+    /* Tab bar styling matching Crush page look */
+    .partner-tab-bar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4rem;
+      padding: 0.75rem 2rem 1rem 2rem;
+      background: transparent;
+    }
+
+    .partner-tab-button {
+      position: relative;
+      padding: 0.25rem 0.75rem;
+      font-weight: 600;
+      font-family: 'Old Standard TT', serif;
+      font-size: 1.05rem;
+      color: #7b3a43;
+      white-space: nowrap;
+    }
+
+    .partner-tab-button.active {
+      color: #c82f41;
+    }
+
+    .partner-baseline {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.85);
+      pointer-events: none;
+      transform: translateX(0);
+      transition: transform 0.3s ease, width 0.3s ease;
+      will-change: transform, width;
+    }
+
+    .partner-underline {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 3px;
+      background-color: #ef4444; /* red */
+      border-radius: 999px;
+      transform: translateX(0);
+      transition: transform 0.3s ease, width 0.3s ease;
+      will-change: transform, width;
+    }
+
+    /* Global body background to blend with Crush page */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: url('/img/bgimg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Rufina', serif;
+    }
+
+    /* Restore original nav-box styling for navbar outside crushSection */
+    .nav-box {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(14px);
+    }
+  </style>
+</head>
+<body>
+  <!-- Global NAVBAR (from CrushPage) -->
+  <div class="nav-box rounded-2xl px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between mb-6 mt-4 gap-3 sm:gap-0">
+    <div class="flex items-center space-x-3">
+      <div class="cursor-pointer font-bold text-white">Logo</div>
+    </div>
+    <div class="flex items-center space-x-4 sm:space-x-8 text-[#7b3a43] font-medium flex-wrap justify-center">
+      <div class="cursor-pointer">Home</div>
+      <div class="cursor-pointer">Match</div>
+      <div class="cursor-pointer">Propose</div>
+      <div class="cursor-pointer">Crush</div>
+    </div>
+    <div>
+      <img src="https://i.pinimg.com/736x/76/07/9b/76079b98096e5da25426248dba5d72ce.jpg" alt="profile" class="w-10 h-10 rounded-full border" />
+    </div>
+  </div>
+
+  <!-- Global Tab Bar (visible for all sections) -->
+  <div id="partnerTabBar" class="partner-tab-bar">
+    <button id="tabCrush" class="partner-tab-button active" type="button">Crushes</button>
+    <button id="tabPropose" class="partner-tab-button" type="button">Propose</button>
+    <button id="tabMatch" class="partner-tab-button" type="button">Match</button>
+    <div class="partner-baseline"></div>
+    <div id="partnerUnderline" class="partner-underline"></div>
+  </div>
+
+  <!-- Crushes Section (from CrushPage.html) -->
+  <section id="crushSection" class="pt-6">
+      <style>
+        /* Scoped Crush styles from CrushPage.html */
+        #crushSection {
+          min-height: calc(100vh - 56px);
+        }
+
+        #crushSection .column-box {
+          background: rgba(255, 255, 255, 0.12);
+          backdrop-filter: blur(14px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 28px;
+          padding: 18px;
+          display: flex;
+          flex-direction: column;
+        }
+
+        #crushSection .scrollable {
+          max-height: 60vh;
+          overflow-y: auto;
+          padding-right: 4px;
+        }
+
+        #crushSection .column-title {
+          font-size: 2.5rem;
+          color: #c92f42;
+          margin-bottom: 8px;
+          font-family: 'Old Standard TT', serif;
+          text-align: center;
+        }
+
+        #crushSection .reminder-box {
+          margin-top: 12px;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(14px);
+          border-radius: 28px;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          padding: 12px 18px;
+          text-align: center;
+          font-size: 1.2rem;
+          color: rgba(255, 255, 255);
+        }
+
+        #crushSection .crush-card {
+          background: rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(14px);
+          border-radius: 28px;
+          padding: 14px 18px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          margin-bottom: 12px;
+          opacity: 0;
+          transform: translateY(20px);
+          animation: crush-slideIn 0.4s forwards;
+        }
+
+        @keyframes crush-slideIn {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        #crushSection .empty-state {
+          height: 200px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.25rem;
+          color: white;
+          font-weight: 600;
+          text-align: center;
+        }
+
+        #crushSection .cancel-btn {
+          background: linear-gradient(180deg, #ffeaf0, #ffd7dff1);
+          color: #c84a5a;
+          border: 1px solid rgba(200, 74, 90, 0.12);
+          padding: 8px 18px;
+          border-radius: 999px;
+          font-weight: 600;
+          font-size: 0.9rem;
+        }
+
+        #crushSection .small-avatar {
+          width: 44px;
+          height: 44px;
+          border-radius: 999px;
+          object-fit: cover;
+          border: 2px solid rgba(255, 255, 255, 0.8);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        @keyframes crush-heartBeat {
+          0%,
+          100% {
+            transform: scale(1);
+          }
+
+          25%,
+          75% {
+            transform: scale(1.2);
+          }
+
+          50% {
+            transform: scale(1.4);
+          }
+        }
+
+        #crushSection .heart-bg {
+          animation: crush-heartBeat 1.2s ease-in-out infinite;
+          transform-origin: center;
+        }
+
+        #crushSection .crush-on-you {
+          background: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(14px);
+          border-radius: 28px;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          animation: crush-popIn 0.6s ease forwards;
+          opacity: 0;
+        }
+
+        @keyframes crush-popIn {
+          0% {
+            transform: scale(0.8);
+            opacity: 0;
+          }
+
+          60% {
+            transform: scale(1.05);
+            opacity: 1;
+          }
+
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+
+        #crushSection .grid-cols-responsive {
+          display: grid;
+          gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+          #crushSection .grid-cols-responsive {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+      </style>
+
+      <!-- MAIN TITLE -->
+      <h1 class="text-center text-6xl text-[#c82f41] mb-8" style="font-family: 'Jomolhari', serif;">
+        Crushes
+      </h1>
+
+      <!-- GRID COLUMNS -->
+      <div class="grid grid-cols-responsive px-4 lg:px-16 gap-6">
+        <!-- LEFT COLUMN -->
+        <div>
+          <div class="column-box">
+            <h2 class="column-title">People You’ve Crushed</h2>
+            <div id="crush-left-column" class="scrollable">
+              <p class="text-placeholder">Loading your crushes...</p>
+            </div>
+          </div>
+          <div class="reminder-box">You can cancel a crush only after 24 hours.</div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="crush-on-you">
+          <h2 class="column-title">Crush On You</h2>
+          <div id="heart" class="relative w-36 h-36 mt-2">
+            <svg viewBox="0 0 64 64" class="w-full h-full heart-bg">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#ff6b7a" />
+                  <stop offset="40%" stop-color="#ff435e" />
+                  <stop offset="90%" stop-color="#ff2b4a" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M32 58s-18-12.8-25-21.2C0 26 15 10 25 18c4 3.2 7 6.8 7 6.8s3-3.6 7-6.8c10-8 25 8 18 18.8C50 45.2 32 58 32 58z"
+                fill="url(#g1)" stroke="#ff4055" stroke-width="1.6" />
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center z-10">
+              <span id="heartNumber" class="text-white text-4xl font-extrabold" style="font-family: 'Itim', cursive;">0</span>
+            </div>
+          </div>
+          <p class="mt-5 text-white">~~Someone can't stop thinking about you~~</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Propose Section (from propose.html) -->
+    <section id="proposeSection" class="hidden pt-6">
+      <style>
+        /* Scoped Propose styles from propose.html */
+        #proposeSection {
+          background: url('/img/bgimg.jpg') center/cover no-repeat;
+          font-family: 'Poppins', sans-serif;
+          min-height: calc(100vh - 56px);
+        }
+
+        #proposeSection .glass {
+          background: rgba(255, 255, 255, 0.18);
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
+          border: 1px solid rgba(255, 255, 255, 0.35);
+          box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+        }
+
+        @keyframes propose-float {
+          0%,
+          100% {
+            transform: translateY(0)
+          }
+
+          50% {
+            transform: translateY(-10px)
+          }
+        }
+
+        #proposeSection .animate-float {
+          animation: propose-float 4s ease-in-out infinite;
+        }
+
+        #proposeSection .proposal-card {
+          transition: all .28s ease;
+          background: rgba(255, 255, 255, 0.55);
+          min-height: 320px;
+        }
+
+        #proposeSection .proposal-card:hover {
+          box-shadow: 0 10px 26px rgba(255, 120, 150, 0.35);
+        }
+
+        #proposeSection .proposal-img {
+          object-fit: cover;
+          width: 100%;
+          height: 240px;
+          display: block;
+        }
+
+        #proposeSection .overlay-name {
+          position: absolute;
+          left: 12px;
+          bottom: 12px;
+          z-index: 2;
+          font-size: 15px;
+          font-weight: 600;
+          padding: 6px 12px;
+          border-radius: 14px;
+          background: rgba(255, 255, 255, 0.75);
+          color: #222;
+        }
+
+        #proposeSection .overlay-mini {
+          position: absolute;
+          right: 12px;
+          bottom: 12px;
+          z-index: 2;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          overflow: hidden;
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.95);
+        }
+
+        #proposeSection .action-bar {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          gap: 16px;
+          padding: 12px 16px;
+          background: linear-gradient(to top, #ff99b3, #ffc2d2 70%, rgba(255, 255, 255, 0.05));
+        }
+
+        #proposeSection .action-btn {
+          font-size: 14px;
+          line-height: 1;
+          padding: 12px 26px;
+          border-radius: 22px;
+          font-weight: 600;
+          letter-spacing: .25px;
+          border: 1px solid rgba(255, 255, 255, 0.85);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+          transition: .25s;
+        }
+
+        #proposeSection .action-btn.accept {
+          background: linear-gradient(135deg, #ff87a2, #ffb9c9);
+          color: #311c25;
+        }
+
+        #proposeSection .action-btn.deny,
+        #proposeSection .action-btn.cancel {
+          background: linear-gradient(to right, #ffd0d9, #ffe4ea);
+          color: #382129;
+        }
+
+        #proposeSection .action-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 14px rgba(255, 130, 160, 0.4);
+        }
+
+        #proposeSection .action-btn.deny:hover,
+        #proposeSection .action-btn.cancel:hover {
+          box-shadow: 0 6px 14px rgba(255, 180, 195, 0.5);
+        }
+
+        #proposeSection .accepted-ring {
+          box-shadow: 0 0 0 3px #4ade80 !important;
+        }
+
+        #proposeSection .modal-overlay {
+          background: rgba(0, 0, 0, 0.55);
+          backdrop-filter: blur(4px);
+        }
+
+        #proposeSection .modal-card {
+          background: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(22px);
+          border: 1px solid rgba(255, 255, 255, 0.55);
+        }
+      </style>
+
+      <div class="min-h-screen flex flex-col px-5 py-10">
+        <!-- RECEIVED PROPOSALS -->
+        <section class="glass animate-float rounded-3xl p-6 md:p-8 mb-10 w-full max-w-6xl mx-auto">
+          <div class="mb-4 md:mb-6 flex justify-center">
+            <h2 class="text-center text-[16px] md:text-[18px] font-medium text-gray-800 flex items-center gap-2">
+              <span class="text-[18px] md:text-[20px]">❤️</span>
+              <span>People Who Proposed You</span>
+            </h2>
+          </div>
+          <div id="receivedGrid" class="grid grid-cols-3 gap-8"></div>
+          <p id="receivedEmpty" class="text-center text-gray-600 mt-4 hidden">No one has proposed to you yet.</p>
+        </section>
+
+        <!-- SENT PROPOSALS -->
+        <section class="glass animate-float rounded-3xl p-6 md:p-8 w-full max-w-6xl mx-auto">
+          <div class="mb-4 md:mb-6 flex justify-center">
+            <h2 class="text-center text-[16px] md:text-[18px] font-medium text-gray-800 flex items-center gap-2">
+              <span class="text-[18px] md:text-[20px]">✉️</span>
+              <span>People You Proposed</span>
+            </h2>
+          </div>
+          <div id="sentGrid" class="grid grid-cols-3 gap-8"></div>
+          <p id="sentEmpty" class="text-center text-gray-600 mt-4 hidden">You haven't proposed to anyone yet.</p>
+        </section>
+
+        <!-- MODAL -->
+        <div id="profileModal" class="fixed inset-0 hidden items-center justify-center modal-overlay z-50">
+          <div class="modal-card rounded-2xl p-6 w-[92%] max-w-xl relative">
+            <button id="closeModal" class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-pink-500 text-white hover:bg-pink-600 shadow-md">×</button>
+            <div class="flex flex-col md:flex-row gap-6">
+              <img id="modalImg" alt="profile" class="w-36 h-36 object-cover rounded-2xl shadow-md" />
+              <div class="flex-1 space-y-2">
+                <h3 id="modalName" class="text-2xl font-semibold text-gray-800"></h3>
+                <p id="modalProgram" class="text-sm text-gray-700"></p>
+                <p id="modalBatch" class="text-sm text-gray-700"></p>
+                <p id="modalMbti" class="text-sm text-gray-700"></p>
+                <p id="modalZodiac" class="text-sm text-gray-700"></p>
+                <p id="modalBio" class="text-sm text-gray-600 leading-relaxed"></p>
+                <div id="modalHobbies" class="flex flex-wrap gap-2 mt-2"></div>
+              </div>
+            </div>
+            <div id="modalActions" class="mt-6 flex gap-4"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Match Section (from match-list.html) -->
+    <section id="matchSection" class="hidden pt-6">
+      <style>
+        /* Scoped Match styles from match-list.html */
+        #matchSection {
+          margin: 0;
+          padding: 0;
+          font-family: "Poppins", sans-serif;
+          background-image: url("../../img/bgimg.jpg");
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          min-height: calc(100vh - 56px);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        #matchSection .thumbs-track {
+          transition: transform 0.3s ease-out;
+          will-change: transform;
+        }
+
+        #matchSection .dot-active {
+          background-color: #ffffff !important;
+          opacity: 1 !important;
+        }
+
+        #matchSection .dot-inactive {
+          background-color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        #matchSection .slider-dots,
+        #matchSection .slider-dots [data-dot],
+        #matchSection .thumbs-container,
+        #matchSection .thumbs-container button {
+          cursor: pointer;
+        }
+
+        #matchSection .thumbs-container img {
+          width: 160px;
+          height: 120px;
+          object-fit: cover;
+          border-radius: 20px;
+          display: block;
+        }
+      </style>
+
+      <!-- Vertical list of cards -->
+      <div id="matchList" class="w-full flex flex-col items-center gap-12 py-10"></div>
+    </section>
+
+  <script>
+    // Tab management and section initializers
+    let crushLoaded = false;
+    let proposeLoaded = false;
+    let matchLoaded = false;
+
+    function initCrushSection() {
+      if (crushLoaded) return;
+      crushLoaded = true;
+
+      const API_BASE = '/api/v1/crushes';
+      const crushContainer = document.getElementById('crush-left-column');
+      const heartNumber = document.getElementById('heartNumber');
+
+      async function fetchMyCrushes() {
+        try {
+          const res = await fetch(`${API_BASE}/my`);
+          if (!res.ok) throw new Error('Failed to fetch crushes');
+          const data = await res.json();
+          return data.data || [];
+        } catch (err) {
+          console.error(err);
+          return [];
+        }
+      }
+
+      async function fetchCrushedMeCount() {
+        try {
+          const res = await fetch(`${API_BASE}/me`);
+          if (!res.ok) throw new Error('Failed to fetch count');
+          const data = await res.json();
+          return data.crushCount || 0;
+        } catch (err) {
+          console.error(err);
+          return 0;
+        }
+      }
+
+      function renderCrushCards(crushes) {
+        crushContainer.innerHTML = '';
+        if (crushes.length === 0) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.textContent = 'You haven’t crushed anyone yet.';
+          crushContainer.appendChild(empty);
+          return;
+        }
+
+        crushes.forEach((crush, index) => {
+          const card = document.createElement('div');
+          card.className = 'crush-card';
+          card.style.animationDelay = `${index * 0.08}s`;
+          card.innerHTML = `
+            <div class="flex items-center space-x-4">
+              <img src="${crush.photos?.[0]?.url || 'https://i.pinimg.com/736x/76/07/9b/76079b98096e5da25426248dba5d72ce.jpg'}" alt="avatar" class="small-avatar"/>
+              <div class="text-white font-semibold">${crush.nickname || 'Unknown'}, ${crush.age || 20}</div>
+            </div>
+            <button class="cancel-btn">Cancel</button>
+          `;
+          card.querySelector('button').addEventListener('click', async () => {
+            try {
+              await fetch(`${API_BASE}/${crush._id}`, { method: 'DELETE' });
+              card.remove();
+            } catch (err) {
+              alert('Cannot cancel crush now');
+            }
+          });
+          crushContainer.appendChild(card);
+        });
+      }
+
+      (async function initCrushPage() {
+        const myCrushes = await fetchMyCrushes();
+        renderCrushCards(myCrushes);
+
+        const count = await fetchCrushedMeCount();
+        heartNumber.textContent = count;
+
+        heartNumber.style.transform = 'scale(0.8)';
+        setTimeout(() => (heartNumber.style.transform = 'scale(1.2)'), 100);
+        setTimeout(() => (heartNumber.style.transform = 'scale(1)'), 400);
+      })();
+    }
+
+    function initProposeSection() {
+      if (proposeLoaded) return;
+      proposeLoaded = true;
+
+      const API_BASE = '/api/v1/proposes';
+      const receivedGrid = document.getElementById('receivedGrid');
+      const sentGrid = document.getElementById('sentGrid');
+      const receivedEmpty = document.getElementById('receivedEmpty');
+      const sentEmpty = document.getElementById('sentEmpty');
+
+      const authHeader = () => {
+        const token = localStorage.getItem('authToken');
+        return token ? { Authorization: `Bearer ${token}` } : {};
+      };
+
+      let receivedProposals = [];
+      let sentProposals = [];
+
+      function pill(label) {
+        const span = document.createElement('span');
+        span.textContent = label;
+        span.className = 'px-3 py-1 rounded-full text-xs bg-pink-100 text-pink-700 font-medium border border-pink-200';
+        return span;
+      }
+
+      function normalizeUrl(u) {
+        if (!u) return null;
+        if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('data:')) return u;
+        if (u.startsWith('//')) return 'https:' + u;
+        if (u.startsWith('ik.imagekit.io')) return 'https://' + u;
+        return u;
+      }
+
+      function userPrimaryPhoto(user) {
+        if (!user) return '/img/bgimg.jpg';
+        const photos = Array.isArray(user.photos) ? user.photos : [];
+        if (photos.length === 0) return '/img/bgimg.jpg';
+        const first = photos[0];
+        const url = typeof first === 'string' ? first : first?.url;
+        return normalizeUrl(url) || '/img/bgimg.jpg';
+      }
+
+      function displayName(user) {
+        return user?.nickname || user?.name || 'Unknown';
+      }
+
+      function card(item, type) {
+        const isReceived = type === 'received';
+        const user = isReceived ? item.from : item.to;
+        const div = document.createElement('div');
+        div.className = 'proposal-card relative rounded-xl overflow-hidden shadow-md w-full';
+
+        const imgWrapper = document.createElement('button');
+        imgWrapper.type = 'button';
+        imgWrapper.className = 'block w-full h-[240px] relative';
+        const photo = userPrimaryPhoto(user);
+        const name = displayName(user);
+        imgWrapper.innerHTML = `<img src="${photo}" alt="${name}" class="proposal-img" onerror="this.onerror=null;this.src='/img/bgimg.jpg';" />`;
+        imgWrapper.addEventListener('click', () => openModal(item, type));
+
+        const nameOverlay = document.createElement('div');
+        nameOverlay.className = 'overlay-name';
+        nameOverlay.textContent = name;
+        imgWrapper.appendChild(nameOverlay);
+
+        const mini = document.createElement('div');
+        mini.className = 'overlay-mini bg-white';
+        mini.innerHTML = `<img src="${photo}" alt="mini ${name}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='/img/bgimg.jpg';" />`;
+        imgWrapper.appendChild(mini);
+
+        const actionBar = document.createElement('div');
+        actionBar.className = 'action-bar';
+
+        if (isReceived) {
+          const accept = document.createElement('button');
+          accept.className = 'action-btn accept';
+          accept.textContent = 'Accept';
+          accept.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await acceptProposal(item._id);
+          });
+          const deny = document.createElement('button');
+          deny.className = 'action-btn deny';
+          deny.textContent = 'Deny';
+          deny.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await denyProposal(item._id);
+          });
+          actionBar.append(accept, deny);
+        } else {
+          const cancel = document.createElement('button');
+          cancel.className = 'action-btn cancel';
+          cancel.textContent = 'Cancel';
+          cancel.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await cancelProposal(item._id);
+          });
+          actionBar.append(cancel);
+        }
+
+        div.append(imgWrapper, actionBar);
+        return div;
+      }
+
+      function render() {
+        receivedGrid.innerHTML = '';
+        sentGrid.innerHTML = '';
+        receivedProposals.forEach((p) => receivedGrid.appendChild(card(p, 'received')));
+        sentProposals.forEach((p) => sentGrid.appendChild(card(p, 'sent')));
+        receivedEmpty.classList.toggle('hidden', receivedProposals.length !== 0);
+        sentEmpty.classList.toggle('hidden', sentProposals.length !== 0);
+      }
+
+      async function parseSafe(res) {
+        try {
+          return await res.json();
+        } catch {
+          return null;
+        }
+      }
+
+      async function loadData() {
+        try {
+          const token = localStorage.getItem('authToken');
+          const headersBase = { 'Content-Type': 'application/json', ...authHeader() };
+
+          let recRes = await fetch(`${API_BASE}/received`, { headers: headersBase });
+          if (recRes.status === 401) {
+            const back = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `/views/auth/login.html?redirect=${back}`;
+            return;
+          }
+          let recJson = await parseSafe(recRes);
+          if (!recRes.ok) {
+            if ((recRes.status === 401 || recRes.status === 500) && token) {
+              localStorage.removeItem('authToken');
+              recRes = await fetch(`${API_BASE}/received`, { headers: { 'Content-Type': 'application/json' } });
+              if (recRes.status === 401) {
+                const back = encodeURIComponent(window.location.pathname + window.location.search);
+                window.location.href = `/views/auth/login.html?redirect=${back}`;
+                return;
+              }
+              recJson = await parseSafe(recRes);
+            }
+            if (!recRes.ok) {
+              const msg = (recJson && (recJson.message || recJson.error?.message)) || 'Unknown error';
+              alert(`[${recRes.status}] GET /proposes/received failed: ${msg}`);
+              return;
+            }
+          }
+
+          let sentRes = await fetch(`${API_BASE}/sent`, { headers: headersBase });
+          if (sentRes.status === 401) {
+            const back = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `/views/auth/login.html?redirect=${back}`;
+            return;
+          }
+          let sentJson = await parseSafe(sentRes);
+          if (!sentRes.ok) {
+            if ((sentRes.status === 401 || sentRes.status === 500) && token) {
+              localStorage.removeItem('authToken');
+              sentRes = await fetch(`${API_BASE}/sent`, { headers: { 'Content-Type': 'application/json' } });
+              if (sentRes.status === 401) {
+                const back = encodeURIComponent(window.location.pathname + window.location.search);
+                window.location.href = `/views/auth/login.html?redirect=${back}`;
+                return;
+              }
+              sentJson = await parseSafe(sentRes);
+            }
+            if (!sentRes.ok) {
+              const msg = (sentJson && (sentJson.message || sentJson.error?.message)) || 'Unknown error';
+              alert(`[${sentRes.status}] GET /proposes/sent failed: ${msg}`);
+              return;
+            }
+          }
+
+          receivedProposals = (recJson && recJson.data) || [];
+          sentProposals = (sentJson && sentJson.data) || [];
+          render();
+        } catch (err) {
+          alert((err && err.message) || 'Failed to load proposals');
+        }
+      }
+
+      async function acceptProposal(proposeId) {
+        try {
+          const res = await fetch(`${API_BASE}/${proposeId}/respond`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', ...authHeader() },
+            body: JSON.stringify({ action: 'accept' })
+          });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.message || 'Failed to accept');
+          await loadData();
+          alert('Accepted. You are now matched!');
+        } catch (err) {
+          alert(err.message || 'Failed to accept');
+        }
+      }
+
+      async function denyProposal(proposeId) {
+        try {
+          const res = await fetch(`${API_BASE}/${proposeId}/respond`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', ...authHeader() },
+            body: JSON.stringify({ action: 'deny' })
+          });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.message || 'Failed to deny');
+          await loadData();
+          alert('Denied the proposal.');
+        } catch (err) {
+          alert(err.message || 'Failed to deny');
+        }
+      }
+
+      async function cancelProposal(proposeId) {
+        try {
+          const res = await fetch(`${API_BASE}/${proposeId}`, {
+            method: 'DELETE',
+            headers: { ...authHeader() }
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(json.message || 'Failed to cancel');
+          await loadData();
+          alert('Canceled your proposal.');
+        } catch (err) {
+          alert(err.message || 'Failed to cancel');
+        }
+      }
+
+      const modal = document.getElementById('profileModal');
+      const closeModalBtn = document.getElementById('closeModal');
+      const modalName = document.getElementById('modalName');
+      const modalProgram = document.getElementById('modalProgram');
+      const modalBatch = document.getElementById('modalBatch');
+      const modalMbti = document.getElementById('modalMbti');
+      const modalZodiac = document.getElementById('modalZodiac');
+      const modalBio = document.getElementById('modalBio');
+      const modalHobbies = document.getElementById('modalHobbies');
+      const modalActions = document.getElementById('modalActions');
+
+      function openModal(item, type) {
+        const user = type === 'received' ? item.from : item.to;
+        const name = displayName(user);
+        modalName.textContent = name + (user?.age ? ' • ' + user.age : '');
+        modalProgram.textContent = user?.program ? 'Program: ' + user.program : '';
+        modalBatch.textContent = user?.batch ? 'Batch: ' + user.batch : '';
+        modalMbti.textContent = 'MBTI: ' + (user?.mbti || '—');
+        modalZodiac.textContent = 'Zodiac: ' + (user?.zodiac || '—');
+        modalBio.textContent = user?.bio || 'No bio provided.';
+        modalHobbies.innerHTML = '';
+        (user?.hobbies || []).forEach((h) => modalHobbies.appendChild(pill(h)));
+        const modalImgEl = document.getElementById('modalImg');
+        modalImgEl.src = userPrimaryPhoto(user);
+        modalImgEl.onerror = function () {
+          this.onerror = null;
+          this.src = '/img/bgimg.jpg';
+        };
+
+        modalActions.innerHTML = '';
+        if (type === 'received') {
+          const a = document.createElement('button');
+          a.textContent = 'Accept';
+          a.className = 'btn-soft px-4 py-2 rounded-full text-sm text-green-700 hover:bg-green-100';
+          a.onclick = async () => {
+            await acceptProposal(item._id);
+            closeModal();
+          };
+          const d = document.createElement('button');
+          d.textContent = 'Deny';
+          d.className = 'btn-soft px-4 py-2 rounded-full text-sm text-red-700 hover:bg-red-100';
+          d.onclick = async () => {
+            await denyProposal(item._id);
+            closeModal();
+          };
+          modalActions.append(a, d);
+        } else {
+          const c = document.createElement('button');
+          c.textContent = 'Cancel Proposal';
+          c.className = 'btn-soft px-4 py-2 rounded-full text-sm text-red-700 hover:bg-red-100';
+          c.onclick = async () => {
+            await cancelProposal(item._id);
+            closeModal();
+          };
+          modalActions.append(c);
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      function closeModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      closeModalBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      loadData();
+    }
+
+    function initMatchSection() {
+      if (matchLoaded) return;
+      matchLoaded = true;
+
+      function authHeader() {
+        const token = localStorage.getItem('authToken');
+        return token ? { Authorization: `Bearer ${token}` } : {};
+      }
+
+      async function fetchMyMatches() {
+        const res = await fetch('/api/v1/matches/me', {
+          headers: { 'Content-Type': 'application/json', ...authHeader() }
+        });
+        if (res.status === 401) {
+          const back = encodeURIComponent(window.location.pathname + window.location.search);
+          window.location.href = `/views/auth/login.html?redirect=${back}`;
+          return [];
+        }
+        if (!res.ok) throw new Error('Failed to load matches');
+        const json = await res.json();
+        return (json && json.data) || [];
+      }
+
+      function normalizeUrl(u) {
+        if (!u) return null;
+        if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('data:')) return u;
+        if (u.startsWith('//')) return 'https:' + u;
+        if (u.startsWith('ik.imagekit.io')) return 'https://' + u;
+        return u;
+      }
+
+      function pickRandomThree(photos) {
+        if (!Array.isArray(photos) || photos.length === 0) return [];
+        const shuffled = [...photos].sort(() => 0.5 - Math.random());
+        return shuffled
+          .slice(0, 3)
+          .map((ph) => (typeof ph === 'string' ? ph : ph?.url))
+          .map(normalizeUrl)
+          .filter(Boolean);
+      }
+
+      function createMatchCard(match, index) {
+        const photos = pickRandomThree(match.photos);
+        const dotsHtml = photos
+          .map((_, i) =>
+            i === 0
+              ? `<div class="w-[60px] h-2 rounded-full bg-white" data-dot="${i}"></div>`
+              : `<div class="w-3 h-3 rounded-full bg-white/60" data-dot="${i}"></div>`
+          )
+          .join('');
+
+        const thumbsHtml = photos
+          .map(
+            (src) => `
+              <img src="${src}" onerror="this.onerror=null;this.src='/img/bgimg.jpg';"
+                   class="w-[160px] h-[120px] rounded-[20px] object-cover shadow-[0_10px_25px_rgba(0,0,0,0.35)]" />`
+          )
+          .join('');
+
+        const bioLines = [match.bio || '', match.zodiac || '', match.batch || '', match.phone || ''].filter(Boolean);
+
+        return `
+          <div class="match-card relative w-[90vw] max-w-[1200px]
+                      h-[520px] md:h-[580px] lg:h-[620px]
+                      rounded-[32px] overflow-hidden transform scale-90 md:scale-95">
+
+            <img src="${photos[0] || '/img/bgimg.jpg'}" onerror="this.onerror=null;this.src='/img/bgimg.jpg';"
+                 class="js-bg absolute inset-0 w-full h-full object-cover opacity-50 z-0" />
+
+            <div class="match-content relative z-10 w-full h-full">
+
+              <h1 class="absolute top-6 left-[80px]
+                         text-white font-extrabold drop-shadow-2xl
+                         text-[56px] leading-[60px]
+                         md:text-[72px] md:leading-[78px]
+                         lg:text-[80px] lg:leading-[86px]">
+                Perfect <br />
+                <span style="color: #57ffd8;">Match!</span>
+              </h1>
+
+              <div class="absolute right-[100px] top-[30%]
+                         bg-white/25 backdrop-blur-xl
+                         border border-white/60
+                         rounded-[30px] shadow-2xl
+                         px-8 py-6
+                         w-[400px] h-[300px]
+                         flex flex-col justify-center items-center
+                         text-white text-center">
+
+                <p class="text-[34px] mb-2 drop-shadow-md"
+                   style="font-family: 'Gasoek One', sans-serif;
+                          -webkit-text-stroke: 0.1px #FF395D;
+                          color: white;">
+                  ${match.nickname || 'Anonymous'}
+                </p>
+
+                <div class="w-[85%] h-[2px] bg-white/70 my-3"></div>
+
+                <div class="space-y-3 text-[16px] md:text-[18px] lg:text-[20px] leading-relaxed opacity-95"
+                     style="font-family: 'Rufina', serif;">
+                  ${bioLines.map((line) => `<p>${line}</p>`).join('')}
+                </div>
+              </div>
+
+              <div class="thumbs-container absolute left-[100px] flex gap-6 overflow-hidden z-30"
+                   style="bottom: 1.5rem; top: auto; width: 344px; height: 130px;">
+                <div class="thumbs-track flex gap-6" data-slides>
+                  ${thumbsHtml}
+                </div>
+              </div>
+
+              <div class="slider-dots absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                ${dotsHtml}
+              </div>
+
+            </div>
+          </div>
+        `;
+      }
+
+      function initMatchSlider(cardEl, match) {
+        const bgImg = cardEl.querySelector('.js-bg');
+        const track = cardEl.querySelector('.thumbs-track');
+        const thumbs = Array.from(track.querySelectorAll('img'));
+        const dots = Array.from(cardEl.querySelectorAll('[data-dot]'));
+        const thumbsContainer = cardEl.querySelector('.thumbs-container');
+        const dotsContainer = cardEl.querySelector('.slider-dots');
+
+        if (!bgImg || !track || thumbs.length === 0 || dots.length === 0) return;
+
+        let currentIndex = 0;
+        const visibleThumbs = 2;
+        let slideOffset = 0;
+        let windowStart = 0;
+
+        function measureOffset() {
+          slideOffset = 184; // 160 width + 24 gap
+        }
+
+        function updateDots() {
+          dots.forEach((dot, idx) => {
+            dot.classList.remove('dot-active', 'dot-inactive');
+            if (idx === currentIndex) {
+              dot.classList.add('dot-active');
+            } else {
+              dot.classList.add('dot-inactive');
+            }
+          });
+        }
+
+        function updateBackground() {
+          const photos = pickRandomThree(match.photos);
+          const src = photos[currentIndex] || photos[0] || '/img/bgimg.jpg';
+          bgImg.src = src;
+        }
+
+        function updateThumbWindow() {
+          const maxStart = Math.max(0, thumbs.length - visibleThumbs);
+          windowStart = Math.max(0, Math.min(windowStart, maxStart));
+          if (!slideOffset) measureOffset();
+          const x = -windowStart * slideOffset;
+          track.style.transform = `translateX(${x}px)`;
+        }
+
+        function ensureCurrentVisible() {
+          const maxStart = Math.max(0, thumbs.length - visibleThumbs);
+          if (currentIndex < windowStart) {
+            windowStart = currentIndex;
+          } else if (currentIndex > windowStart + visibleThumbs - 1) {
+            windowStart = currentIndex - (visibleThumbs - 1);
+          }
+          windowStart = Math.max(0, Math.min(windowStart, maxStart));
+          updateThumbWindow();
+        }
+
+        function goTo(index, syncThumbWindow = true) {
+          const photos = pickRandomThree(match.photos);
+          const maxIndex = photos.length - 1;
+          currentIndex = Math.max(0, Math.min(index, maxIndex));
+          if (syncThumbWindow) {
+            if (!slideOffset) measureOffset();
+            ensureCurrentVisible();
+          }
+          updateDots();
+          updateBackground();
+        }
+
+        dots.forEach((dot, idx) => {
+          dot.addEventListener('click', () => goTo(idx));
+        });
+        thumbs.forEach((img, idx) => {
+          img.style.cursor = 'pointer';
+          img.addEventListener('click', () => goTo(idx));
+        });
+
+        let startX = 0;
+        let isDragging = false;
+
+        function onStart(clientX) {
+          isDragging = true;
+          startX = clientX;
+        }
+
+        function onEnd(clientX) {
+          if (!isDragging) return;
+          isDragging = false;
+          const dx = clientX - startX;
+          const threshold = 40;
+          if (dx > threshold) {
+            goTo(currentIndex - 1, false);
+          } else if (dx < -threshold) {
+            goTo(currentIndex + 1, false);
+          }
+        }
+
+        cardEl.addEventListener('mousedown', (e) => {
+          if (thumbsContainer && thumbsContainer.contains(e.target)) return;
+          if (dotsContainer && dotsContainer.contains(e.target)) return;
+          onStart(e.clientX);
+        });
+        window.addEventListener('mouseup', (e) => onEnd(e.clientX));
+
+        cardEl.addEventListener(
+          'touchstart',
+          (e) => {
+            if (e.touches.length > 0) {
+              const target = e.target;
+              if (thumbsContainer && thumbsContainer.contains(target)) return;
+              if (dotsContainer && dotsContainer.contains(target)) return;
+              onStart(e.touches[0].clientX);
+            }
+          },
+          { passive: true }
+        );
+        cardEl.addEventListener(
+          'touchend',
+          (e) => {
+            const touch = e.changedTouches[0];
+            onEnd(touch.clientX);
+          },
+          { passive: true }
+        );
+
+        measureOffset();
+        updateThumbWindow();
+        goTo(0);
+      }
+
+      (async function initMatchPage() {
+        try {
+          const matches = await fetchMyMatches();
+          const listEl = document.getElementById('matchList');
+          listEl.innerHTML = matches.map((m, i) => createMatchCard(m, i)).join('');
+
+          const cards = Array.from(listEl.querySelectorAll('.match-card'));
+          cards.forEach((cardEl, index) => {
+            initMatchSlider(cardEl, matches[index]);
+          });
+        } catch (e) {
+          console.error('Failed to load matches:', e);
+          const listEl = document.getElementById('matchList');
+          listEl.innerHTML = `<p class="text-white text-center mt-10">No matches found.</p>`;
+        }
+      })();
+    }
+
+    function setupTabs() {
+      const crushSection = document.getElementById('crushSection');
+      const proposeSection = document.getElementById('proposeSection');
+      const matchSection = document.getElementById('matchSection');
+
+      const tabCrush = document.getElementById('tabCrush');
+      const tabPropose = document.getElementById('tabPropose');
+      const tabMatch = document.getElementById('tabMatch');
+      const underline = document.getElementById('partnerUnderline');
+      const tabBar = document.getElementById('partnerTabBar');
+      const baseline = tabBar ? tabBar.querySelector('.partner-baseline') : null;
+
+      const tabs = [tabCrush, tabPropose, tabMatch];
+      const sections = [crushSection, proposeSection, matchSection];
+
+      function positionBaseline() {
+        if (!baseline || !tabBar || tabs.some(t => !t)) return;
+
+        const barRect = tabBar.getBoundingClientRect();
+        const firstRect = tabs[0].getBoundingClientRect();
+        const lastRect = tabs[tabs.length - 1].getBoundingClientRect();
+
+        const left = firstRect.left - barRect.left;
+        const right = lastRect.right - barRect.left;
+        const width = Math.max(0, right - left);
+
+        baseline.style.width = width + 'px';
+        baseline.style.transform = `translateX(${left}px)`;
+      }
+
+      function moveUnderline(targetTab) {
+        if (!targetTab || !underline || !tabBar) return;
+
+        const barRect = tabBar.getBoundingClientRect();
+        const tabRect = targetTab.getBoundingClientRect();
+
+        const width = tabRect.width;
+        underline.style.width = width + 'px';
+
+        // Center the underline under the active tab text
+        const tabCenter = tabRect.left + tabRect.width / 2;
+        const offsetX = tabCenter - width / 2 - barRect.left;
+        underline.style.transform = `translateX(${offsetX}px)`;
+      }
+
+      function showSection(index) {
+        sections.forEach((sec, i) => {
+          if (!sec) return;
+          if (i === index) {
+            sec.classList.remove('hidden');
+          } else {
+            sec.classList.add('hidden');
+          }
+        });
+
+        tabs.forEach((tab, i) => {
+          if (!tab) return;
+          if (i === index) {
+            tab.classList.add('active');
+          } else {
+            tab.classList.remove('active');
+          }
+        });
+
+        moveUnderline(tabs[index]);
+
+        if (index === 0) initCrushSection();
+        if (index === 1) initProposeSection();
+        if (index === 2) initMatchSection();
+      }
+
+      tabCrush.addEventListener('click', () => showSection(0));
+      tabPropose.addEventListener('click', () => showSection(1));
+      tabMatch.addEventListener('click', () => showSection(2));
+
+      requestAnimationFrame(() => {
+        positionBaseline();
+        showSection(0);
+      });
+
+      window.addEventListener('resize', () => {
+        positionBaseline();
+        const activeIndex = tabs.findIndex((t) => t.classList.contains('active'));
+        if (activeIndex >= 0) moveUnderline(tabs[activeIndex]);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setupTabs();
+    });
+  </script>
+</body>
+</html>
