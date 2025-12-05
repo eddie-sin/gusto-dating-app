@@ -21,7 +21,7 @@ exports.getMyMatches = catchAsync(async (req, res, next) => {
   const matches = await Match.find({ users: myId })
     .populate({
       path: 'users',
-      select: 'nickname age gender bio hobbies heightFt heightIn zodiac mbti photos phone program batch',
+      select: 'nickname age gender bio hobbies heightFt heightIn zodiac mbti photos contact program batch',
       match: { _id: { $ne: myId } }, // exclude self
     });
 
