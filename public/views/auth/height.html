@@ -5,28 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Height Selection</title>
 
-  <!-- Tailwind CSS -->
-  <link rel="stylesheet" href="/css/tailwind.css" />
+  <!-- Tailwind CSS (CDN for parity with coworker files) -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <style>
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
       height: 100vh;
-      background-image: url('/img/bgimg.jpg');
+      background-image: url('../../img/bgimg.jpg');
       background-size: cover;
       background-position: center;
-      background-repeat: no-repeat;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+    }
+
+    .page-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+      padding: 0 20px;
     }
 
     /* ✨ MBTI Gradient Button Style */
@@ -64,6 +69,7 @@
       );
       -webkit-mask: linear-gradient(#fff 0 0) content-box,
         linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
       z-index: -1;
@@ -75,14 +81,15 @@
     }
 
     .card {
-      width: 500px;
-      background: rgba(255, 255, 255, 0.25);
+      width: 100%;
+      max-width: 600px;
+      background: rgba(255,255,255,0.25);
       backdrop-filter: blur(15px);
       border-radius: 25px;
       padding: 50px;
-      text-align: center;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
       position: relative;
+      text-align: center;
+      height: 450px;
     }
 
     @keyframes float {
@@ -91,11 +98,12 @@
     }
     .animate-float { animation: float 4s ease-in-out infinite; will-change: transform; }
 
-    h2 {
-      font-size: 22px;
+    .title {
+      font-family: 'Inter', sans-serif;
+      font-size: 28px;
+      font-weight: 300;
+      margin-bottom: 55px;
       color: #000;
-      margin-bottom: 35px;
-      font-weight: 500;
     }
 
     .heart-bg {
@@ -115,7 +123,7 @@
       z-index: 1;
       display: flex;
       justify-content: center;
-      gap: 80px;
+      gap: 120px;
       margin-top: 20px;
     }
 
@@ -124,24 +132,23 @@
     }
 
     .column label {
-      font-size: 15px;
-      color: #222;
       display: block;
-      margin-bottom: 8px;
+      font-size: 16px;
+      color: #222;
+      margin-bottom: 35px;
       font-weight: 500;
+      width: 50px;
     }
 
     .scroll {
+      height: 90px;
+      overflow-y: scroll;
       display: flex;
       flex-direction: column;
       align-items: center;
-      font-size: 18px;
-      color: #333;
-      height: 90px;
-      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
       scrollbar-width: none;
       position: relative;
-      scroll-snap-type: y mandatory;
     }
 
     .scroll::-webkit-scrollbar {
@@ -149,64 +156,62 @@
     }
 
     .scroll div {
-      line-height: 35px;
-      transition: all 0.2s ease;
-      opacity: 0.4;
-      scroll-snap-align: center;
+      line-height: 50px;
+      opacity: 0.35;
+      font-size: 18px;
     }
 
     .scroll div.active {
       font-size: 26px;
       opacity: 1;
-      font-weight: bold;
-      color: #000;
-      border-bottom: 2px solid black;
-    }
-
-    .btn-row {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 45px;
+      font-weight: 500;
       position: relative;
-      z-index: 2;
+      color: #000;
     }
+    .scroll div.active::before,
+    .scroll div.active::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 78px;
+      height: 1.8px;
+      background: #000;
+    }
+    .scroll div.active::before { top: -10px; }
+    .scroll div.active::after { bottom: -10px; }
+
+    .btn-row { display:flex; justify-content:center; gap:20px; margin-top:45px; }
+    .next-btn { background: linear-gradient(135deg, #f78998 0%, #fa97a9 50%, #f78998 100%); border-width: 0.11rem; border-style: solid; border-top-color: #ffffffcc; border-bottom-color: #ffffffcc; border-left-color: #fa97a9; border-right-color: #fa97a9; border-radius: 55px; box-shadow: 0px 36.86px 13.98px rgba(255,106,106,0.02),0px 20.34px 12.71px rgba(255,106,106,0.08),0px 8.9px 8.9px rgba(255,106,106,0.13),0px 2.54px 5.08px rgba(255,106,106,0.15); position: relative; overflow: hidden; transition: 0.25s ease; }
+    .next-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100%); border-radius: 55px; pointer-events: none; }
+    .next-btn:hover { transform: translateY(-2px) scale(1.02); }
   </style>
 </head>
 <body>
 
-  <!-- Back Button -->
-  <div class="w-full max-w-[880px] mb-6 px-4 sm:px-6">
-    <a href="zodiac.html"
-       class="mbti-btn flex items-center justify-start font-medium 
-              w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px]
-              px-4 sm:px-6 text-base sm:text-lg transition-all duration-200"
-    >
-      <i class="fa-solid fa-arrow-left mr-2 text-lg sm:text-xl"></i>
+  <div class="page-wrapper">
+    <!-- Back button aligned outside card -->
+    <a href="zodiac.html" class="mbti-btn absolute -top-[70px] left-[3px] z-50 flex items-center justify-center gap-2 w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px] px-4 sm:px-6 text-base sm:text-lg">
+      <i class="fa-solid fa-arrow-left"></i>
       <span class="font-serif leading-none">Back</span>
     </a>
-  </div>
 
-  <!-- Main Card -->
-  <div class="card animate-float">
-    <h2>What's your height?</h2>
-    <div class="heart-bg"></div>
-
-    <div class="height-picker">
-      <div class="column">
-        <label>Feet</label>
-        <div class="scroll" id="feet"></div>
+    <div class="card animate-float">
+      <h2 class="title">What's your height?</h2>
+      <div class="height-picker">
+        <div class="column">
+          <label>Feet</label>
+          <div class="scroll" id="feet"></div>
+        </div>
+        <div class="column">
+          <label>Inches</label>
+          <div class="scroll" id="inches"></div>
+        </div>
       </div>
-
-      <div class="column">
-        <label>Inches</label>
-        <div class="scroll" id="inches"></div>
+      <div class="btn-row">
+        <button id="skipBtn" class="next-btn w-[110px] h-[45px]">Skip</button>
+        <button id="nextBtn" class="next-btn w-[110px] h-[45px]">Next</button>
       </div>
-    </div>
-
-    <div class="btn-row">
-      <button id="skipBtn" class="mbti-btn w-[110px] h-[40px] sm:h-[45px] text-sm sm:text-base">Skip</button>
-      <button id="nextBtn" class="mbti-btn w-[110px] h-[40px] sm:h-[45px] text-sm sm:text-base">Next</button>
     </div>
   </div>
 

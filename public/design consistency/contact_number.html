@@ -46,8 +46,8 @@
               inset 0 -1px 3px rgba(255, 255, 255, 0.4);
 }
 
-      /* Subtle glossy border */
-  .mbti-btn::before {
+/* Subtle glossy border */
+.mbti-btn::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -75,12 +75,13 @@
     .next-btn { width:96px; padding:6px; font-family:'Rufina',serif; font-size:14px; color:black; background:linear-gradient(135deg,#F78998 0%,#fa97a9 50%,#F78998 100%); position:relative; overflow:hidden; border-width:0.11rem; border-style:solid; border-top-color:#ffffffcc; border-bottom-color:#ffffffcc; border-left-color:#fa97a9; border-right-color:#fa97a9; border-radius:55px; box-shadow:0px 36.86px 13.98px rgba(255,106,106,0.02),0px 20.34px 12.71px rgba(255,106,106,0.08),0px 8.9px 8.9px rgba(255,106,106,0.13),0px 2.54px 5.08px rgba(255,106,106,0.15); cursor:pointer; transition:0.25s ease; }
     .next-btn::before { content:""; position:absolute; top:0; left:0; height:100%; width:100%; background:linear-gradient(90deg,rgba(255,255,255,0.35) 0%,rgba(255,255,255,0) 40%,rgba(255,255,255,0) 60%,rgba(255,255,255,0.35) 100%); pointer-events:none; border-radius:55px; }
     .next-btn:hover { transform:translateY(-2px) scale(1.02); }
+
     </style>
   </head>
 
   <body
     class="flex flex-col items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat relative overflow-hidden px-4 sm:px-6"
-    style="background-image: url('../../img/bgimg.jpg');"
+    style="background-image: url('bgimg.jpg');"
   >
 
     <!-- Responsive Glassmorphism Card Wrapper -->
@@ -152,6 +153,7 @@
         <div class="flex justify-end mt-auto">
           <button id="nextBtn" class="next-btn">Next</button>
         </div>
+
       </div>
     </div>
 

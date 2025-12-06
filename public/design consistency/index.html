@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Photos to Profile</title>
+
+  <!-- ✅ Tailwind added (required for correct Back Button design) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- External stylesheet & fonts -->
+  <link rel="preconnect" href="https://rsms.me/" />
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    @keyframes float { 0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);} }
+    .animate-float { animation: float 4s ease-in-out infinite; }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-image: url('bgimg.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      margin: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      padding: 0 20px;
+    }
+
+    /* Back button (copied exactly from Gender.html) */
+    .mbti-btn {
+      position: relative;
+      background: radial-gradient(circle at 30% 100%,
+        rgba(255,255,255,0.55) 0%,
+        rgba(255,255,255,0.25) 35%,
+        rgba(255,182,193,0.18) 60%,
+        rgba(255,160,180,0.1) 80%,
+        rgba(255,150,170,0.05) 100%
+      ), rgba(255,192,203,0.25);
+      border-radius: 1.2rem;
+      color:#111;
+      font-weight:500;
+      transition: all 0.25s ease-in-out;
+      overflow:hidden;
+      z-index:10;
+      box-shadow:
+        inset 0 0 1px rgba(255,255,255,0.6),
+        inset 0 -1px 3px rgba(255,255,255,0.4);
+    }
+
+    .mbti-btn::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      padding:1.4px;
+      background:linear-gradient(150deg,
+        rgba(255,255,255,0.9),
+        rgba(255,190,210,0.65)
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box,
+                     linear-gradient(#fff 0 0);
+      -webkit-mask-composite:xor;
+      mask-composite:exclude;
+      z-index:-1;
+    }
+
+    .mbti-btn:hover {
+      transform: scale(1.06);
+      box-shadow:0 0 18px rgba(255,180,200,0.85);
+    }
+
+    .card {
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .title {
+      font-family: "Inter", sans-serif;
+      font-weight: 400;
+      font-size: 28px;
+      color: #000000;
+      margin-bottom: 50px;
+    }
+
+    .subtitle {
+      color: #171717;
+      margin-bottom: 25px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .subtitle img {
+      width: 2em;
+      height: 2em;
+      vertical-align: middle;
+    }
+
+    .photo-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    .photo-box {
+      width: 220px;
+      height: 220px;
+      border: 2px solid #FF4D6D;
+      border-radius: 35px;
+      background-color: transparent;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.3s;
+    }
+    .photo-box:hover {
+      border-color: #ff6f91;
+      background-color: rgba(255, 240, 245, 0.9);
+    }
+
+    .upload-area {
+      text-align: center;
+      color: black;
+    }
+
+    .upload-area .plus {
+      font-size: 45px;
+      color: black;
+      display: block;
+      margin-bottom: 5px;
+      transition: transform 0.2s ease;
+    }
+    .photo-box:hover .plus { transform: scale(1.1); }
+
+    .preview {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 15px;
+    }
+
+    .remove {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      display: none;
+    }
+    .remove:hover { background: red; }
+
+    .btn-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 30px;
+    }
+
+    .next-btn {
+      background: linear-gradient(135deg, #F78998 0%, #fa97a9 50%, #F78998 100%);
+      border-width: 0.13rem;
+      border-style: solid;
+      border-top-color: #ffffffcc;
+      border-bottom-color: #ffffffcc;
+      border-left-color: #fa97a9;
+      border-right-color: #fa97a9;
+      border-radius: 55px;
+      box-shadow:
+        0px 36.86px 13.98px rgba(255, 106, 106, 0.02),
+        0px 20.34px 12.71px rgba(255, 106, 106, 0.08),
+        0px 8.9px 8.9px rgba(255, 106, 106, 0.13),
+        0px 2.54px 5.08px rgba(255, 106, 106, 0.15);
+      position: relative;
+      overflow:hidden;
+      padding: 10px 25px;
+      font-size: 16px;
+      color: black;
+      cursor: pointer;
+      transition:0.25s ease;
+    }
+
+    .next-btn::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(90deg,
+        rgba(255,255,255,0.35) 0%,
+        rgba(255,255,255,0) 40%,
+        rgba(255,255,255,0) 60%,
+        rgba(255,255,255,0.35) 100%
+      );
+      border-radius:55px;
+      pointer-events:none;
+    }
+
+    .next-btn:hover { transform: translateY(-2px) scale(1.02); }
+
+  </style>
+</head>
+
+<body>
+  <div class="page-wrapper">
+
+    <!-- ✅ FINAL Back Button (only change you requested) -->
+    <a href="javascript:history.back()"
+       class="mbti-btn absolute -top-20 left-5 inline-flex items-center rounded-full font-medium
+              w-[95px] sm:w-[105px] md:w-[115px]
+              h-[40px] sm:h-[43px] md:h-[45px]
+              px-4 sm:px-6 text-base sm:text-lg
+              transition-all duration-200 z-50">
+      <i class="fa-solid fa-arrow-left mr-2 text-lg sm:text-xl"></i>
+      <span class="font-serif leading-none">Back</span>
+    </a>
+
+    <!-- CARD -->
+    <div class="card animate-float">
+      <h2 class="title">Add Photos to Profile</h2>
+      <p class="subtitle">
+        <img src="index-heart.png" alt="heart" />
+        Selected Photos
+      </p>
+
+      <div class="photo-row">
+        <div class="photo-box" id="box1">
+          <div class="upload-area">
+            <span class="plus">+</span>
+            <p>Tap to add</p>
+          </div>
+          <input type="file" id="photo1" accept="image/*" hidden>
+          <div class="preview" id="preview1"></div>
+          <button class="remove" id="remove1">❌</button>
+        </div>
+
+        <div class="photo-box" id="box2">
+          <div class="upload-area">
+            <span class="plus">+</span>
+            <p>Tap to add</p>
+          </div>
+          <input type="file" id="photo2" accept="image/*" hidden>
+          <div class="preview" id="preview2"></div>
+          <button class="remove" id="remove2">❌</button>
+        </div>
+
+        <div class="photo-box" id="box3">
+          <div class="upload-area">
+            <span class="plus">+</span>
+            <p>Tap to add</p>
+          </div>
+          <input type="file" id="photo3" accept="image/*" hidden>
+          <div class="preview" id="preview3"></div>
+          <button class="remove" id="remove3">❌</button>
+        </div>
+      </div>
+
+      <div class="btn-container">
+        <button id="nextBtn" class="next-btn">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function setupPhotoBox(boxId, inputId, previewId, removeId) {
+      const box = document.getElementById(boxId);
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      const removeBtn = document.getElementById(removeId);
+      const uploadArea = box.querySelector(".upload-area");
+
+      box.addEventListener("click", (e) => {
+        if (e.target === removeBtn) return;
+        input.click();
+      });
+
+      input.addEventListener("change", () => {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          preview.innerHTML = `<img src="${e.target.result}" alt="photo">`;
+          uploadArea.style.display = "none";
+          removeBtn.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      });
+
+      removeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        input.value = "";
+        preview.innerHTML = "";
+        uploadArea.style.display = "block";
+        removeBtn.style.display = "none";
+      });
+    }
+
+    setupPhotoBox("box1", "photo1", "preview1", "remove1");
+    setupPhotoBox("box2", "photo2", "preview2", "remove2");
+    setupPhotoBox("box3", "photo3", "preview3", "remove3");
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      alert("Proceeding to the next step!");
+    });
+  </script>
+
+</body>
+</html>
+
+
+  <script>
+    function setupPhotoBox(boxId, inputId, previewId, removeId) {
+      const box = document.getElementById(boxId);
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      const removeBtn = document.getElementById(removeId);
+      const uploadArea = box.querySelector(".upload-area");
+
+      box.addEventListener("click", (e) => {
+        if (e.target === removeBtn) return;
+        input.click();
+      });
+
+      input.addEventListener("change", () => {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          preview.innerHTML = `<img src="${e.target.result}" alt="photo">`;
+          uploadArea.style.display = "none";
+          removeBtn.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      });
+
+      removeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        input.value = "";
+        preview.innerHTML = "";
+        uploadArea.style.display = "block";
+        removeBtn.style.display = "none";
+      });
+    }
+
+    setupPhotoBox("box1", "photo1", "preview1", "remove1");
+    setupPhotoBox("box2", "photo2", "preview2", "remove2");
+    setupPhotoBox("box3", "photo3", "preview3", "remove3");
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      alert("Proceeding to the next step!");
+    });
+  </script>
+</body>
+</html>

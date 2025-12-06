@@ -16,11 +16,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
+        /* Back button design from contact_number */
+        .mbti-btn { position: relative; background: radial-gradient(circle at 30% 100%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.25) 35%, rgba(255,182,193,0.18) 60%, rgba(255,160,180,0.1) 80%, rgba(255,150,170,0.05) 100%), rgba(255,192,203,0.25); border-radius: 1.2rem; color: #111; font-weight: 500; transition: all 0.25s ease-in-out; overflow: hidden; z-index: 1; box-shadow: inset 0 0 1px rgba(255,255,255,0.6), inset 0 -1px 3px rgba(255,255,255,0.4); }
+        .mbti-btn::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1.4px; background:linear-gradient(150deg, rgba(255,255,255,0.9), rgba(255,190,210,0.65)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; z-index:-1; }
+        .mbti-btn:hover { transform: scale(1.05); box-shadow: 0 0 18px rgba(255,180,200,0.85); }
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
       min-height: 100vh;
-      background-image: url('../../img/bgimg.jpg');
+      background-image: url('bgimg.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -30,50 +34,28 @@
       padding: 20px;
     }
 
-    /* ✨ MBTI Gradient Button Style */
-    .mbti-btn {
-      position: relative;
-      background: radial-gradient(
-          circle at 30% 100%,
-          rgba(255, 255, 255, 0.55) 0%,
-          rgba(255, 255, 255, 0.25) 35%,
-          rgba(255, 182, 193, 0.18) 60%,
-          rgba(255, 160, 180, 0.1) 80%,
-          rgba(255, 150, 170, 0.05) 100%
-        ),
-        rgba(255, 192, 203, 0.25);
+ 
+    .back-btn {
+      position: absolute;
+      top: -70px; /* outside the card */
+      left: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 95px;
+      height: 45px;
+      background: radial-gradient(circle at 30% 100%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.25) 35%, rgba(255,182,193,0.18) 60%, rgba(255,160,180,0.1) 80%, rgba(255,150,170,0.05) 100%), rgba(255,192,203,0.25);
       border-radius: 1.2rem;
       color: #111;
       font-weight: 500;
-      transition: all 0.25s ease-in-out;
-      overflow: hidden;
-      z-index: 1;
-      box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.6),
-        inset 0 -1px 3px rgba(255, 255, 255, 0.4);
+      box-shadow: inset 0 0 1px rgba(255,255,255,0.6), inset 0 -1px 3px rgba(255,255,255,0.4);
+      cursor: pointer;
+      transition: transform 0.25s ease-in-out;
+      font-size: 14px;
     }
-
-    .mbti-btn::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      padding: 1.4px;
-      background: linear-gradient(
-        150deg,
-        rgba(255, 255, 255, 0.9),
-        rgba(255, 190, 210, 0.65)
-      );
-      -webkit-mask: linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      z-index: -1;
-    }
-
-    .mbti-btn:hover {
-      transform: scale(1.06);
-      box-shadow: 0 0 18px rgba(255, 180, 200, 0.85);
-    }
+    .back-btn:hover { transform: scale(1.05); box-shadow: 0 0 18px rgba(255,180,200,0.85); }
 
     .card {
       width: 100%;
@@ -97,6 +79,7 @@
       color: #000;
       margin-bottom: 55px;
       font-weight: 400;
+
     }
 
     .heart-bg {
@@ -158,6 +141,61 @@
       flex-wrap: wrap;
     }
 
+    .mbti-btn {
+  position: relative;
+  background: radial-gradient(
+      circle at 30% 100%,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.25) 35%,
+      rgba(255, 182, 193, 0.18) 60%,
+      rgba(255, 160, 180, 0.1) 80%,
+      rgba(255, 150, 170, 0.05) 100%
+    ),
+    rgba(255, 192, 203, 0.25);
+  border-radius: 1.2rem;
+  color: #111;
+  font-weight: 500;
+  transition: all 0.25s ease-in-out;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.6),
+              inset 0 -1px 3px rgba(255, 255, 255, 0.4);
+}
+
+/* Subtle glossy border */
+.mbti-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 190, 210, 0.65)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+}
+
+/* Hover effect */
+.mbti-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 18px rgba(255, 180, 200, 0.85);
+}
+
+    @media (max-width: 480px) {
+      .card { padding: 35px 20px; }
+      h2 { font-size: 20px; margin-bottom: 35px; }
+      .back-btn { width: 80px; height: 36px; font-size: 13px; }
+      textarea { font-size: 14px; }
+      .btn-row { gap: 15px; }
+      .mbti-btn { font-size: 13px; }
+    }
+
     /* Standard next/skip button */
     .next-btn { width:96px; padding:6px; font-family:'Rufina',serif; font-size:14px; color:black; background:linear-gradient(135deg,#F78998 0%,#fa97a9 50%,#F78998 100%); position:relative; overflow:hidden; border-width:0.11rem; border-style:solid; border-top-color:#ffffffcc; border-bottom-color:#ffffffcc; border-left-color:#fa97a9; border-right-color:#fa97a9; border-radius:55px; box-shadow:0px 36.86px 13.98px rgba(255,106,106,0.02),0px 20.34px 12.71px rgba(255,106,106,0.08),0px 8.9px 8.9px rgba(255,106,106,0.13),0px 2.54px 5.08px rgba(255,106,106,0.15); cursor:pointer; transition:0.25s ease; }
     .next-btn::before { content:""; position:absolute; top:0; left:0; height:100%; width:100%; background:linear-gradient(90deg,rgba(255,255,255,0.35) 0%,rgba(255,255,255,0) 40%,rgba(255,255,255,0) 60%,rgba(255,255,255,0.35) 100%); pointer-events:none; border-radius:55px; }
@@ -167,27 +205,30 @@
 <body>
 
   <div class="relative w-full max-w-[500px]">
-    <a href="height.html" class="mbti-btn absolute -top-[70px] left-0 z-50 flex items-center justify-center gap-2 w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px] px-4 sm:px-6 text-base sm:text-lg">
+    <!-- Back Button outside the card -->
+    <a href="#" class="mbti-btn absolute -top-[70px] left-0 z-50 flex items-center justify-center gap-2 w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px] px-4 sm:px-6 text-base sm:text-lg">
       <i class="fa-solid fa-arrow-left"></i>
       <span class="font-serif leading-none">Back</span>
     </a>
 
-  <!-- Main Card -->
-  <div class="card animate-float">
-    <h2 class="title">Enter Bio</h2>
+    <!-- Main Card -->
+    <div class="card animate-float">
+      <h2 class="title">Enter Bio</h2>
+      <div class="heart-bg"></div>
 
-    <div class="bio-section">
-      <div class="bio-label">
-        <span>Describe yourself</span>
-        <span id="charCount">500</span>
+      <div class="bio-section">
+        <div class="bio-label">
+          <span>Describe yourself</span>
+          <span id="charCount">100</span>
+        </div>
+        <textarea id="bioInput" maxlength="100" placeholder=""></textarea>
+        <p class="hint">You can edit it later...</p>
       </div>
-      <textarea id="bioInput" maxlength="500" placeholder=""></textarea>
-      <p class="hint">You can edit it later...</p>
-    </div>
 
-    <div class="btn-row">
-      <button id="skipBtn" class="next-btn">Skip</button>
-      <button id="nextBtn" class="next-btn">Next</button>
+      <div class="btn-row">
+        <button class="next-btn">Skip</button>
+        <button class="next-btn">Next</button>
+      </div>
     </div>
   </div>
 
@@ -196,29 +237,8 @@
     const counter = document.getElementById("charCount");
 
     textarea.addEventListener("input", () => {
-      const remaining = 500 - textarea.value.length;
+      const remaining = 100 - textarea.value.length;
       counter.textContent = remaining;
-      if (remaining < 0) {
-        textarea.value = textarea.value.substring(0, 500);
-        counter.textContent = 0;
-      }
-    });
-
-    document.getElementById('skipBtn').addEventListener('click', () => {
-      localStorage.removeItem('bio');
-      window.location.href = 'MBTI.html';
-    });
-
-    document.getElementById('nextBtn').addEventListener('click', () => {
-      const bio = textarea.value.trim();
-      if (bio.length > 500) {
-        alert('⚠️ Bio must be 500 characters or less.');
-        return;
-      }
-      if (bio) {
-        localStorage.setItem('bio', bio);
-      }
-      window.location.href = 'MBTI.html';
     });
   </script>
 

@@ -72,25 +72,10 @@
       box-shadow: none;
     }
 
-    /* ========== BUTTON ========== */
-    button {
-      background: linear-gradient(to right, #ff3366, #f68229);
-      border: none;
-      padding: 10px 30px;
-      color: white;
-      border-radius: 25px;
-      cursor: pointer;
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 15px;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      transform: scale(1.05);
-      background: linear-gradient(to right, #ff4d6d, #ff8c66);
-      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.4);
-    }
+    /* Standard next/skip button style (copied from birthday page) */
+    .next-btn { width: 96px; padding: 6px; font-family: 'Rufina', serif; font-size: 14px; color: black; background: linear-gradient(135deg, #F78998 0%, #fa97a9 50%, #F78998 100%); position: relative; overflow: hidden; border-width: 0.11rem; border-style: solid; border-top-color: #ffffffcc; border-bottom-color: #ffffffcc; border-left-color: #fa97a9; border-right-color: #fa97a9; border-radius: 55px; box-shadow: 0px 36.86px 13.98px rgba(255, 106, 106, 0.02), 0px 20.34px 12.71px rgba(255, 106, 106, 0.08), 0px 8.9px 8.9px rgba(255, 106, 106, 0.13), 0px 2.54px 5.08px rgba(255, 106, 106, 0.15); cursor: pointer; transition: 0.25s ease; }
+    .next-btn::before { content: ""; position: absolute; top: 0; left: 0; height: 100%; width: 100%; background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100%); pointer-events: none; border-radius: 55px; }
+    .next-btn:hover { transform: translateY(-2px) scale(1.02); }
 
     /* ========== LAYOUT HELPERS ========== */
     .next1 {
@@ -107,7 +92,7 @@
       <input type="text" id="lastName" placeholder="Last Name" required><br>
       <input type="text" id="nickname" placeholder="Nickname (Display Name)" maxlength="40" required><br>
       <div class="next1">
-        <button id="nextBtn" type="button">Next</button>
+        <button id="nextBtn" type="button" class="next-btn">Next</button>
       </div>
     </form>
   </div>
