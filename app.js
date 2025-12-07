@@ -20,7 +20,9 @@ const app = express();
 /* ==========================
    MIDDLEWARES
 ========================== */
-app.use(express.json({ limit: "10kb" })); // parse JSON
+// Increase body size limits to allow base64 image payloads from client steps
+app.use(express.json({ limit: "10mb" })); // parse JSON (was 10kb)
+app.use(express.urlencoded({ extended: true, limit: "10mb" })); // parse URL-encoded bodies
 app.use(cookieParser()); // parse cookies (for jwt)
 app.use(morgan("dev")); // logging
 
