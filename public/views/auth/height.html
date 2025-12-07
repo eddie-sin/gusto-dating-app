@@ -282,23 +282,43 @@
       return closest ? parseInt(closest.textContent) : null;
     }
 
-    document.getElementById('skipBtn').addEventListener('click', () => {
-      localStorage.removeItem('heightFt');
-      localStorage.removeItem('heightIn');
-      window.location.href = 'bio.html';
+    document.getElementById('skipBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      const orig = window.collectPageData;
+      window.collectPageData = () => ({ /* skip -> save nothing */ });
+      document.dispatchEvent(new Event('registration:submit'));
+      window.collectPageData = orig;
     });
 
-    document.getElementById('nextBtn').addEventListener('click', () => {
-      const feet = getSelectedValue("feet");
-      const inches = getSelectedValue("inches");
-      
-      if (feet !== null && inches !== null) {
-        localStorage.setItem('heightFt', feet);
-        localStorage.setItem('heightIn', inches);
-      }
-      window.location.href = 'bio.html';
+    document.getElementById('nextBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.dispatchEvent(new Event('registration:submit'));
     });
   </script>
+
+  <script>
+    // Registration hooks for server-side step saving
+    window.prefillPage = function (prefill) {
+      const ft = prefill.heightFt ?? localStorage.getItem('heightFt');
+      const inch = prefill.heightIn ?? localStorage.getItem('heightIn');
+      // attempt to set the visible active value by scrolling to approximate position
+      // simple: store to localStorage to be picked up by other scripts if needed
+      if (ft != null) localStorage.setItem('heightFt', ft);
+      if (inch != null) localStorage.setItem('heightIn', inch);
+    };
+
+    window.collectPageData = function () {
+      const feet = getSelectedValue("feet");
+      const inches = getSelectedValue("inches");
+      if (feet === null || inches === null) return { };
+      // keep localStorage parity
+      localStorage.setItem('heightFt', feet);
+      localStorage.setItem('heightIn', inches);
+      return { heightFt: feet, heightIn: inches };
+    };
+  </script>
+
+  <script type="module" src="/js/registration.js"></script>
 
 </body>
 </html>

@@ -306,8 +306,34 @@
       }
       
       localStorage.setItem('photos', JSON.stringify(photos));
-      window.location.href = 'hobby.html';
+      // trigger registration save (registration.js will collect from localStorage)
+      document.dispatchEvent(new Event('registration:submit'));
     });
+
+    // Registration hooks
+    window.prefillPage = function(prefill) {
+      const photos = prefill.photos ?? JSON.parse(localStorage.getItem('photos') || '[]');
+      if (!Array.isArray(photos) || photos.length === 0) return;
+      photos.forEach((src, idx) => {
+        const preview = document.getElementById(`preview${idx+1}`);
+        const uploadArea = document.getElementById(`box${idx+1}`).querySelector('.upload-area');
+        preview.innerHTML = `<img src="${src}" alt="photo">`;
+        uploadArea.style.display = 'none';
+        const removeBtn = document.getElementById(`remove${idx+1}`);
+        if (removeBtn) removeBtn.style.display = 'block';
+      });
+    };
+
+    window.collectPageData = function() {
+      const photos = JSON.parse(localStorage.getItem('photos') || '[]');
+      if (!Array.isArray(photos) || photos.length < 3) {
+        alert("⚠️ Please upload at least 3 photos before continuing.");
+        return null;
+      }
+      return { photos };
+    };
+  </script>
+  <script type="module" src="/js/registration.js"></script>
   </script>
 </body>
 </html>

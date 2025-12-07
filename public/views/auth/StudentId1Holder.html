@@ -191,15 +191,36 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-document.getElementById('continueBtn').addEventListener('click', () => {
-  const imgData = localStorage.getItem('capturedID');
+document.getElementById('continueBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.dispatchEvent(new Event('registration:submit'));
+});
+
+// Registration hooks
+window.prefillPage = function(prefill) {
+  const img = prefill.studentIdPhoto ?? prefill.capturedID ?? localStorage.getItem('studentIdPhoto') ?? localStorage.getItem('capturedID');
+  if (img) {
+    localStorage.setItem('studentIdPhoto', img);
+    const uploadedImg = document.getElementById('uploadedImg');
+    const defaultIcon = document.getElementById('defaultIcon');
+    uploadedImg.src = img;
+    uploadedImg.classList.remove('hidden');
+    defaultIcon.classList.add('hidden');
+  }
+};
+
+window.collectPageData = function() {
+  const imgData = localStorage.getItem('capturedID') || localStorage.getItem('studentIdPhoto');
   if (!imgData) {
     alert('⚠️ Please capture or upload your student ID photo.');
-    return;
+    return null;
   }
+  // store for UI parity and return payload
   localStorage.setItem('studentIdPhoto', imgData);
-  window.location.href = 'password.html';
-});
+  return { studentIdPhoto: imgData };
+};
+
 </script>
+<script type="module" src="/js/registration.js"></script>
 </body>
 </html>

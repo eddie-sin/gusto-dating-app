@@ -58,7 +58,7 @@ import {
 
   // User jumped ahead too far → redirect back
   if (pageStep > currentStep) {
-    alert("Geting Back");
+    alert("You have not completed the previous steps yet.");
     return goToStep(currentStep, registrationSteps);
   }
 

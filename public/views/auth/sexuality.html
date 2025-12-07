@@ -191,19 +191,36 @@
     });
   });
 
-  nextButton.addEventListener('click', () => {
+  nextButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.dispatchEvent(new Event('registration:submit'));
+  });
+
+  // Registration hooks
+  window.prefillPage = function (prefill) {
+    const val = prefill.sexuality ?? localStorage.getItem('sexuality');
+    if (!val) return;
+    genderButtons.forEach(btn => {
+      const g = btn.getAttribute('data-gender');
+      const mapped = g === 'other' ? 'both' : g;
+      if (mapped === val) {
+        btn.click();
+      }
+    });
+  };
+
+  window.collectPageData = function () {
     if (!selectedGender) {
       alert('⚠️ Please select your interest before continuing.');
-      return;
+      return null;
     }
-
-    // Map "other" to "both" for backend
     const sexualityValue = selectedGender === 'other' ? 'both' : selectedGender;
-    
     localStorage.setItem('sexuality', sexualityValue);
-    window.location.href = 'contact_number.html';
-  });
+    return { sexuality: sexualityValue };
+  };
+
   </script>
+  <script type="module" src="/js/registration.js"></script>
 
 </body>
 </html>

@@ -164,11 +164,22 @@
       // Next button with shake effect
       const batchInput = document.getElementById("batchInput");
 
-      document.getElementById("nextBtn").addEventListener("click", () => {
-        const program =
-          programBtn.querySelector("span:first-child").textContent;
+      document.getElementById("nextBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.dispatchEvent(new Event('registration:submit'));
+      });
+
+      // Registration hooks
+      window.prefillPage = function(prefill) {
+        const program = prefill.program ?? localStorage.getItem('program');
+        const batch = prefill.batch ?? localStorage.getItem('batch');
+        if (program) programBtn.querySelector('span:first-child').textContent = program;
+        if (batch) batchInput.value = batch;
+      };
+
+      window.collectPageData = function() {
+        const program = programBtn.querySelector("span:first-child").textContent;
         const batch = batchInput.value.trim();
-        
         if (program === "Programs" || batch === "") {
           [programBtn, batchInput].forEach((el) => el.classList.add("shake"));
           setTimeout(() => {
@@ -177,19 +188,17 @@
             );
           }, 500);
           alert("⚠️ Please select your program and enter your batch number!");
-        } else {
-          // Validate batch length
-          if (batch.length > 50) {
-            alert("⚠️ Batch number must be 50 characters or less.");
-            return;
-          }
-          
-          // Store and navigate
-          localStorage.setItem('program', program);
-          localStorage.setItem('batch', batch);
-          window.location.href = "Gender.html";
+          return null;
         }
-      });
+        if (batch.length > 50) {
+          alert("⚠️ Batch number must be 50 characters or less.");
+          return null;
+        }
+        localStorage.setItem('program', program);
+        localStorage.setItem('batch', batch);
+        return { program, batch };
+      };
     </script>
+  <script type="module" src="/js/registration.js"></script>
   </body>
 </html>

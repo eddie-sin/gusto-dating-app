@@ -47,7 +47,7 @@ export function goToStep(step, stepsMap) {
     return;
   }
 
-  window.location.href = `/registration/${target[0]}`;
+  window.location.href = `/views/auth/${target[0]}`;
 }
 
 // --- Get current filename ---

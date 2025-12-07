@@ -270,7 +270,26 @@
         setTimeout(() => button.classList.remove("shake"), 500);
       }
 
-      document.getElementById("nextBtn").addEventListener("click", () => {
+      document.getElementById("nextBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.dispatchEvent(new Event('registration:submit'));
+      });
+
+      // Registration hooks
+      window.prefillPage = function(prefill) {
+        const iso = prefill.dob ?? localStorage.getItem('dob');
+        if (!iso) return;
+        const d = new Date(iso);
+        const day = String(d.getDate()).padStart(2,'0');
+        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        const month = monthNames[d.getMonth()];
+        const year = String(d.getFullYear());
+        selectValue('day', day);
+        selectValue('month', month);
+        selectValue('year', year);
+      };
+
+      window.collectPageData = function() {
         const dayBtn = document.getElementById("dayBtn");
         const monthBtn = document.getElementById("monthBtn");
         const yearBtn = document.getElementById("yearBtn");
@@ -289,39 +308,31 @@
 
         if (!allSelected) {
           alert("⚠️ Please select your full birthday before continuing!");
-          return;
+          return null;
         }
 
-        // Get selected values
         const day = dayBtn.querySelector("span:first-child").textContent;
         const month = monthBtn.querySelector("span:first-child").textContent;
         const year = yearBtn.querySelector("span:first-child").textContent;
-
-        // Convert month name to number
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-          "July", "August", "September", "October", "November", "December"];
+        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         const monthNum = monthNames.indexOf(month) + 1;
-
-        // Create date object
         const dob = new Date(year, monthNum - 1, parseInt(day));
         const today = new Date();
         const age = today.getFullYear() - parseInt(year) - (today.getMonth() < monthNum - 1 || (today.getMonth() === monthNum - 1 && today.getDate() < parseInt(day)) ? 1 : 0);
-
-        // Validate age (must be at least 18)
         if (age < 18) {
           alert("⚠️ You must be at least 18 years old to register.");
-          return;
+          return null;
         }
-
         if (dob > today) {
           alert("⚠️ Date of birth cannot be in the future.");
-          return;
+          return null;
         }
-
-        // Store DOB as ISO string
-        localStorage.setItem('dob', dob.toISOString());
-        window.location.href = "batch_og.html";
-      });
+        const iso = dob.toISOString();
+        localStorage.setItem('dob', iso);
+        return { dob: iso };
+      };
     </script>
+
+  <script type="module" src="/js/registration.js"></script>
   </body>
 </html>

@@ -226,24 +226,42 @@
       });
     });
 
-    document.getElementById('skipBtn').addEventListener('click', () => {
-      localStorage.setItem('hobbies', JSON.stringify([]));
-      window.location.href = 'zodiac.html';
+    document.getElementById('skipBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      const orig = window.collectPageData;
+      window.collectPageData = () => ({ hobbies: [] });
+      document.dispatchEvent(new Event('registration:submit'));
+      window.collectPageData = orig;
     });
 
-    document.getElementById('nextBtn').addEventListener('click', () => {
+    document.getElementById('nextBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.dispatchEvent(new Event('registration:submit'));
+    });
+
+    // Registration hooks
+    window.prefillPage = function(prefill) {
+      const list = prefill.hobbies ?? JSON.parse(localStorage.getItem('hobbies') || '[]');
+      if (!Array.isArray(list) || list.length === 0) return;
+      document.querySelectorAll('[data-hobby]').forEach(el => {
+        const key = el.dataset.hobby;
+        if (list.includes(key)) el.classList.add('pill-selected');
+        else el.classList.remove('pill-selected');
+      });
+    };
+
+    window.collectPageData = function() {
       const selected = document.querySelectorAll('.pill-selected');
       const hobbies = Array.from(selected).map(pill => pill.dataset.hobby);
-      
       if (hobbies.length > 5) {
         alert('⚠️ You can select a maximum of 5 hobbies.');
-        return;
+        return null;
       }
-      
       localStorage.setItem('hobbies', JSON.stringify(hobbies));
-      window.location.href = 'zodiac.html';
-    });
+      return { hobbies };
+    };
   </script>
+  <script type="module" src="/js/registration.js"></script>
 
 </body>
 </html>

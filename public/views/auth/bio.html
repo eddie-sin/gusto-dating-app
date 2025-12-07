@@ -204,23 +204,40 @@
       }
     });
 
-    document.getElementById('skipBtn').addEventListener('click', () => {
-      localStorage.removeItem('bio');
-      window.location.href = 'MBTI.html';
+    document.getElementById('skipBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      const orig = window.collectPageData;
+      window.collectPageData = () => ({ /* skip */ });
+      document.dispatchEvent(new Event('registration:submit'));
+      window.collectPageData = orig;
     });
 
-    document.getElementById('nextBtn').addEventListener('click', () => {
-      const bio = textarea.value.trim();
-      if (bio.length > 500) {
-        alert('⚠️ Bio must be 500 characters or less.');
-        return;
-      }
-      if (bio) {
-        localStorage.setItem('bio', bio);
-      }
-      window.location.href = 'MBTI.html';
+    document.getElementById('nextBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.dispatchEvent(new Event('registration:submit'));
     });
   </script>
+
+  <script>
+    window.prefillPage = function (prefill) {
+      const val = prefill.bio ?? localStorage.getItem('bio') ?? '';
+      textarea.value = val;
+      const remaining = 500 - textarea.value.length;
+      counter.textContent = remaining;
+    };
+
+    window.collectPageData = function () {
+      const bio = textarea.value.trim();
+      if (bio && bio.length > 500) {
+        alert('⚠️ Bio must be 500 characters or less.');
+        return null;
+      }
+      if (bio) localStorage.setItem('bio', bio);
+      return { bio };
+    };
+  </script>
+
+  <script type="module" src="/js/registration.js"></script>
 
 </body>
 </html>
