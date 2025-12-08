@@ -42,14 +42,16 @@
       }
 
       .container {
-        background: rgba(255, 255, 255, 0.25);
-        backdrop-filter: blur(99%);
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         border-radius: 20px;
-        padding: 60px 60px; /* Increased padding */
-        width: 480px; /* Increased width from 350px */
+        padding: 60px 60px;
+        width: 480px;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
         text-align: center;
         position: relative;
+        border: 1px solid rgba(255,255,255,0.3);
       }
 
       h2 {
@@ -76,21 +78,18 @@
         opacity: 0.8;
       }
 
-      button {
-        background: linear-gradient(to right, #ff3366);
-        border: none;
-        padding: 10px 30px;
-        color: white;
-        border-radius: 20px;
-        cursor: pointer;
-        margin-top: 15px;
-        font-weight: bold;
-        transition: 0.3s;
-      }
+      /* Standard next/skip button style (from birthday) */
+      .next-btn { width: 96px; padding: 6px; font-family: 'Rufina', serif; font-size: 14px; color: black; background: linear-gradient(135deg, #F78998 0%, #fa97a9 50%, #F78998 100%); position: relative; overflow: hidden; border-width: 0.11rem; border-style: solid; border-top-color: #ffffffcc; border-bottom-color: #ffffffcc; border-left-color: #fa97a9; border-right-color: #fa97a9; border-radius: 55px; box-shadow: 0px 36.86px 13.98px rgba(255, 106, 106, 0.02), 0px 20.34px 12.71px rgba(255, 106, 106, 0.08), 0px 8.9px 8.9px rgba(255, 106, 106, 0.13), 0px 2.54px 5.08px rgba(255, 106, 106, 0.15); cursor: pointer; transition: 0.25s ease; }
+      .next-btn::before { content: ""; position: absolute; top: 0; left: 0; height: 100%; width: 100%; background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100%); pointer-events: none; border-radius: 55px; }
+      .next-btn:hover { transform: translateY(-2px) scale(1.02); }
 
-      button:hover {
-        transform: scale(1.05);
-        background: linear-gradient(to right, #f0578a);
+      /* Larger login CTA for prominence and spacing */
+      .login-cta {
+        width: 220px !important;
+        padding: 12px 24px !important;
+        font-size: 16px !important;
+        border-radius: 40px !important;
+        margin: 18px 0 !important;
       }
 
       a {
@@ -102,25 +101,27 @@
       .remember {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
+        gap: 10px;
         width: 80%;
-        margin: 25px auto -10px; /* pushes it closer to the Login button */
-        font-size: 14px;
+        margin: 18px auto 6px;
+        font-size: 15px;
         color: black;
       }
 
       #remember {
         all: unset; /* resets all browser default styles */
         display: inline-block;
-        width: 13px; /* perfect compact size */
-        height: 13px;
-        border: 3px solid black;
-        border-radius: 5px;
+        width: 14px;
+        height: 14px;
+        border: 2px solid black;
+        border-radius: 4px;
         background: transparent;
         cursor: pointer;
         position: relative;
         vertical-align: middle;
-        transition: 0.2s ease-in-out;
+        transition: 0.15s ease-in-out;
+        margin-left: 4px;
       }
 
       #remember:checked::after {
@@ -132,25 +133,9 @@
         left: 1px;
       }
 
-      .next-btn,
-      .login-btn {
-        margin-top: 35px;
-        width: 80%;
-        padding: 12px;
-        border: none;
-        border-radius: 30px;
-        font-weight: bold;
-        color: white;
-        background: linear-gradient(90deg, #ef3063, #f68229);
-        cursor: pointer;
-        transition: 0.3s;
-      }
-
-      .next-btn:hover,
-      .login-btn:hover {
-        transform: scale(1.05);
-        background: linear-gradient(90deg, #ff3366, #ff5c8a);
-      }
+      /* Ensure login button uses same visual as next-btn when present */
+      .login-btn { width: 80%; padding: 12px; border: none; border-radius: 30px; font-weight: bold; color: white; background: linear-gradient(90deg, #ef3063, #f68229); cursor: pointer; transition: 0.3s; }
+      .login-btn:hover { transform: scale(1.05); background: linear-gradient(90deg, #ff3366, #ff5c8a); }
 
       /* Account + Register line */
       /* Left-right layout for bottom line */
@@ -185,11 +170,25 @@
       }
 
       .type3 {
-        padding-left: 29%;
+        padding-left: 0;
       }
 
       .next1 {
         margin-left: 72%;
+      }
+
+      /* Make Forget Password and Register links clearer */
+      .forgot-link {
+        font-size: 15px;
+        color: #ff3366;
+        font-weight: 600;
+      }
+
+      .account-register a {
+        font-size: 16px;
+        color: #ff4d6d;
+        font-weight: 700;
+        text-shadow: 0 0 6px rgba(255, 77, 109, 0.6);
       }
     </style>
   </head>
@@ -218,8 +217,10 @@
             <input type="checkbox" id="remember" />
           </div>
         </div>
-        <button type="submit" class="next-btn">Login</button>
-        <p><a href="#">Forget Password?</a></p>
+        <div style="width:100%; display:flex; justify-content:center;">
+          <button type="submit" class="next-btn login-cta">Login</button>
+        </div>
+        <p style="margin-top:12px;"><a href="#" class="forgot-link">Forget Password?</a></p>
         <div class="account-register">
           <span>Don't have an Account?</span>
           <a href="enter-name.html">Register</a>

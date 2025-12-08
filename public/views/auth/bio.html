@@ -6,27 +6,28 @@
   <title>Enter Bio</title>
 
   <!-- Tailwind CSS -->
-  <link rel="stylesheet" href="/css/tailwind.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      height: 100vh;
-      background-image: url('/img/bgimg.jpg');
+      min-height: 100vh;
+      background-image: url('../../img/bgimg.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
     /* ✨ MBTI Gradient Button Style */
@@ -75,27 +76,27 @@
     }
 
     .card {
-      width: 500px;
-      background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(15px);
+      width: 100%;
+      max-width: 500px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-radius: 25px;
-      padding: 50px;
+      padding: 50px 30px;
       text-align: center;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
       position: relative;
-      animation: float 6s ease-in-out infinite;
+      border: 1px solid rgba(255,255,255,0.3);
     }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
+    @keyframes float { 0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);} }
+    .animate-float { animation: float 4s ease-in-out infinite; will-change: transform; }
 
-    h2 {
+    .title {
       font-size: 22px;
       color: #000;
-      margin-bottom: 45px;
-      font-weight: 500;
+      margin-bottom: 55px;
+      font-weight: 400;
     }
 
     .heart-bg {
@@ -154,27 +155,26 @@
       margin-top: 45px;
       position: relative;
       z-index: 2;
+      flex-wrap: wrap;
     }
+
+    /* Standard next/skip button */
+    .next-btn { width:96px; padding:6px; font-family:'Rufina',serif; font-size:14px; color:black; background:linear-gradient(135deg,#F78998 0%,#fa97a9 50%,#F78998 100%); position:relative; overflow:hidden; border-width:0.11rem; border-style:solid; border-top-color:#ffffffcc; border-bottom-color:#ffffffcc; border-left-color:#fa97a9; border-right-color:#fa97a9; border-radius:55px; box-shadow:0px 36.86px 13.98px rgba(255,106,106,0.02),0px 20.34px 12.71px rgba(255,106,106,0.08),0px 8.9px 8.9px rgba(255,106,106,0.13),0px 2.54px 5.08px rgba(255,106,106,0.15); cursor:pointer; transition:0.25s ease; }
+    .next-btn::before { content:""; position:absolute; top:0; left:0; height:100%; width:100%; background:linear-gradient(90deg,rgba(255,255,255,0.35) 0%,rgba(255,255,255,0) 40%,rgba(255,255,255,0) 60%,rgba(255,255,255,0.35) 100%); pointer-events:none; border-radius:55px; }
+    .next-btn:hover { transform:translateY(-2px) scale(1.02); }
   </style>
 </head>
 <body>
 
-  <!-- Back Button -->
-  <div class="w-full max-w-[880px] mb-6 px-4 sm:px-6">
-    <a href="height.html"
-       class="mbti-btn flex items-center justify-start font-medium 
-              w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px]
-              px-4 sm:px-6 text-base sm:text-lg transition-all duration-200"
-    >
-      <i class="fa-solid fa-arrow-left mr-2 text-lg sm:text-xl"></i>
+  <div class="relative w-full max-w-[500px]">
+    <a href="height.html" class="mbti-btn absolute -top-[70px] left-0 z-50 flex items-center justify-center gap-2 w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px] px-4 sm:px-6 text-base sm:text-lg">
+      <i class="fa-solid fa-arrow-left"></i>
       <span class="font-serif leading-none">Back</span>
     </a>
-  </div>
 
   <!-- Main Card -->
-  <div class="card">
-    <h2>Enter Bio</h2>
-    <div class="heart-bg"></div>
+  <div class="card animate-float">
+    <h2 class="title">Enter Bio</h2>
 
     <div class="bio-section">
       <div class="bio-label">
@@ -186,8 +186,8 @@
     </div>
 
     <div class="btn-row">
-      <button id="skipBtn" class="mbti-btn w-[110px] h-[40px] sm:h-[45px] text-sm sm:text-base">Skip</button>
-      <button id="nextBtn" class="mbti-btn w-[110px] h-[40px] sm:h-[45px] text-sm sm:text-base">Next</button>
+      <button id="skipBtn" class="next-btn">Skip</button>
+      <button id="nextBtn" class="next-btn">Next</button>
     </div>
   </div>
 
@@ -204,23 +204,40 @@
       }
     });
 
-    document.getElementById('skipBtn').addEventListener('click', () => {
-      localStorage.removeItem('bio');
-      window.location.href = 'MBTI.html';
+    document.getElementById('skipBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      const orig = window.collectPageData;
+      window.collectPageData = () => ({ /* skip */ });
+      document.dispatchEvent(new Event('registration:submit'));
+      window.collectPageData = orig;
     });
 
-    document.getElementById('nextBtn').addEventListener('click', () => {
-      const bio = textarea.value.trim();
-      if (bio.length > 500) {
-        alert('⚠️ Bio must be 500 characters or less.');
-        return;
-      }
-      if (bio) {
-        localStorage.setItem('bio', bio);
-      }
-      window.location.href = 'MBTI.html';
+    document.getElementById('nextBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.dispatchEvent(new Event('registration:submit'));
     });
   </script>
+
+  <script>
+    window.prefillPage = function (prefill) {
+      const val = prefill.bio ?? localStorage.getItem('bio') ?? '';
+      textarea.value = val;
+      const remaining = 500 - textarea.value.length;
+      counter.textContent = remaining;
+    };
+
+    window.collectPageData = function () {
+      const bio = textarea.value.trim();
+      if (bio && bio.length > 500) {
+        alert('⚠️ Bio must be 500 characters or less.');
+        return null;
+      }
+      if (bio) localStorage.setItem('bio', bio);
+      return { bio };
+    };
+  </script>
+
+  <script type="module" src="/js/registration.js"></script>
 
 </body>
 </html>

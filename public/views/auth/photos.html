@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add Photos to Profile</title>
 
+  <!-- Tailwind (for consistent button styles) -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <!-- External stylesheet & fonts -->
   <link rel="preconnect" href="https://rsms.me/" />
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   
   <style>
     /* ========== ANIMATIONS ========== */
@@ -24,7 +28,7 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-image: url('/img/bgimg.jpg');
+      background-image: url('../../img/bgimg.jpg');
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center;
@@ -144,36 +148,22 @@
       background: red;
     }
 
-    /* ========== NEXT BUTTON ========== */
-    .btn-container {
-      padding-left: 600px;
-      padding-top: 50px;
-    }
-
-
-    #nextBtn {
-      padding: 10px 25px;
-      font-size: 16px;
-      background: linear-gradient(to right, #ff6f91, #ff9671);
-      color: white;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    #nextBtn:hover {
-      background: linear-gradient(to right, #ff9671, #ff6f91);
-      transform: scale(1.05);
-    }
+    /* ========== NEXT BUTTON (shared) ========== */
+    .btn-container { display:flex; justify-content:flex-end; margin-top: 30px; }
+    .next-btn { background: linear-gradient(135deg, #F78998 0%, #fa97a9 50%, #F78998 100%); border-width: 0.13rem; border-style: solid; border-top-color: #ffffffcc; border-bottom-color: #ffffffcc; border-left-color: #fa97a9; border-right-color: #fa97a9; border-radius: 55px; box-shadow: 0px 36.86px 13.98px rgba(255, 106, 106, 0.02), 0px 20.34px 12.71px rgba(255, 106, 106, 0.08), 0px 8.9px 8.9px rgba(255, 106, 106, 0.13), 0px 2.54px 5.08px rgba(255, 106, 106, 0.15); position: relative; overflow:hidden; padding: 10px 25px; font-size: 16px; color: black; cursor: pointer; transition:0.25s ease; }
+    .next-btn::before{ content:""; position:absolute; inset:0; background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100% ); border-radius:55px; pointer-events:none; }
+    .next-btn:hover { transform: translateY(-2px) scale(1.02); }
   </style>
 </head>
 
 <body>
   <!-- Back Button -->
-  <button onclick="window.location.href='contact_number.html'" class="absolute top-6 left-6 bg-white/70 backdrop-blur-xl border border-white/60 shadow-lg text-black text-sm font-medium hover:scale-105 transition px-4 py-2 rounded-full z-50">
-    ← Back
-  </button>
+  <a href="contact_number.html"
+     class="absolute top-6 left-6 inline-flex items-center rounded-full font-medium w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px] px-4 sm:px-6 text-base sm:text-lg transition-all duration-200 z-50"
+     style="background: rgba(255,255,255,0.7); box-shadow: inset 0 0 1px rgba(255,255,255,0.6), inset -1px -2px 3px rgba(0,0,0,0.1);">
+    <i class="fa-solid fa-arrow-left mr-2 text-lg sm:text-xl"></i>
+    <span class="font-serif leading-none">Back</span>
+  </a>
   <div class="card animate-float">
     <h2>Add Photos to Profile</h2>
     <p class="subtitle">
@@ -234,7 +224,7 @@
     </div>
 
     <div class="btn-container">
-      <button id="nextBtn">Next</button>
+      <button id="nextBtn" class="next-btn">Next</button>
     </div>
   </div>
 
@@ -316,8 +306,34 @@
       }
       
       localStorage.setItem('photos', JSON.stringify(photos));
-      window.location.href = 'hobby.html';
+      // trigger registration save (registration.js will collect from localStorage)
+      document.dispatchEvent(new Event('registration:submit'));
     });
+
+    // Registration hooks
+    window.prefillPage = function(prefill) {
+      const photos = prefill.photos ?? JSON.parse(localStorage.getItem('photos') || '[]');
+      if (!Array.isArray(photos) || photos.length === 0) return;
+      photos.forEach((src, idx) => {
+        const preview = document.getElementById(`preview${idx+1}`);
+        const uploadArea = document.getElementById(`box${idx+1}`).querySelector('.upload-area');
+        preview.innerHTML = `<img src="${src}" alt="photo">`;
+        uploadArea.style.display = 'none';
+        const removeBtn = document.getElementById(`remove${idx+1}`);
+        if (removeBtn) removeBtn.style.display = 'block';
+      });
+    };
+
+    window.collectPageData = function() {
+      const photos = JSON.parse(localStorage.getItem('photos') || '[]');
+      if (!Array.isArray(photos) || photos.length < 3) {
+        alert("⚠️ Please upload at least 3 photos before continuing.");
+        return null;
+      }
+      return { photos };
+    };
+  </script>
+  <script type="module" src="/js/registration.js"></script>
   </script>
 </body>
 </html>

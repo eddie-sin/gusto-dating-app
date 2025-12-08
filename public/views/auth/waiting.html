@@ -125,6 +125,20 @@
       background: rgba(220, 38, 38, 0.3);
     }
 
+    /* Standard next/skip button style (from birthday page) */
+    .next-btn { width: 96px; padding: 6px; font-family: 'Rufina', serif; font-size: 14px; color: black; background: linear-gradient(135deg, #F78998 0%, #fa97a9 50%, #F78998 100%); position: relative; overflow: hidden; border-width: 0.11rem; border-style: solid; border-top-color: #ffffffcc; border-bottom-color: #ffffffcc; border-left-color: #fa97a9; border-right-color: #fa97a9; border-radius: 55px; box-shadow: 0px 36.86px 13.98px rgba(255, 106, 106, 0.02), 0px 20.34px 12.71px rgba(255, 106, 106, 0.08), 0px 8.9px 8.9px rgba(255, 106, 106, 0.13), 0px 2.54px 5.08px rgba(255, 106, 106, 0.15); cursor: pointer; transition: 0.25s ease; }
+    .next-btn::before { content: ""; position: absolute; top: 0; left: 0; height: 100%; width: 100%; background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100%); pointer-events: none; border-radius: 55px; }
+    .next-btn:hover { transform: translateY(-2px) scale(1.02); }
+
+    /* Larger variants for action buttons on this page */
+    #restartBtn.next-btn,
+    #submitBtn.next-btn {
+      width: 180px;
+      padding: 12px 22px;
+      font-size: 16px;
+      border-radius: 999px;
+    }
+
     .loading {
       display: inline-block;
       width: 16px;
@@ -154,8 +168,8 @@
     </div>
 
     <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-      <button id="restartBtn" class="btn-danger w-full sm:w-auto">Start Over</button>
-      <button id="submitBtn" class="btn-primary w-full sm:w-auto">
+      <button id="restartBtn" class="next-btn w-full sm:w-auto">Start Over</button>
+      <button id="submitBtn" class="next-btn w-full sm:w-auto">
         <span id="submitText">Submit Registration</span>
         <span id="submitLoader" class="loading hidden"></span>
       </button>
@@ -502,5 +516,25 @@
     // Load review data on page load
     loadReviewData();
   </script>
+  <script>
+    // Allow registration.js to prefill this page from server data
+    window.prefillPage = function(prefill) {
+      if (!prefill || typeof prefill !== 'object') return;
+      // write known keys into localStorage for review rendering
+      Object.entries(prefill).forEach(([k, v]) => {
+        try {
+          if (typeof v === 'object') {
+            localStorage.setItem(k, JSON.stringify(v));
+          } else if (v != null) {
+            localStorage.setItem(k, v);
+          }
+        } catch (e) {
+          // ignore
+        }
+      });
+      loadReviewData();
+    };
+  </script>
+  <script type="module" src="/js/registration.js"></script>
 </body>
 </html>

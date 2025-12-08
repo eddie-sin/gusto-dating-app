@@ -15,96 +15,66 @@
   />
 
   <style>
-      /* ---------- Background Image ---------- */
+  /* Background */
   .pink-bg {
-    background: url('/img/bgimg.jpg') no-repeat center center/cover;
+    background: url('../../img/bgimg.jpg') no-repeat center center/cover;
     font-family: "Poppins", sans-serif;
     min-height: 100vh;
   }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
+  @keyframes float { 0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);} }
   .animate-float { animation: float 4s ease-in-out infinite; will-change: transform; }
 
-  /* ---------- Gender Cards ---------- */
+  /* Gender Cards */
   .gender-option {
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    border: 2.1px solid rgba(255, 255, 255, 0.4);
     background: rgba(255, 255, 255, 0.25);
     transition: all 0.3s ease;
     font-weight: 600;
     color: #2e2e2e;
   }
-
-  .gender-option:hover {
-    transform: scale(1.07);
-    box-shadow: 0 0 20px rgba(255, 155, 180, 0.5);
-  }
-
-  /* ---------- White Border Overlay ---------- */
+  .gender-option:hover { transform: scale(1.07); box-shadow: 0 0 20px rgba(255, 155, 180, 0.5); }
   .gender-option::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(255, 255, 255, 1) 10%,
-      rgba(255, 255, 255, 2) 90%,
-      rgba(255, 255, 255, 1) 100%
-    );
+    content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+    background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    mask-composite: exclude; pointer-events: none; opacity: 0; transition: opacity 0.3s ease;
   }
+  .gender-option.active::before { opacity: 1; }
 
-  .gender-option.active::before {
-    opacity: 1;
-  }
+  /* Next / Skip button (standardized) */
+  .next-btn { width: 96px; padding: 6px 10px; font-family: 'Rufina', serif; font-size: 14px; color: black;
+    background: linear-gradient(135deg, #F78998 0%, #fa97a9 50%, #F78998 100%);
+    position: relative; overflow: hidden; border-width: 0.11rem; border-style: solid; border-top-color: #ffffffcc; border-bottom-color: #ffffffcc; border-left-color: #fa97a9; border-right-color: #fa97a9; border-radius: 55px;
+    box-shadow: 0px 36.86px 13.98px rgba(255, 106, 106, 0.02), 0px 20.34px 12.71px rgba(255, 106, 106, 0.08), 0px 8.9px 8.9px rgba(255, 106, 106, 0.13), 0px 2.54px 5.08px rgba(255, 106, 106, 0.15);
+    cursor: pointer; transition: 0.25s ease; }
+  .next-btn::before { content: ""; position:absolute; top:0; left:0; height:100%; width:100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100%);
+    pointer-events:none; border-radius:55px; }
+  .next-btn:hover { transform: translateY(-2px) scale(1.02); }
 
-     /* ---------- Buttons ---------- */
-  .glass-btn {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    background: rgba(255, 255, 255, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 10px rgba(255, 155, 180, 0.3);
-    color: #3f3f3f;
-    font-weight: 500;
-    transition: all 0.3s ease;
-  }
-
-  .glass-btn:hover {
-    background: rgba(255, 182, 193, 0.6);
-    transform: scale(1.05);
-  }
-
+  /* Mobile triangle layout */
   @media (max-width: 640px) {
-  /* Triangle layout with even spacing */
-  #genderGroup {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem; /* even vertical + horizontal space */
-    justify-items: center;
-    align-items: center;
+    #genderGroup { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; justify-items: center; }
+    #genderGroup button:nth-child(3) { grid-column: 1 / span 2; justify-self: center; }
   }
+  /* Desktop horizontal */
+  @media (min-width: 641px) {
+    #genderGroup { display: flex; flex-direction: row; justify-content: center; align-items: center; flex-wrap: nowrap; gap: 2rem; }
+  }
+  /* Inner border + spread */
+  .gender-option { position: relative; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: rgba(255,255,255,0.12); overflow: hidden; }
+  .gender-option .inner-border { position: absolute; inset: 0; border: 2px solid lightgray; pointer-events: none; z-index: 5; }
+  .gender-option::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(245,214,214,0.15) 0%, rgba(244,220,220,0) 25%, rgba(255,255,255,0) 75%, rgba(255,255,255,0.15) 100%); pointer-events: none; z-index: 2; }
 
-  #genderGroup button:nth-child(3) {
-    grid-column: 1 / span 2;
-    justify-self: center;
-    margin-top: 0.5rem; /* slight offset for balance */
-  }
-}
+  .title-font { font-family: 'Rufina', serif; font-weight: 500; }
+  /* Back button design */
+  .mbti-btn { position: relative; background: radial-gradient(circle at 30% 100%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.25) 35%, rgba(255,182,193,0.18) 60%, rgba(255,160,180,0.1) 80%, rgba(255,150,170,0.05) 100%), rgba(255,192,203,0.25); border-radius: 1.2rem; color:#111; font-weight:500; transition: all 0.25s ease-in-out; overflow:hidden; z-index:1; box-shadow: inset 0 0 1px rgba(255,255,255,0.6), inset 0 -1px 3px rgba(255,255,255,0.4); }
+  .mbti-btn::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1.4px; background:linear-gradient(150deg, rgba(255,255,255,0.9), rgba(255,190,210,0.65)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; z-index:-1; }
+  .mbti-btn:hover { transform: scale(1.06); box-shadow: 0 0 18px rgba(255,180,200,0.85); }
   </style>
 </head>
 
@@ -114,24 +84,19 @@
   <div class="relative text-center px-4 sm:px-6 md:px-10 lg:px-16 w-full max-w-6xl z-10 animate-float">
 
     <!-- Back Button -->
-    <div class="text-left mt-4 sm:mt-6 md:mt-10 mb-6 sm:mb-8 md:mb-10">
+    <div class=" text-left mt-4 sm:mt-6 md:mt-10 mb-6 sm:mb-8 md:mb-10">
       <a href="batch_og.html"
-         class="inline-flex items-center rounded-full bg-[#ffd6e0] text-[#2e2e2e] font-medium 
-                shadow-[inset_2px_2px_4px_rgba(255,255,255,0.6),inset_-2px_-2px_4px_rgba(0,0,0,0.1),0_4px_8px_rgba(255,182,193,0.6)]
-                hover:shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.6),inset_2px_2px_4px_rgba(0,0,0,0.1),0_6px_12px_rgba(255,182,193,0.7)]
-                transition-all duration-200 px-4 sm:px-6 py-2 sm:py-2.5 text-base sm:text-lg">
-        <span class="mr-2 text-lg sm:text-xl leading-none">&lt;</span>
+         class="mbti-btn inline-flex items-center rounded-full font-medium w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px] px-4 sm:px-6 text-base sm:text-lg transition-all duration-200">
+        <i class="fa-solid fa-arrow-left mr-2 text-lg sm:text-xl"></i>
         <span class="font-serif leading-none">Back</span>
       </a>
     </div>
 
     <!-- Title -->
-    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mt-6 sm:mt-10 mb-10 sm:mb-16 md:mb-20">
-      Select Your Gender
-    </h1>
+    <div class="bg-white/15 backdrop-blur-lg rounded-3xl p-8 sm:p-10 md:p-12 shadow-2xl border border-white/30 animate-float mx-auto w-full">
+      <h1 class="title-font text-2xl sm:text-3xl md:text-4xl text-gray-800 mb-10 sm:mb-16 md:mb-20">Select Your Gender</h1>
 
-    <div id="genderGroup"
-  class="flex flex-wrap justify-center items-center gap-8 sm:gap-10 md:gap-12 mb-12 sm:mb-16 md:mb-20">
+      <div id="genderGroup" class="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-10 mb-12 sm:mb-16 md:mb-20">
 
   <!-- Male -->
   <button data-gender="male"
@@ -152,25 +117,19 @@
   </button>
 
   <!-- Both -->
-  <button data-gender="other"
-    class="gender-option flex flex-col items-center justify-center rounded-2xl
-           w-[150px] sm:w-[190px] md:w-[210px]
-           h-[130px] sm:h-[180px] md:h-[180px] mx-2 sm:mx-3 md:mx-4">
-    <i class="fa-solid fa-transgender-alt text-3xl sm:text-5xl md:text-6xl mb-3"></i>
-    <span class="font-bold text-base sm:text-lg md:text-xl">Other</span>
-  </button>
-</div>
-
-    <!-- Centered Next Button -->
-    <div class="flex justify-center items-center mt-4 sm:mt-8 md:mt-10">
-      <button id="nextButton"
-        class="glass-btn px-10 sm:px-12 py-2.5 sm:py-3 rounded-full text-sm sm:text-base cursor-not-allowed bg-gray-300/60">
-        Next
+      <button data-gender="other" class="gender-option flex flex-col items-center justify-center rounded-2xl w-[150px] sm:w-[190px] md:w-[210px] h-[130px] sm:h-[180px] md:h-[180px]">
+        <i class="fa-solid fa-transgender-alt text-3xl sm:text-5xl md:text-6xl mb-3"></i>
+        <span class="font-bold text-base sm:text-lg md:text-xl">Both</span>
       </button>
-    </div>
-  </div>
 
-  </div>  
+      </div>
+
+      <!-- Next Button -->
+      <div class="flex justify-center items-center mt-4 sm:mt-8 md:mt-10">
+        <button id="nextButton" class="next-btn cursor-not-allowed opacity-80">Next</button>
+      </div>
+
+    </div>
 
   <!-- JS Script -->
   <script>
@@ -180,7 +139,6 @@
 
   genderButtons.forEach(button => {
     button.addEventListener('click', () => {
-      // Reset all buttons
       genderButtons.forEach(btn => {
         btn.classList.remove('active');
         btn.style.background = 'rgba(255,255,255,0.25)';
@@ -188,32 +146,40 @@
         btn.style.boxShadow = 'none';
       });
 
-      // Mark selected one
       selectedGender = button.getAttribute('data-gender');
       button.classList.add('active');
       button.style.background = '#fa627e';
       button.style.color = 'white';
       button.style.boxShadow = '0 0 25px rgba(250, 98, 126, 0.6)';
 
-      // Enable Next button
       nextButton.classList.remove('bg-gray-300/60', 'cursor-not-allowed');
-      nextButton.classList.add('bg-pink-500', 'hover:bg-pink-600', 'cursor-pointer', 'text-white');
+      nextButton.classList.add('cursor-pointer');
     });
   });
 
-  nextButton.addEventListener('click', () => {
-    if (!selectedGender) {
-      alert('⚠️ Please select your gender before continuing.');
-      return;
-    }
-
-    // Map "other" to "lgbt" for backend
-    const genderValue = selectedGender === 'other' ? 'lgbt' : selectedGender;
-    
-    localStorage.setItem('gender', genderValue);
-    window.location.href = 'sexuality.html';
+  nextButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.dispatchEvent(new Event('registration:submit'));
   });
+
+  window.prefillPage = function(prefill) {
+    const g = prefill.gender ?? localStorage.getItem('gender');
+    if (!g) return;
+    genderButtons.forEach(btn => {
+      const val = btn.getAttribute('data-gender') === 'other' ? 'lgbt' : btn.getAttribute('data-gender');
+      if (val === g) btn.click();
+    });
+  };
+
+  window.collectPageData = function() {
+    if (!selectedGender) { alert('⚠️ Please select your gender before continuing.'); return null; }
+    const genderValue = selectedGender === 'other' ? 'lgbt' : selectedGender;
+    localStorage.setItem('gender', genderValue);
+    return { gender: genderValue };
+  };
+
 </script>
+<script type="module" src="/js/registration.js"></script>
 
 </body>
 </html>

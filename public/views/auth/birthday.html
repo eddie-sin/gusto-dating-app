@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Birthday Input</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;600&display=swap" rel="stylesheet">
     <style>
       @keyframes fadeIn {
         from {
@@ -36,10 +37,7 @@
         animation: fadeIn 1.5s ease-out both;
       }
 
-      .card {
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-      }
+      .card { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); min-height: 350px; }
 
       .no-scrollbar::-webkit-scrollbar {
         display: none;
@@ -50,10 +48,18 @@
         scrollbar-width: none;
       }
 
-      .dropdown-list {
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(236, 72, 153, 0.3);
-      }
+      .dropdown-list { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); border: 1px solid rgba(236, 72, 153, 0.3); }
+      .font-serif { font-family: 'Rufina', serif; }
+
+      /* Standard next/skip button style */
+      .next-btn { width: 96px; padding: 6px; font-family: 'Rufina', serif; font-size: 14px; color: black; background: linear-gradient(135deg, #F78998 0%, #fa97a9 50%, #F78998 100%); position: relative; overflow: hidden; border-width: 0.11rem; border-style: solid; border-top-color: #ffffffcc; border-bottom-color: #ffffffcc; border-left-color: #fa97a9; border-right-color: #fa97a9; border-radius: 55px; box-shadow: 0px 36.86px 13.98px rgba(255, 106, 106, 0.02), 0px 20.34px 12.71px rgba(255, 106, 106, 0.08), 0px 8.9px 8.9px rgba(255, 106, 106, 0.13), 0px 2.54px 5.08px rgba(255, 106, 106, 0.15); cursor: pointer; transition: 0.25s ease; }
+      .next-btn::before { content: ""; position: absolute; top: 0; left: 0; height: 100%; width: 100%; background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100%); pointer-events: none; border-radius: 55px; }
+      .next-btn:hover { transform: translateY(-2px) scale(1.02); }
+
+      /* Back button style */
+      .mbti-btn { position: relative; background: radial-gradient(circle at 30% 100%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.25) 35%, rgba(255,182,193,0.18) 60%, rgba(255,160,180,0.1) 80%, rgba(255,150,170,0.05) 100%), rgba(255,192,203,0.25); border-radius: 1.2rem; color:#111; font-weight:500; transition: all 0.25s ease-in-out; overflow:hidden; z-index:1; box-shadow: inset 0 0 1px rgba(255,255,255,0.6), inset 0 -1px 3px rgba(255,255,255,0.4); }
+      .mbti-btn::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1.4px; background:linear-gradient(150deg, rgba(255,255,255,0.9), rgba(255,190,210,0.65)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; z-index:-1; }
+      .mbti-btn:hover { transform: scale(1.06); box-shadow: 0 0 18px rgba(255,180,200,0.85); }
 
       @keyframes shake {
         0%,
@@ -101,16 +107,19 @@
   <body
     class="flex items-center justify-center min-h-screen px-4 relative"
     style="
-      background-image: url('/img/bgimg.jpg');
+      background-image: url('../../img/bgimg.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
     "
   >
     <!-- Back Button -->
-    <button onclick="window.location.href='enter-name.html'" class="absolute top-6 left-6 bg-white/70 backdrop-blur-xl border border-white/60 shadow-lg text-black text-sm font-medium hover:scale-105 transition px-4 py-2 rounded-full">
-      ← Back
-    </button>
+    <div class="absolute top-6 left-6 z-50">
+      <button onclick="window.location.href='enter-name.html'" class="mbti-btn inline-flex items-center rounded-full font-medium w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px] px-4 sm:px-6 text-base sm:text-lg transition-all duration-200">
+        <span class="mr-2 text-lg sm:text-xl leading-none">&lt;</span>
+        <span class="font-serif leading-none">Back</span>
+      </button>
+    </div>
 
     <div
       class="card animate-float fade-in bg-white/15 rounded-3xl p-8 sm:p-10 md:p-12 lg:p-14 text-center shadow-2xl w-full max-w-[420px] sm:max-w-[480px] md:max-w-[520px] lg:max-w-[600px] xl:max-w-[640px] border border-white/30"
@@ -175,13 +184,8 @@
           </div>
         </div>
 
-        <div class="flex justify-start mt-4 ml-[calc(50%+40px)]">
-          <button
-            id="nextBtn"
-            class="bg-rose-500 hover:bg-rose-600 text-white px-10 py-3 rounded-full text-lg font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 w-24 sm:w-28 md:w-32"
-          >
-            Next
-          </button>
+        <div class="flex justify-end mt-6">
+          <button id="nextBtn" class="next-btn">Next</button>
         </div>
       </div>
     </div>
@@ -266,7 +270,26 @@
         setTimeout(() => button.classList.remove("shake"), 500);
       }
 
-      document.getElementById("nextBtn").addEventListener("click", () => {
+      document.getElementById("nextBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.dispatchEvent(new Event('registration:submit'));
+      });
+
+      // Registration hooks
+      window.prefillPage = function(prefill) {
+        const iso = prefill.dob ?? localStorage.getItem('dob');
+        if (!iso) return;
+        const d = new Date(iso);
+        const day = String(d.getDate()).padStart(2,'0');
+        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        const month = monthNames[d.getMonth()];
+        const year = String(d.getFullYear());
+        selectValue('day', day);
+        selectValue('month', month);
+        selectValue('year', year);
+      };
+
+      window.collectPageData = function() {
         const dayBtn = document.getElementById("dayBtn");
         const monthBtn = document.getElementById("monthBtn");
         const yearBtn = document.getElementById("yearBtn");
@@ -285,39 +308,31 @@
 
         if (!allSelected) {
           alert("⚠️ Please select your full birthday before continuing!");
-          return;
+          return null;
         }
 
-        // Get selected values
         const day = dayBtn.querySelector("span:first-child").textContent;
         const month = monthBtn.querySelector("span:first-child").textContent;
         const year = yearBtn.querySelector("span:first-child").textContent;
-
-        // Convert month name to number
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-          "July", "August", "September", "October", "November", "December"];
+        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         const monthNum = monthNames.indexOf(month) + 1;
-
-        // Create date object
         const dob = new Date(year, monthNum - 1, parseInt(day));
         const today = new Date();
         const age = today.getFullYear() - parseInt(year) - (today.getMonth() < monthNum - 1 || (today.getMonth() === monthNum - 1 && today.getDate() < parseInt(day)) ? 1 : 0);
-
-        // Validate age (must be at least 18)
         if (age < 18) {
           alert("⚠️ You must be at least 18 years old to register.");
-          return;
+          return null;
         }
-
         if (dob > today) {
           alert("⚠️ Date of birth cannot be in the future.");
-          return;
+          return null;
         }
-
-        // Store DOB as ISO string
-        localStorage.setItem('dob', dob.toISOString());
-        window.location.href = "batch_og.html";
-      });
+        const iso = dob.toISOString();
+        localStorage.setItem('dob', iso);
+        return { dob: iso };
+      };
     </script>
+
+  <script type="module" src="/js/registration.js"></script>
   </body>
 </html>

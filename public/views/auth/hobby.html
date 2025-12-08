@@ -8,15 +8,44 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background-image: url("/img/bgimg.jpg");
+      background-image: url('../../img/bgimg.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
     }
+
+    /* Shared Next/Skip button from coworker design */
+    .next-btn {
+      width: 120px;
+      padding: 10px 10px;
+      font-family: 'Rufina', serif;
+      font-size: 17px;
+      color: black;
+      background: linear-gradient(135deg, #F78998 0%, #fa97a9 50%, #F78998 100%);
+      position: relative;
+      overflow: hidden;
+      border-width: 0.11rem;
+      border-style: solid;
+      border-top-color: #ffffffcc;
+      border-bottom-color: #ffffffcc;
+      border-left-color: #fa97a9;
+      border-right-color: #fa97a9;
+      border-radius: 55px;
+      box-shadow: 0px 36.86px 13.98px rgba(255, 106, 106, 0.02),
+                  0px 20.34px 12.71px rgba(255, 106, 106, 0.08),
+                  0px 8.9px 8.9px rgba(255, 106, 106, 0.13),
+                  0px 2.54px 5.08px rgba(255, 106, 106, 0.15);
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+    .next-btn::before { content:""; position:absolute; top:0; left:0; height:100%; width:100%; background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100%); pointer-events:none; border-radius:55px; }
+    .next-btn:hover { transform: translateY(-2px) scale(1.02); }
 
     /* Floating glass card (same as Confirm Document) */
     .glass {
@@ -112,14 +141,15 @@
 </head>
 
 
-<body class="flex flex-col items-center justify-center min-h-screen px-4 relative overflow-hidden">
+<body class="flex flex-col items-center justify-center min-h-screen px-4 relative overflow-auto">
 
-  <!-- ORIGINAL BACK BUTTON RESTORED -->
-  <button onclick="window.location.href='index.html'" class="absolute top-6 left-6 md:top-8 md:left-10 px-6 py-2.5 rounded-full 
-      bg-white/70 backdrop-blur-xl border border-white/60 shadow-lg
-      text-black text-[15px] font-medium hover:scale-105 transition flex items-center gap-2">
-    ← Back
-  </button>
+  <!-- Back button -->
+  <div class="w-full mb-6">
+    <a href="photos.html" class="mbti-btn inline-flex items-center justify-center gap-2 w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px] px-4 sm:px-6 text-base sm:text-lg">
+      <i class="fa-solid fa-arrow-left text-lg sm:text-xl"></i>
+      <span class="font-serif leading-none">Back</span>
+    </a>
+  </div>
 
 
   <!-- Floating Glass Card (EXACT SAME AS CONFIRM PAGE) -->
@@ -128,7 +158,7 @@
 
     <div class="heart-bg"></div>
 
-    <h2 class="text-[#2e2e2e] text-xl sm:text-2xl md:text-3xl mb-6">
+    <h2 class="text-gray-1200 text-xl sm:text-2xl md:text-3xl mb-16">
       What’s your Hobby?
     </h2>
 
@@ -146,13 +176,8 @@
 
     <!-- Buttons -->
     <div class="flex justify-center gap-6 mt-10">
-      <button id="skipBtn" class="mbti-btn w-[130px] h-[48px] flex items-center justify-center text-[16px]">
-        Skip
-      </button>
-
-      <button id="nextBtn" class="mbti-btn w-[130px] h-[48px] flex items-center justify-center text-[16px]">
-        Next
-      </button>
+      <button id="skipBtn" class="next-btn">Skip</button>
+      <button id="nextBtn" class="next-btn">Next</button>
     </div>
 
   </div>
@@ -201,24 +226,42 @@
       });
     });
 
-    document.getElementById('skipBtn').addEventListener('click', () => {
-      localStorage.setItem('hobbies', JSON.stringify([]));
-      window.location.href = 'zodiac.html';
+    document.getElementById('skipBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      const orig = window.collectPageData;
+      window.collectPageData = () => ({ hobbies: [] });
+      document.dispatchEvent(new Event('registration:submit'));
+      window.collectPageData = orig;
     });
 
-    document.getElementById('nextBtn').addEventListener('click', () => {
+    document.getElementById('nextBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.dispatchEvent(new Event('registration:submit'));
+    });
+
+    // Registration hooks
+    window.prefillPage = function(prefill) {
+      const list = prefill.hobbies ?? JSON.parse(localStorage.getItem('hobbies') || '[]');
+      if (!Array.isArray(list) || list.length === 0) return;
+      document.querySelectorAll('[data-hobby]').forEach(el => {
+        const key = el.dataset.hobby;
+        if (list.includes(key)) el.classList.add('pill-selected');
+        else el.classList.remove('pill-selected');
+      });
+    };
+
+    window.collectPageData = function() {
       const selected = document.querySelectorAll('.pill-selected');
       const hobbies = Array.from(selected).map(pill => pill.dataset.hobby);
-      
       if (hobbies.length > 5) {
         alert('⚠️ You can select a maximum of 5 hobbies.');
-        return;
+        return null;
       }
-      
       localStorage.setItem('hobbies', JSON.stringify(hobbies));
-      window.location.href = 'zodiac.html';
-    });
+      return { hobbies };
+    };
   </script>
+  <script type="module" src="/js/registration.js"></script>
 
 </body>
 </html>

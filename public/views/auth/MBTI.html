@@ -5,100 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Personality Type</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      
-      rel="stylesheet"
-    />
-
-    <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&display=swap" rel="stylesheet" />
 
     <style>
       body {
         font-family: "Inter", sans-serif;
       }
 
-      /* Glass Container */
       .glass {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
       }
 
-      /* MBTI Button Style */
       .mbti-btn {
         position: relative;
-        background: radial-gradient(
-            circle at 30% 100%,
-            rgba(255, 255, 255, 0.55) 0%,
-            rgba(255, 255, 255, 0.25) 35%,
-            rgba(255, 182, 193, 0.18) 60%,
-            rgba(255, 160, 180, 0.1) 80%,
-            rgba(255, 150, 170, 0.05) 100%
-          ),
-          rgba(255, 192, 203, 0.25);
-        border-radius: 1.2rem;
+        background: rgba(206, 185, 185, 0.1);
+        border: 1px solid rgba(255,255,255,0.45);
+        border-radius: 1.5rem;
+        backdrop-filter: blur(56px);
+        -webkit-backdrop-filter: blur(14px);
         color: #111;
         font-weight: 500;
         transition: all 0.25s ease-in-out;
         overflow: hidden;
-        z-index: 1;
-        box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.6),
-          inset 0 -1px 3px rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 5px rgba(255,255,255,0.35);
       }
 
-      /* Subtle glossy border gradient */
       .mbti-btn::before {
         content: "";
         position: absolute;
         inset: 0;
         border-radius: inherit;
-        padding: 1.4px;
-        background: linear-gradient(
-          150deg,
-          rgba(255, 255, 255, 0.9),
-          rgba(255, 190, 210, 0.65)
-        );
-        -webkit-mask: linear-gradient(#fff 0 0) content-box,
-          linear-gradient(#fff 0 0);
+        padding: 1.3px;
+        background: linear-gradient(150deg, rgba(255, 255, 255, 0.95), rgba(255, 190, 210, 0.7));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
         -webkit-mask-composite: xor;
         mask-composite: exclude;
-        z-index: -1;
       }
 
-      /* Hover and selection */
       .mbti-btn:hover {
-        transform: scale(1.06);
-        box-shadow: 0 0 18px rgba(255, 180, 200, 0.85);
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(255, 185, 205, 0.9);
       }
 
       .selected {
-        background: radial-gradient(
-            circle at 30% 100%,
-            rgba(255, 255, 255, 0.55) 0%,
-            rgba(255, 160, 180, 0.4) 50%,
-            rgba(255, 100, 130, 0.25) 80%
-          ),
-          linear-gradient(to bottom right, #ff8eb5, #ff4f85);
+        background: radial-gradient(circle at 30% 100%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 150, 180, 0.45) 50%, rgba(255, 90, 130, 0.3) 80%), linear-gradient(to bottom right, #ff8eb5, #ff4f85);
         color: white;
-        box-shadow: 0 0 22px rgba(255, 110, 150, 0.8);
+        box-shadow: 0 0 24px rgba(255, 110, 150, 0.85);
         transform: scale(1.08);
       }
+
+      .title{ font-family: "Inter", sans-serif; font-weight: 400; }
+      @keyframes float { 0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);} }
+      .animate-float { animation: float 4s ease-in-out infinite; will-change: transform; }
+
+      .next-btn {
+        width: 96px;
+        padding: 8px;
+        font-family: 'Rufina', serif;
+        font-size: 14px;
+        color: black;
+        background: linear-gradient(135deg, #F78998 0%, #fa97a9 50%, #F78998 100%);
+        position: relative;
+        overflow: hidden;
+        border-width: 0.11rem;
+        border-style: solid;
+        border-top-color: #ffffffcc;
+        border-bottom-color: #ffffffcc;
+        border-left-color: #fa97a9;
+        border-right-color: #fa97a9;
+        border-radius: 55px;
+        box-shadow:
+          0px 36.86px 13.98px rgba(255, 106, 106, 0.02),
+          0px 20.34px 12.71px rgba(255, 106, 106, 0.08),
+          0px 8.9px 8.9px rgba(255, 106, 106, 0.13),
+          0px 2.54px 5.08px rgba(255, 106, 106, 0.15);
+        cursor: pointer;
+        transition: 0.25s ease;
+      }
+      .next-btn::before { content:""; position:absolute; top:0; left:0; height:100%; width:100%; background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100%); pointer-events:none; border-radius:55px; }
+      .next-btn:hover { transform: translateY(-2px) scale(1.02); background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100%); }
+
+      .back-btn { position: relative; background: radial-gradient(circle at 30% 100%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.25) 35%, rgba(255,182,193,0.18) 60%, rgba(255,160,180,0.1) 80%, rgba(255,150,170,0.05) 100%), rgba(255,192,203,0.25); border-radius: 1.2rem; color:#111; font-weight:500; transition: all 0.25s ease-in-out; overflow:hidden; z-index:1; box-shadow: inset 0 0 1px rgba(255,255,255,0.6), inset 0 -1px 3px rgba(255,255,255,0.4); }
+      .back-btn::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1.4px; background:linear-gradient(150deg, rgba(255,255,255,0.9), rgba(255,190,210,0.65)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; z-index:-1; }
+      .back-btn:hover { transform: scale(1.06); box-shadow: 0 0 18px rgba(255,180,200,0.85); }
     </style>
   </head>
 
   <body
     class="flex flex-col items-center justify-center min-h-screen bg-cover bg-center"
-    style="background-image: url('/img/bgimg.jpg');"
+    style="background-image: url('../../img/bgimg.jpg');"
   >
   
   <!-- Back Button (outside the card) -->
   <div class="w-[90%] max-w-[560px] mb-6">
   <a href="bio.html"
-     class="mbti-btn flex items-center justify-start font-medium 
+     class="back-btn flex items-center justify-start font-medium 
             w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px]
             px-4 sm:px-6 text-base sm:text-lg transition-all duration-200"
   >
@@ -110,24 +115,18 @@
 
   <!-- Glass Container -->
   <div
-    class="glass rounded-[2rem] p-8 sm:p-10 md:p-12 shadow-2xl border border-white/25 w-[90%] max-w-[560px] text-center"
+    class="glass rounded-[2rem] p-8 sm:p-10 md:p-12 shadow-2xl border border-white/25 w-[90%] max-w-[560px] text-center animate-float"
   >
     <!-- Title -->
-    <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold text-black mb-[54px]">
-      what's your personality type?
-    </h2>
+    <h2 class="title text-xl sm:text-2xl md:text-3xl text-black mb-[48px]">what's your personality type?</h2>
 
     <!-- MBTI Grid -->
-    <div id="typeGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 md:gap-7 justify-items-center mb-10"></div>
+    <div id="typeGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-4 sm:gap-6 md:gap-7 justify-items-center mb-10"></div>
 
     <!-- Buttons -->
     <div class="flex justify-center gap-6">
-      <button id="skipBtn" class="w-28 h-12 sm:w-32 sm:h-13 rounded-full border border-white/50 bg-white/30 text-gray-700 font-medium shadow-md hover:bg-white/50 transition-all duration-300">
-        Skip
-      </button>
-      <button id="nextBtn" class="w-28 h-12 sm:w-32 sm:h-13 rounded-full bg-gradient-to-t from-rose-500 to-pink-400 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 border border-white/50">
-        Next
-      </button>
+      <button id="skipBtn" class="next-btn">Skip</button>
+      <button id="nextBtn" class="next-btn">Next</button>
     </div>
   </div>
 
@@ -149,12 +148,11 @@
         const btn = document.createElement("button");
         btn.textContent = t;
 
-        // Responsive size tuning
         btn.className = `
           mbti-btn
           w-16 h-16
-          sm:w-20 sm:h-20
-          md:w-22 md:h-22
+          sm:w-18 sm:h-18
+          md:w-20 md:h-20
           flex items-center justify-center
           text-base sm:text-lg md:text-xl
         `;
@@ -172,19 +170,39 @@
 
       let selectedMBTI = null;
 
-      document.getElementById('skipBtn').addEventListener('click', () => {
-        localStorage.removeItem('mbti');
-        window.location.href = 'StudentId1.html';
+      document.getElementById('skipBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        const orig = window.collectPageData;
+        window.collectPageData = () => ({ mbti: null });
+        document.dispatchEvent(new Event('registration:submit'));
+        window.collectPageData = orig;
       });
 
-      document.getElementById('nextBtn').addEventListener('click', () => {
+      document.getElementById('nextBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.dispatchEvent(new Event('registration:submit'));
+      });
+
+      window.prefillPage = function(prefill) {
+        const val = prefill.mbti ?? localStorage.getItem('mbti');
+        if (!val) return;
+        document.querySelectorAll('#typeGrid button').forEach(b => {
+          if (b.textContent === val) b.classList.add('selected');
+          else b.classList.remove('selected');
+        });
+      };
+
+      window.collectPageData = function() {
         const selected = document.querySelector('#typeGrid button.selected');
         if (selected) {
           selectedMBTI = selected.textContent;
           localStorage.setItem('mbti', selectedMBTI);
+          return { mbti: selectedMBTI };
         }
-        window.location.href = 'StudentId1.html';
-      });
+        // allow skipping
+        return { mbti: null };
+      };
     </script>
+  <script type="module" src="/js/registration.js"></script>
   </body>
 </html>
