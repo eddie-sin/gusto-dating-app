@@ -2,6 +2,7 @@ const express = require("express");
 const authController = require("../controllers/authControllers");
 const feedController = require("../controllers/feedControllers");
 const imageController = require("../controllers/imageController");
+const userController = require("../controllers/userControllers"); // Add this line
 const { uploadSignupFiles } = require("../utils/multerConfig");
 
 const router = express.Router();
@@ -35,13 +36,23 @@ router.post(
 );
 
 /* ============================================================
-   PROFILE / USER ACCOUNT ROUTES (examples)
+   PROFILE / USER ACCOUNT ROUTES
    ============================================================ */
 
-// TODO: implement routes like getMe, updateMe, deleteMe
-// router.get("/me", authController.getMe);
-// router.patch("/me", authController.updateMe);
-// router.delete("/me", authController.deleteMe);
+// Get all users (with optional status filter - for admin)
+router.get("/", authController.protect, userController.getAllUsers);
+
+// Get user by ID
+router.get("/:id", authController.protect, userController.getUser);
+
+// Get current user profile
+router.get("/me", authController.protect, userController.getMe);
+
+// Update current user profile
+router.patch("/me", authController.protect, userController.updateMe);
+
+// Delete current user account
+router.delete("/me", authController.protect, userController.deleteMe);
 
 /* ============================================================
    EXPORT ROUTER

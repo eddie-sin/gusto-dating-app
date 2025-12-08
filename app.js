@@ -11,12 +11,22 @@ const xssSanitizer = require("./utils/xssSanitizer");
 const hpp = require("hpp");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorControllers");
+const path = require('path');
 
 /* ==========================
    INIT APP
 ========================== */
 const app = express();
 
+// favicon handling
+app.get('/favicon.ico', (req, res) => {
+    res.status(204).end(); // No content
+});
+
+// Or serve a default favicon
+app.get('/favicon.ico', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/favicon.ico'));
+});
 /* ==========================
    MIDDLEWARES
 ========================== */
@@ -84,9 +94,12 @@ app.use(xssSanitizer);
 // app.use(mongoSanitize()); // enable later if needed
 app.use(hpp());
 
-/* Serve static files */
-app.use(express.static("./public")); // main frontend
-app.use("/admin", express.static("./public/admin")); // admin UI
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve admin files with proper paths
+app.use('/admin', express.static(path.join(__dirname, 'public/admin')));
+app.use('/admin/js', express.static(path.join(__dirname, 'public/admin/js')));
 
 /* ==========================
    ROUTERS
@@ -116,6 +129,8 @@ app.get("/admin", (req, res) => {
 app.get("/admin/dashboard", (req, res) => {
   res.sendFile(`${__dirname}/public/admin/dashboard.html`);
 });
+
+
 
 /* ==========================
    ERROR HANDLING
