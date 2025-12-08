@@ -157,13 +157,29 @@
     });
   });
 
-  nextButton.addEventListener('click', () => {
-    if (!selectedGender) { alert('⚠️ Please select your gender before continuing.'); return; }
+  nextButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.dispatchEvent(new Event('registration:submit'));
+  });
+
+  window.prefillPage = function(prefill) {
+    const g = prefill.gender ?? localStorage.getItem('gender');
+    if (!g) return;
+    genderButtons.forEach(btn => {
+      const val = btn.getAttribute('data-gender') === 'other' ? 'lgbt' : btn.getAttribute('data-gender');
+      if (val === g) btn.click();
+    });
+  };
+
+  window.collectPageData = function() {
+    if (!selectedGender) { alert('⚠️ Please select your gender before continuing.'); return null; }
     const genderValue = selectedGender === 'other' ? 'lgbt' : selectedGender;
     localStorage.setItem('gender', genderValue);
-    window.location.href = 'sexuality.html';
-  });
+    return { gender: genderValue };
+  };
+
 </script>
+<script type="module" src="/js/registration.js"></script>
 
 </body>
 </html>

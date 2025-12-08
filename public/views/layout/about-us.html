@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>About Us – GUSTO Dating App</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts (adjust to your project) -->
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rufina", serif;
+      background: linear-gradient(to bottom, #ffdbe8 0%, #ff5f87 100%);
+    }
+
+    /* ---- Team Orbit Area ---- */
+    #team-orbit {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+      aspect-ratio: 1 / 1;       /* perfect circle */
+    }
+
+    #team-orbit svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .orbit-node {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      background: #fff;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .orbit-node img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .orbit-node:hover {
+      transform: translate(-50%, -50%) scale(1.08);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.32);
+    }
+
+    .orbit-node-leader {
+      width: 140px;
+      height: 140px;
+      border: 3px solid #000000;
+    }
+    .orbit-node-lead {
+      width: 110px;
+      height: 110px;
+      border: 2px solid #000000;
+    }
+    .orbit-node-member {
+      width: 80px;
+      height: 80px;
+      border: 2px solid #000000;
+    }
+
+    .orbit-label {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      text-align: center;
+      color: #4a2630;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.7);
+    }
+
+    /* group glows behind clusters (optional) */
+    .group-glow {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(45px);
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    /* ---- Connection lines ---- */
+    .connection-line {
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke: #000000;
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
+      animation: draw-line 0.9s forwards ease-out;
+    }
+
+    @keyframes draw-line {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    /* ---- Modal ---- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 24px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+      padding: 24px 26px 20px;
+      width: min(480px, 92vw);
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: modal-pop 0.25s ease-out;
+    }
+
+    @keyframes modal-pop {
+      from {
+        transform: translateY(10px) scale(0.96);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 999px;
+      overflow: hidden;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+      border: 3px solid #fff0f6;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      background: #ffe7f0;
+      color: #7b2140;
+      margin: 0 4px 6px 0;
+      border: 1px solid rgba(255,255,255,0.9);
+    }
+
+    .chip img {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      object-fit: cover;
+    }
+
+    .close-btn {
+      position: absolute;
+      right: 14px;
+      top: 10px;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: #ff4f7d;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(255,79,125,0.55);
+      font-weight: 700;
+    }
+    .close-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Contact cards */
+    .contact-card {
+      background: rgba(255,255,255,0.75);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.16);
+    }
+
+    @media (max-width: 640px) {
+      .orbit-node-leader { width: 110px; height: 110px; }
+      .orbit-node-lead   { width: 90px; height: 90px;   }
+      .orbit-node-member { width: 65px; height: 65px;   }
+    }
+  </style>
+</head>
+
+<body class="text-[#4a2630]">
+
+  <!-- Simple top bar / logo (replace with your real navbar if needed) -->
+  <header class="w-full bg-white/70 backdrop-blur-md shadow-sm">
+    <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+      <div class="font-bold text-xl tracking-wide">GUSTO Dating App</div>
+      <nav class="hidden sm:flex gap-6 text-sm">
+        <a href="/" class="hover:underline">Home</a>
+        <span class="font-semibold underline underline-offset-4">About</span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 pb-16 pt-10">
+    <!-- About us -->
+    <section class="text-center mb-10">
+      <h2 class="text-2xl md:text-3xl font-semibold mb-3" style="font-family:'Old Standard TT',serif;">
+        About us
+      </h2>
+      <p class="text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+        We created this app to help people build real, meaningful connections safely and easily.
+      </p>
+    </section>
+
+    <!-- Our story -->
+    <section class="text-center mb-14">
+      <h3 class="text-xl md:text-2xl font-semibold mb-3" style="font-family:'Old Standard TT',serif;">
+        Our story
+      </h3>
+      <p class="text-sm md:text-base leading-relaxed max-w-3xl mx-auto">
+        We started this dating app with a simple idea: people deserve a safe and comfortable place to meet new people.
+        Whether you’re looking for love, friendship, or a meaningful connection, our app helps you find someone who truly connects with you.
+        Our mission is to make online dating simple, honest, and enjoyable.
+      </p>
+    </section>
+
+    <!-- Meet the team (radial map) -->
+    <section class="mb-16">
+      <h3 class="text-center text-xl md:text-2xl font-semibold mb-6" style="font-family:'Old Standard TT',serif;">
+        Meet the Team
+      </h3>
+
+      <div id="team-orbit">
+        <!-- SVG for connection lines -->
+        <svg id="team-lines"></svg>
+        <!-- glow layers & circles are injected via JS -->
+      </div>
+    </section>
+
+    <!-- Contact section -->
+    <section class="mb-10">
+      <h3 class="text-center text-xl md:text-2xl font-semibold mb-6" style="font-family:'Old Standard TT',serif;">
+        Contact Us
+      </h3>
+      <div class="grid sm:grid-cols-3 gap-6">
+        <div class="contact-card text-center">
+          <div class="font-semibold mb-1">Address</div>
+          <p class="text-sm">Tine Gyi, GUSTO College,<br>Training Hub</p>
+        </div>
+        <div class="contact-card text-center">
+          <div class="font-semibold mb-1">Phone</div>
+          <p class="text-sm">+95 9 000 000 000</p>
+        </div>
+        <div class="contact-card text-center">
+          <div class="font-semibold mb-1">Email</div>
+          <p class="text-sm">datingapp@gustocollege.com</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL -->
+  <div id="profileModal" class="modal-overlay">
+    <div class="modal-card relative">
+      <button id="closeModal" class="close-btn">&times;</button>
+
+      <div class="flex flex-col items-center text-center mb-3">
+        <div class="modal-avatar mb-3">
+          <img id="modalAvatar" src="" alt="Profile" class="w-full h-full object-cover" />
+        </div>
+        <h4 id="modalName" class="text-xl font-semibold mb-1"></h4>
+        <p id="modalRole" class="text-sm text-[#7a4050] mb-1"></p>
+        <p id="modalBatch" class="text-xs text-[#a0606f]"></p>
+      </div>
+
+      <div id="modalChildrenBlock" class="mt-4 hidden">
+        <h5 class="font-semibold text-sm mb-2 text-left">Team Members</h5>
+        <div id="modalChildren" class="flex flex-wrap gap-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // -------------- TEAM DATA --------------
+    // Replace these with your real people / images.
+    const teamNodes = [
+      {
+        id: "leader",
+        name: "Floyd Miles",
+        role: "Team Organizer",
+        batch: "Batch 2023",
+        img: "/img/testingperson.jpg",
+        level: 0,
+        group: null,
+        children: ["fe-lead", "be-lead", "ui-lead"]
+      },
+      // --- Team leads ---
+      {
+        id: "fe-lead",
+        name: "Front-end Lead",
+        role: "Front-end Developer Lead",
+        batch: "Batch 2023",
+        img: "/img/testingperson.jpg",
+        level: 1,
+        group: "frontend",
+        children: ["fe-1", "fe-2", "fe-3", "fe-4", "fe-5"]
+      },
+      {
+        id: "be-lead",
+        name: "Back-end Lead",
+        role: "Back-end Developer Lead",
+        batch: "Batch 2023",
+        img: "/img/testingperson.jpg",
+        level: 1,
+        group: "backend",
+        children: ["be-1", "be-2", "be-3", "be-4"]
+      },
+      {
+        id: "ui-lead",
+        name: "UI/UX Lead",
+        role: "UI/UX Designer Lead",
+        batch: "Batch 2023",
+        img: "/img/testingperson.jpg",
+        level: 1,
+        group: "uiux",
+        children: ["ui-1", "ui-2", "ui-3", "ui-4", "ui-5"]
+      },
+
+      // --- Front-end members ---
+      { id: "fe-1", name: "FE Dev 1", role: "Front-end Dev", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "frontend", children: [] },
+      { id: "fe-2", name: "FE Dev 2", role: "Front-end Dev", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "frontend", children: [] },
+      { id: "fe-3", name: "FE Dev 3", role: "Front-end Dev", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "frontend", children: [] },
+      { id: "fe-4", name: "FE Dev 4", role: "Front-end Dev", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "frontend", children: [] },
+      { id: "fe-5", name: "FE Dev 5", role: "Front-end Dev", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "frontend", children: [] },
+
+      // --- Back-end members ---
+      { id: "be-1", name: "BE Dev 1", role: "Back-end Dev", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "backend", children: [] },
+      { id: "be-2", name: "BE Dev 2", role: "Back-end Dev", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "backend", children: [] },
+      { id: "be-3", name: "BE Dev 3", role: "Back-end Dev", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "backend", children: [] },
+      { id: "be-4", name: "BE Dev 4", role: "Back-end Dev", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "backend", children: [] },
+
+      // --- UI/UX members ---
+      { id: "ui-1", name: "UI/UX 1", role: "UI/UX Designer", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "uiux", children: [] },
+      { id: "ui-2", name: "UI/UX 2", role: "UI/UX Designer", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "uiux", children: [] },
+      { id: "ui-3", name: "UI/UX 3", role: "UI/UX Designer", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "uiux", children: [] },
+      { id: "ui-4", name: "UI/UX 4", role: "UI/UX Designer", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "uiux", children: [] },
+      { id: "ui-5", name: "UI/UX 5", role: "UI/UX Designer", batch: "Batch 2024", img: "/img/testingperson.jpg",  level: 2, group: "uiux", children: [] },
+    ];
+
+    const nodeById = Object.fromEntries(teamNodes.map(n => [n.id, n]));
+
+    function buildTeamOrbit() {
+    const container = document.getElementById("team-orbit");
+    const svg = document.getElementById("team-lines");
+
+    // Clear existing
+    svg.innerHTML = "";
+    Array.from(container.querySelectorAll(".orbit-node, .group-glow")).forEach(el => el.remove());
+
+    const rect = container.getBoundingClientRect();
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+
+    // Radii based on container size
+    const baseR = Math.min(rect.width, rect.height) / 3.0;   // main ring distance for leads
+    const childR = baseR / 2.0;                              // base distance for members around each lead
+
+    // Determine first-layer nodes (children of leader)
+    const leader = nodeById["leader"];
+    const firstLayerIds = leader.children || [];
+    const angleStep = (Math.PI * 2) / firstLayerIds.length;
+
+    const positions = {}; // id -> {x,y}
+
+    // Leader at centre
+    positions["leader"] = { x: cx, y: cy };
+
+    // Group colors for glows
+    const groupColors = {
+        frontend: "rgba(255, 214, 234, 1)",
+        backend: "rgba(205, 237, 255, 1)",
+        uiux: "rgba(212, 255, 230, 1)"
+    };
+
+    // ---- Helpers for deterministic randomness and radii ----
+    function prng(key, salt = 0) {
+        let h = 2166136261 ^ salt;
+        for (let i = 0; i < key.length; i++) {
+        h = Math.imul(h ^ key.charCodeAt(i), 16777619);
+        }
+        return ((h >>> 0) / 4294967296);
+    }
+
+    function randBetween(key, min, max, salt = 0) {
+        const r = prng(String(key), salt);
+        return min + r * (max - min);
+    }
+
+    function getNodeRadiusByLevel(level) {
+        const small = window.matchMedia("(max-width: 640px)").matches;
+        if (level === 0) return small ? 55 : 70;   // leader: ~110/140 diameter
+        if (level === 1) return small ? 45 : 55;   // lead:   ~90/110
+        return small ? 32.5 : 40;                  // member: ~65/80
+    }
+
+    // ---- Place first layer (team leads) in a triangle-like arrangement ----
+    const leadPreset = {
+        // down-left cluster
+        "fe-lead": { angle: Math.PI * 1.15, r: baseR * 1.1 },
+        // upper-left cluster
+        "be-lead": { angle: Math.PI * 0.65, r: baseR * 0.95 },
+        // right cluster
+        "ui-lead": { angle: Math.PI * 0.05, r: baseR * 1.0 }
+    };
+
+    firstLayerIds.forEach((id, index) => {
+        const preset = leadPreset[id];
+        const angle = preset ? preset.angle : (-Math.PI / 2 + index * angleStep);
+        const r = preset ? preset.r : baseR;
+        const x = cx + r * Math.cos(angle);
+        const y = cy + r * Math.sin(angle);
+        positions[id] = { x, y };
+
+        const leadNode = nodeById[id];
+
+        // soft glow behind each cluster
+        const glow = document.createElement("div");
+        glow.className = "group-glow";
+        const glowSize = leadNode.children.length > 5 ? 260 : 230;
+        glow.style.width = glowSize + "px";
+        glow.style.height = glowSize + "px";
+        glow.style.left = (x - glowSize / 2) + "px";
+        glow.style.top = (y - glowSize / 2) + "px";
+        glow.style.background = groupColors[leadNode.group] || "rgba(255,255,255,0.7)";
+        container.appendChild(glow);
+    });
+
+    // ---- Place second layer (members) in OUTWARD ARCS with organic jitter ----
+    firstLayerIds.forEach(leadId => {
+        const leadNode = nodeById[leadId];
+        const children = leadNode.children || [];
+        if (!children.length) return;
+
+        const center = positions[leadId];
+
+        // direction from global center -> lead (we extend further in this direction)
+        const outwardAngle = Math.atan2(center.y - cy, center.x - cx);
+
+        // per-cluster configuration to mimic the reference
+        const clusterConfig = {
+        "fe-lead": { arcSpan: Math.PI * 0.9, radiusScale: 1.3 }, // bottom-left wide arc
+        "be-lead": { arcSpan: Math.PI * 0.7, radiusScale: 1.2 }, // upper-left tighter arc
+        "ui-lead": { arcSpan: Math.PI * 0.8, radiusScale: 1.25 } // right arc
+        };
+        const cfg = clusterConfig[leadId] || { arcSpan: Math.PI * 0.8, radiusScale: 1.25 };
+
+        const count = children.length;
+        const arcSpan = cfg.arcSpan;                     // total angle of the arc
+        const gap = count > 1 ? arcSpan / (count - 1) : 0;
+        const startAngle = outwardAngle - arcSpan / 2;   // centre the arc around outward direction
+
+        // base distance from lead to members
+        const rLead = getNodeRadiusByLevel(1);
+        const rMember = getNodeRadiusByLevel(2);
+        const minGap = rLead + rMember + 24; // ensure they don't overlap
+        const baseDistance = Math.max(minGap, childR * cfg.radiusScale);
+
+        children.forEach((childId, idx) => {
+        // evenly spread along arc then add jitter (organic look)
+        let angle = startAngle + gap * idx;
+        angle += randBetween(childId, -0.16, 0.16, 1); // small angle jitter
+
+        const jitterDist = randBetween(childId, -18, 18, 2); // small radial jitter
+        const radius = baseDistance + jitterDist;
+
+        const x = center.x + radius * Math.cos(angle);
+        const y = center.y + radius * Math.sin(angle);
+        positions[childId] = { x, y };
+        });
+    });
+
+    // ---- Helper to create node elements ----
+    function createNodeEl(node) {
+        const pos = positions[node.id];
+        if (!pos) return;
+
+        const div = document.createElement("div");
+        div.classList.add("orbit-node");
+        if (node.level === 0) div.classList.add("orbit-node-leader");
+        else if (node.level === 1) div.classList.add("orbit-node-lead");
+        else div.classList.add("orbit-node-member");
+
+        div.style.left = pos.x + "px";
+        div.style.top = pos.y + "px";
+        div.style.transform = "translate(-50%, -50%) scale(0.85)";
+        div.style.opacity = "0";
+
+        const img = document.createElement("img");
+        img.src = node.img || "https://via.placeholder.com/150";
+        img.alt = node.name;
+        div.appendChild(img);
+
+        // name label
+        const label = document.createElement("div");
+        label.className = "orbit-label";
+        label.textContent = node.name;
+        label.style.position = "absolute";
+        label.style.top = "100%";
+        label.style.left = "50%";
+        label.style.transform = "translate(-50%, 6px)";
+        container.appendChild(label);
+
+        // pop-in animation
+        setTimeout(() => {
+        div.style.transition = "transform 0.4s ease, opacity 0.4s ease";
+        div.style.transform = "translate(-50%, -50%) scale(1)";
+        div.style.opacity = "1";
+        }, node.level * 70 + 100);
+
+        // modal on click
+        div.addEventListener("click", () => openModal(node.id));
+        container.appendChild(div);
+    }
+
+    // ---- SVG connections with endpoints touching circle borders ----
+    function drawLine(parentId, childId, delayMult = 0) {
+        const p = positions[parentId];
+        const c = positions[childId];
+        if (!p || !c) return;
+
+        const parent = nodeById[parentId];
+        const child = nodeById[childId];
+        const rParent = getNodeRadiusByLevel(parent.level);
+        const rChild = getNodeRadiusByLevel(child.level);
+
+        const dx = c.x - p.x;
+        const dy = c.y - p.y;
+        const len = Math.hypot(dx, dy);
+        if (len === 0) return;
+        const ux = dx / len;
+        const uy = dy / len;
+
+        const x1 = p.x + ux * rParent;
+        const y1 = p.y + uy * rParent;
+        const x2 = c.x - ux * rChild;
+        const y2 = c.y - uy * rChild;
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", x1);
+        line.setAttribute("y1", y1);
+        line.setAttribute("x2", x2);
+        line.setAttribute("y2", y2);
+        line.classList.add("connection-line");
+        line.style.animationDelay = (delayMult * 0.12) + "s";
+        svg.appendChild(line);
+    }
+
+    // Draw all lines first, then nodes so circles sit on top
+    teamNodes.forEach(node => {
+        (node.children || []).forEach(childId => {
+        drawLine(node.id, childId, node.level);
+        });
+    });
+    teamNodes.forEach(n => createNodeEl(n));
+    }
+
+
+    // ---------- Modal Logic ----------
+    const modal = document.getElementById("profileModal");
+    const modalAvatar = document.getElementById("modalAvatar");
+    const modalName = document.getElementById("modalName");
+    const modalRole = document.getElementById("modalRole");
+    const modalBatch = document.getElementById("modalBatch");
+    const modalChildrenBlock = document.getElementById("modalChildrenBlock");
+    const modalChildren = document.getElementById("modalChildren");
+    const closeModalBtn = document.getElementById("closeModal");
+
+    function openModal(id) {
+      const node = nodeById[id];
+      if (!node) return;
+
+      modalAvatar.src = node.img || "https://via.placeholder.com/150";
+      modalName.textContent = node.name;
+      modalRole.textContent = node.role || "";
+      modalBatch.textContent = node.batch ? `Batch: ${node.batch}` : "";
+
+      // children (if leader)
+      const children = node.children || [];
+      modalChildren.innerHTML = "";
+      if (children.length) {
+        modalChildrenBlock.classList.remove("hidden");
+        children.forEach(childId => {
+          const child = nodeById[childId];
+          if (!child) return;
+          const chip = document.createElement("div");
+          chip.className = "chip";
+          const img = document.createElement("img");
+          img.src = child.img || "https://via.placeholder.com/150";
+          img.alt = child.name;
+          const span = document.createElement("span");
+          span.textContent = child.name;
+          chip.appendChild(img);
+          chip.appendChild(span);
+          chip.addEventListener("click", () => {
+            openModal(child.id);
+          });
+          modalChildren.appendChild(chip);
+        });
+      } else {
+        modalChildrenBlock.classList.add("hidden");
+      }
+
+      modal.classList.add("show");
+    }
+
+    function closeModal() {
+      modal.classList.remove("show");
+    }
+
+    closeModalBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // ---------- Init ----------
+    window.addEventListener("load", buildTeamOrbit);
+    window.addEventListener("resize", () => {
+      // debounce a bit
+      clearTimeout(window.__teamOrbitTimer);
+      window.__teamOrbitTimer = setTimeout(buildTeamOrbit, 250);
+    });
+  </script>
+</body>
+</html>

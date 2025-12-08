@@ -282,7 +282,7 @@
         <img src="../../img/${key}.png" alt="${label}" />
         <div class="label">${label}</div>
       `;
-      grid.appendChild(div);
+        grid.appendChild(div);
     });
 
     let selectedZodiac = null;
@@ -295,17 +295,38 @@
       selectedZodiac = item.querySelector('.label').textContent.toLowerCase();
     });
 
-    document.getElementById('skipBtn').addEventListener('click', () => {
-      localStorage.removeItem('zodiac');
-      window.location.href = 'height.html';
+    document.getElementById('skipBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      const orig = window.collectPageData;
+      window.collectPageData = () => ({ zodiac: null });
+      document.dispatchEvent(new Event('registration:submit'));
+      window.collectPageData = orig;
     });
 
-    document.getElementById('nextBtn').addEventListener('click', () => {
+    document.getElementById('nextBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.dispatchEvent(new Event('registration:submit'));
+    });
+
+    window.prefillPage = function(prefill) {
+      const z = prefill.zodiac ?? localStorage.getItem('zodiac');
+      if (!z) return;
+      document.querySelectorAll('.zodiac-item').forEach(el => {
+        const label = el.querySelector('.label').textContent.toLowerCase();
+        if (label === z) el.classList.add('selected');
+        else el.classList.remove('selected');
+      });
+    };
+
+    window.collectPageData = function() {
       if (selectedZodiac) {
         localStorage.setItem('zodiac', selectedZodiac);
+        return { zodiac: selectedZodiac };
       }
-      window.location.href = 'height.html';
-    });
+      // allow skipping (null)
+      return { zodiac: null };
+    };
   </script>
+  <script type="module" src="/js/registration.js"></script>
 </body>
 </html>

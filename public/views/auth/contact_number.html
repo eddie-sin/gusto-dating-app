@@ -240,25 +240,45 @@
           closeDropdown();
       });
 
-      // Next button handler
-      document.getElementById("nextBtn").addEventListener("click", () => {
+      // Next button handler (now delegated to registration flow)
+      document.getElementById("nextBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.dispatchEvent(new Event('registration:submit'));
+      });
+
+      // Registration hooks
+      window.prefillPage = function(prefill) {
+        const contact = prefill.contact ?? localStorage.getItem('contact');
+        if (!contact) return;
+        // try to split code and number
+        const match = contact.match(/^(\+\d+)(\d+)$/);
+        if (match) {
+          countryCodeBtn.querySelector('span').textContent = match[1];
+          phoneInput.value = match[2];
+        } else {
+          phoneInput.value = contact;
+        }
+      };
+
+      window.collectPageData = function() {
         const code = countryCodeBtn.querySelector("span").textContent;
         const phone = phoneInput.value.trim();
 
         if (!phone) {
           alert("⚠️ Please enter your phone number.");
-          return;
+          return null;
         }
 
         if (phone.length < 7 || phone.length > 15) {
           alert("⚠️ Phone number must be between 7 and 15 digits.");
-          return;
+          return null;
         }
 
         const contact = code + phone;
         localStorage.setItem('contact', contact);
-        window.location.href = 'index.html';
-      });
+        return { contact };
+      };
     </script>
+  <script type="module" src="/js/registration.js"></script>
   </body>
 </html>

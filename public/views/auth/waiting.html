@@ -516,5 +516,25 @@
     // Load review data on page load
     loadReviewData();
   </script>
+  <script>
+    // Allow registration.js to prefill this page from server data
+    window.prefillPage = function(prefill) {
+      if (!prefill || typeof prefill !== 'object') return;
+      // write known keys into localStorage for review rendering
+      Object.entries(prefill).forEach(([k, v]) => {
+        try {
+          if (typeof v === 'object') {
+            localStorage.setItem(k, JSON.stringify(v));
+          } else if (v != null) {
+            localStorage.setItem(k, v);
+          }
+        } catch (e) {
+          // ignore
+        }
+      });
+      loadReviewData();
+    };
+  </script>
+  <script type="module" src="/js/registration.js"></script>
 </body>
 </html>

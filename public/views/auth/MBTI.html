@@ -170,19 +170,39 @@
 
       let selectedMBTI = null;
 
-      document.getElementById('skipBtn').addEventListener('click', () => {
-        localStorage.removeItem('mbti');
-        window.location.href = 'StudentId1.html';
+      document.getElementById('skipBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        const orig = window.collectPageData;
+        window.collectPageData = () => ({ mbti: null });
+        document.dispatchEvent(new Event('registration:submit'));
+        window.collectPageData = orig;
       });
 
-      document.getElementById('nextBtn').addEventListener('click', () => {
+      document.getElementById('nextBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.dispatchEvent(new Event('registration:submit'));
+      });
+
+      window.prefillPage = function(prefill) {
+        const val = prefill.mbti ?? localStorage.getItem('mbti');
+        if (!val) return;
+        document.querySelectorAll('#typeGrid button').forEach(b => {
+          if (b.textContent === val) b.classList.add('selected');
+          else b.classList.remove('selected');
+        });
+      };
+
+      window.collectPageData = function() {
         const selected = document.querySelector('#typeGrid button.selected');
         if (selected) {
           selectedMBTI = selected.textContent;
           localStorage.setItem('mbti', selectedMBTI);
+          return { mbti: selectedMBTI };
         }
-        window.location.href = 'StudentId1.html';
-      });
+        // allow skipping
+        return { mbti: null };
+      };
     </script>
+  <script type="module" src="/js/registration.js"></script>
   </body>
 </html>
