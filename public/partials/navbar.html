@@ -1,0 +1,37 @@
+<!-- Global Navbar Partial: /public/partials/navbar.html -->
+<style>
+  .gda-nav{position:sticky;top:0;z-index:40;background:transparent;padding-block:6px}
+  .gda-nav__wrap{max-width:var(--nav-max, 64rem);margin:0 auto;padding-inline:var(--nav-pad, 1rem)}
+  .gda-bar{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-radius:9999px;background:linear-gradient(180deg,#f9acbd,#f59fb1);box-shadow:0 6px 22px rgba(0,0,0,.10) inset, 0 2px 8px rgba(0,0,0,.10)}
+  .gda-brand{font-weight:700;letter-spacing:.3px;color:#2b2b2b}
+  .gda-links{display:flex;gap:38px;align-items:center;justify-content:center;flex:1}
+  .gda-link{color:#2b2b2b;text-decoration:none;padding:6px 8px;border-radius:8px}
+  .gda-link:hover{background:rgba(0,0,0,.05)}
+  .gda-link--active{font-weight:600;text-decoration:underline;text-underline-offset:4px}
+  .gda-right{display:flex;align-items:center;gap:10px}
+  .gda-avatar{width:34px;height:34px;border-radius:9999px;object-fit:cover;border:2px solid rgba(0,0,0,.5);box-shadow:0 2px 6px rgba(0,0,0,.15)}
+  .gda-burger{display:none;background:none;border:0;font-size:22px}
+  @media (max-width:640px){
+    .gda-burger{display:block}
+    .gda-links{display:none;position:absolute;left:10px;right:10px;top:calc(100% + 6px);background:rgba(255,255,255,.95);padding:12px;border-radius:16px;border:1px solid rgba(0,0,0,.06)}
+    .gda-links.show{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+  }
+  /* Hide any page-local header once global nav is injected */
+  .has-global-nav [data-local-header]{display:none !important}
+</style>
+<header class="gda-nav" role="navigation" aria-label="Site">
+  <div class="gda-nav__wrap">
+    <div class="gda-bar">
+      <div class="gda-brand">Logo</div>
+      <button class="gda-burger" aria-label="Toggle menu" aria-expanded="false">☰</button>
+      <nav class="gda-links" id="gda-links">
+        <a class="gda-link" href="/">Home</a>
+        <a class="gda-link" href="/views/layout/partner.html">Partners</a>
+        <a class="gda-link" href="/views/layout/about-us.html">About us</a>
+      </nav>
+      <div class="gda-right">
+        <img class="gda-avatar" src="/img/testingperson.jpg" alt="Profile" />
+      </div>
+    </div>
+  </div>
+</header>

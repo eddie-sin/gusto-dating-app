@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Partner</title>
 
+  <style>
+    /* Align global navbar pill with this page's content width */
+    :root {
+      --nav-max: 100%;  /* let width be controlled by padding instead of fixed max */
+      --nav-pad: 4rem;  /* match lg:px-16 side padding */
+    }
+
+    @media (max-width: 1024px) {
+      :root {
+        --nav-pad: 1rem; /* match px-4 on smaller screens */
+      }
+    }
+  </style>
+
   <!-- Global Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -82,8 +96,8 @@
   </style>
 </head>
 <body>
-  <!-- Global NAVBAR (from CrushPage) -->
-  <div class="nav-box rounded-2xl px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between mb-6 mt-4 gap-3 sm:gap-0">
+  <!-- Page-local navbar (hidden when global navbar is injected) -->
+  <div data-local-header class="nav-box rounded-2xl px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between mb-6 mt-4 gap-3 sm:gap-0">
     <div class="flex items-center space-x-3">
       <div class="cursor-pointer font-bold text-white">Logo</div>
     </div>
@@ -1291,5 +1305,6 @@
       setupTabs();
     });
   </script>
+  <script src="/js/navbar.js" defer></script>
 </body>
 </html>
