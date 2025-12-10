@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;600&display=swap" rel="stylesheet">
+    
+<!-- Font Awesome (working CDN) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <style>
       @keyframes float {
         0%,
@@ -67,6 +70,103 @@
 
       /* Dropdown hover */
       #programList li:hover { background-color: #F7788F !important; color: black !important; border-radius: 9999px; margin: 2px 6px; transition: all 0.2s ease; }
+
+
+      
+  /* ====== MODAL FIX ====== */
+#uploadGuidanceModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  justify-content: center;
+  align-items: flex-start; /* top pop-up */
+  z-index: 9999;
+  /* pointer-events: none; */
+}
+
+/* NEW: visible state */
+#uploadGuidanceModal.open {
+  display: flex;
+  pointer-events: auto;
+  animation: slideDown 260ms ease-out;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-10px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* UPDATED modal content to be a top bar with responsive width */
+.modal-content {
+  width: min(720px, calc(100% - 32px));
+  max-height: 35vh; /* <-- limit height to 80% of viewport */
+  margin-top: 28px;
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Body scroll */
+.modal-body {
+  padding: 16px;
+  overflow-y: auto;  /* <-- scroll vertically if content is too tall */
+  flex: 1 1 auto;    /* take remaining space in modal */
+}
+
+/* NEW: header bar (red/pink) */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(90deg,#F78998,#fa97a9 60%);
+  color: white;
+}
+
+/* NEW: header title */
+.modal-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* NEW: close button using Font Awesome */
+.modal-close-button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+}
+.modal-close-button:focus { outline: 2px solid rgba(255,255,255,0.3); }
+
+/* small-screen tweak */
+@media (max-width:420px) {
+  .modal-content { width: calc(100% - 16px); margin-top: 16px; }
+  .modal-header h2 { font-size: 0.95rem; }
+}
+
+
+.info-icon {
+  font-size: 20px;
+  color: black;
+  cursor: pointer;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+}
+
+.custom-leading {
+  line-height: 1.6; /* adjust this value as needed */
+}
+
     </style>
   </head>
   <body
@@ -88,10 +188,40 @@
       class="bg-white/15 backdrop-blur-lg rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14 shadow-2xl w-full max-w-[360px] sm:max-w-[480px] md:max-w-[520px] lg:max-w-[600px] xl:max-w-[700px] 2xl:max-w-[800px] border border-white/30 animate-float"
     >
 
+    <span class="info-icon" onclick="openGuidanceModal()" role="button" aria-label="Upload guidance" title="Upload guidance">
+  <i class="fa-solid fa-circle-exclamation" style="font-size:20px; color:black;"></i>
+</span>
+
+<!-- modal inner structure with a top-bar header + body -->
+<div id="uploadGuidanceModal" aria-hidden="true" role="dialog" aria-labelledby="uploadGuidanceTitle">
+  <div class="modal-content" role="document">
+    <div class="modal-header">
+      <h2 id="uploadGuidanceTitle" class="text-base sm:text-lg md:text-xl lg:text-2xl custom-leading">User guidance</h2>
+      <!-- Font Awesome X icon (accessible button) -->
+      <button class="modal-close-button" onclick="closeGuidanceModal()" aria-label="Close upload guidance">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" style="padding:16px; text-align:left;">
+      <div class="modal-body p-4 text-left font-inter font-normal">
+        <p class="mb-4 text-sm sm:text-base md:text-lg lg:text-xl font-medium custom-leading">How to fill the data correctly:</p>
+  
+        <ul class="list-disc list-inside text-xs sm:text-sm md:text-base lg:text-lg mb-4 custom-leading">
+  <li>The program must correspond to the level you are currently attending.</li>
+  <li>For the batch, enter only the number. For example, if your batch is <strong>HND58</strong>, enter <strong>58</strong> only.</li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div>
       <!-- Program Selection Row -->
       <div
-        class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6"
+        class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 mt-8"
       >
+
+    
         <label
           class="text-black font-medium text-base sm:text-lg mb-2 sm:mb-0 sm:w-1/2"
         >
@@ -124,7 +254,14 @@
         >
           Enter Your Batch Number
         </label>
-        <input id="batchInput" type="text" placeholder="Eg: level3C32, HND01" class="w-full sm:w-1/2 px-4 py-2 rounded-full border border-black-500 bg-transparent text-black placeholder-black text-base focus:ring-2 focus:ring-pink-400">
+<input
+  id="batchInput"
+  type="text"
+  placeholder="Eg: 21, 57, 58"
+  class="w-full sm:w-1/2 px-4 py-2 rounded-full border border-black-500 bg-transparent text-black placeholder-black text-base focus:ring-2 focus:ring-pink-400"
+  oninput="validateBatchInput(this)"
+>
+
       </div>
 
       <!-- Next Button -->
@@ -198,6 +335,22 @@
         localStorage.setItem('batch', batch);
         return { program, batch };
       };
+
+function validateBatchInput(input) {
+  // If there are any non-digit characters
+  if (/[^0-9]/.test(input.value)) {
+    alert("⚠️ Please only type numbers. If you have no idea how to fill the data, please press the guidance icon on the top-right corner.");
+    // Remove non-digit characters
+    input.value = input.value.replace(/[^0-9]/g, '');
+  }
+}
+
+         function openGuidanceModal() {
+  document.getElementById('uploadGuidanceModal').style.display = 'flex';
+}
+function closeGuidanceModal() {
+  document.getElementById('uploadGuidanceModal').style.display = 'none';
+}
     </script>
   <script type="module" src="/js/registration.js"></script>
   </body>
