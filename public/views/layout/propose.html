@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proposals</title>
+  <!-- Tailwind (CDN for simplicity; switch to /css/tailwind.css if desired) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://rsms.me/" />
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  <style>
+    body { background: url('/img/bgimg.jpg') center/cover no-repeat; font-family: 'Poppins', sans-serif; }
+    .glass { background: rgba(255,255,255,0.18); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.35); box-shadow: 0 8px 28px rgba(0,0,0,0.18); }
+    @keyframes float {0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .animate-float { animation: float 4s ease-in-out infinite; }
+    /* CARD */
+    .proposal-card { transition: all .28s ease; background: rgba(255,255,255,0.55); min-height:320px; }
+    .proposal-card:hover { box-shadow: 0 10px 26px rgba(255,120,150,0.35); }
+    .proposal-img { object-fit: cover; width: 100%; height: 240px; display: block; }
+    .overlay-name { position: absolute; left: 12px; bottom: 12px; z-index: 2; font-size: 15px; font-weight:600; padding:6px 12px; border-radius:14px; background:rgba(255,255,255,0.75); color:#222; }
+    .overlay-mini { position:absolute; right:12px; bottom:12px; z-index: 2; width:50px; height:50px; border-radius:50%; overflow:hidden; box-shadow:0 0 0 3px rgba(255,255,255,0.95); }
+    .action-bar { position:absolute; left:0; bottom:0; width:100%; display:flex; justify-content:center; gap:16px; padding:12px 16px; background:linear-gradient(to top,#ff99b3,#ffc2d2 70%,rgba(255,255,255,0.05)); }
+    .action-btn { font-size:14px; line-height:1; padding:12px 26px; border-radius:22px; font-weight:600; letter-spacing:.25px; border:1px solid rgba(255,255,255,0.85); box-shadow:0 2px 6px rgba(0,0,0,0.12); transition:.25s; }
+    .action-btn.accept { background:linear-gradient(135deg,#ff87a2,#ffb9c9); color:#311c25; }
+    .action-btn.deny { background:linear-gradient(135deg,#f7d5dc,#ffe9ee); color:#382129; }
+    .action-btn.cancel { background:linear-gradient(135deg,#f7d5dc,#ffe9ee); color:#382129; }
+    .action-btn:hover { transform:translateY(-3px); box-shadow:0 8px 18px rgba(255,140,170,0.45); }
+    .action-btn:hover { transform:translateY(-2px); box-shadow:0 6px 14px rgba(255,130,160,0.4); }
+    .action-btn.deny, .action-btn.cancel { background:linear-gradient(to right,#ffd0d9,#ffe4ea); }
+    .action-btn.deny:hover, .action-btn.cancel:hover { box-shadow:0 6px 14px rgba(255,180,195,0.5); }
+    .accepted-ring { box-shadow:0 0 0 3px #4ade80 !important; }
+    /* Modal */
+    .modal-overlay { background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); }
+    .modal-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,0.55); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col px-5 py-10">
+
+  <!-- RECEIVED PROPOSALS -->
+  <section class="glass animate-float rounded-3xl p-6 md:p-8 mb-10 w-full max-w-6xl mx-auto">
+    <div class="mb-4 md:mb-6 flex justify-center">
+      <h2 class="text-center text-[16px] md:text-[18px] font-medium text-gray-800 flex items-center gap-2">
+        <span class="text-[18px] md:text-[20px]">❤️</span>
+        <span>People Who Proposed You</span>
+      </h2>
+    </div>
+    <div id="receivedGrid" class="grid grid-cols-3 gap-8"></div>
+    <p id="receivedEmpty" class="text-center text-gray-600 mt-4 hidden">No one has proposed to you yet.</p>
+  </section>
+
+  <!-- SENT PROPOSALS -->
+  <section class="glass animate-float rounded-3xl p-6 md:p-8 w-full max-w-6xl mx-auto">
+    <div class="mb-4 md:mb-6 flex justify-center">
+      <h2 class="text-center text-[16px] md:text-[18px] font-medium text-gray-800 flex items-center gap-2">
+        <span class="text-[18px] md:text-[20px]">✉️</span>
+        <span>People You Proposed</span>
+      </h2>
+    </div>
+    <div id="sentGrid" class="grid grid-cols-3 gap-8"></div>
+    <p id="sentEmpty" class="text-center text-gray-600 mt-4 hidden">You haven't proposed to anyone yet.</p>
+  </section>
+
+  <!-- MODAL -->
+  <div id="profileModal" class="fixed inset-0 hidden items-center justify-center modal-overlay z-50">
+    <div class="modal-card rounded-2xl p-6 w-[92%] max-w-xl relative">
+      <button id="closeModal" class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-pink-500 text-white hover:bg-pink-600 shadow-md">×</button>
+      <div class="flex flex-col md:flex-row gap-6">
+        <img id="modalImg" alt="profile" class="w-36 h-36 object-cover rounded-2xl shadow-md" />
+        <div class="flex-1 space-y-2">
+          <h3 id="modalName" class="text-2xl font-semibold text-gray-800"></h3>
+          <p id="modalProgram" class="text-sm text-gray-700"></p>
+          <p id="modalBatch" class="text-sm text-gray-700"></p>
+          <p id="modalMbti" class="text-sm text-gray-700"></p>
+          <p id="modalZodiac" class="text-sm text-gray-700"></p>
+          <p id="modalBio" class="text-sm text-gray-600 leading-relaxed"></p>
+          <div id="modalHobbies" class="flex flex-wrap gap-2 mt-2"></div>
+        </div>
+      </div>
+      <div id="modalActions" class="mt-6 flex gap-4"></div>
+    </div>
+  </div>
+
+  <script>
+  const API_BASE = '/api/v1/proposes';
+  const receivedGrid = document.getElementById('receivedGrid');
+  const sentGrid = document.getElementById('sentGrid');
+  const receivedEmpty = document.getElementById('receivedEmpty');
+  const sentEmpty = document.getElementById('sentEmpty');
+
+  const authHeader = () => {
+    const token = localStorage.getItem('authToken');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
+  let receivedProposals = [];
+  let sentProposals = [];
+
+  function pill(label){
+    const span = document.createElement('span');
+    span.textContent = label;
+    span.className = 'px-3 py-1 rounded-full text-xs bg-pink-100 text-pink-700 font-medium border border-pink-200';
+    return span;
+  }
+
+  function normalizeUrl(u){
+    if(!u) return null;
+    if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('data:')) return u;
+    if (u.startsWith('//')) return 'https:' + u;
+    if (u.startsWith('ik.imagekit.io')) return 'https://' + u;
+    return u; // relative path like /img/bgimg.jpg
+  }
+
+  function userPrimaryPhoto(user){
+    if (!user) return '/img/bgimg.jpg';
+    const photos = Array.isArray(user.photos) ? user.photos : [];
+    if (photos.length === 0) return '/img/bgimg.jpg';
+    const first = photos[0];
+    const url = typeof first === 'string' ? first : first?.url;
+    return normalizeUrl(url) || '/img/bgimg.jpg';
+  }
+
+  function displayName(user){
+    return user?.nickname || user?.name || 'Unknown';
+  }
+
+  function card(item, type){
+    const isReceived = type === 'received';
+    const user = isReceived ? item.from : item.to;
+    const div = document.createElement('div');
+    div.className = 'proposal-card relative rounded-xl overflow-hidden shadow-md w-full';
+
+    const imgWrapper = document.createElement('button');
+    imgWrapper.type = 'button';
+    imgWrapper.className = 'block w-full h-[240px] relative';
+    const photo = userPrimaryPhoto(user);
+    const name = displayName(user);
+    imgWrapper.innerHTML = `<img src="${photo}" alt="${name}" class="proposal-img" onerror="this.onerror=null;this.src='/img/bgimg.jpg';" />`;
+    imgWrapper.addEventListener('click', ()=> openModal(item, type));
+
+    const nameOverlay = document.createElement('div');
+    nameOverlay.className = 'overlay-name';
+    nameOverlay.textContent = name;
+    imgWrapper.appendChild(nameOverlay);
+
+    const mini = document.createElement('div');
+    mini.className = 'overlay-mini bg-white';
+    mini.innerHTML = `<img src="${photo}" alt="mini ${name}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='/img/bgimg.jpg';" />`;
+    imgWrapper.appendChild(mini);
+
+    const actionBar = document.createElement('div');
+    actionBar.className = 'action-bar';
+
+    if(isReceived){
+      const accept = document.createElement('button');
+      accept.className = 'action-btn accept';
+      accept.textContent = 'Accept';
+      accept.addEventListener('click', async (e)=>{ e.stopPropagation(); await acceptProposal(item._id); });
+      const deny = document.createElement('button');
+      deny.className = 'action-btn deny';
+      deny.textContent = 'Deny';
+      deny.addEventListener('click', async (e)=>{ e.stopPropagation(); await denyProposal(item._id); });
+      actionBar.append(accept, deny);
+    } else {
+      const cancel = document.createElement('button');
+      cancel.className = 'action-btn cancel';
+      cancel.textContent = 'Cancel';
+      cancel.addEventListener('click', async (e)=>{ e.stopPropagation(); await cancelProposal(item._id); });
+      actionBar.append(cancel);
+    }
+
+    div.append(imgWrapper, actionBar);
+    return div;
+  }
+
+  function render(){
+    receivedGrid.innerHTML='';
+    sentGrid.innerHTML='';
+    receivedProposals.forEach(p=> receivedGrid.appendChild(card(p,'received')));
+    sentProposals.forEach(p=> sentGrid.appendChild(card(p,'sent')));
+    receivedEmpty.classList.toggle('hidden', receivedProposals.length !== 0);
+    sentEmpty.classList.toggle('hidden', sentProposals.length !== 0);
+  }
+
+  async function parseSafe(res){
+    try { return await res.json(); } catch { return null; }
+  }
+
+  async function loadData(){
+    try{
+      const token = localStorage.getItem('authToken');
+      const headersBase = { 'Content-Type': 'application/json', ...authHeader() };
+      // 1) Received first
+      let recRes = await fetch(`${API_BASE}/received`, { headers: headersBase });
+      if (recRes.status === 401) {
+        const back = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/views/auth/login.html?redirect=${back}`;
+        return;
+      }
+      let recJson = await parseSafe(recRes);
+      if(!recRes.ok){
+        // If token existed, clear and retry once without header (use cookie)
+        if ((recRes.status === 401 || recRes.status === 500) && token) {
+          localStorage.removeItem('authToken');
+          recRes = await fetch(`${API_BASE}/received`, { headers: { 'Content-Type': 'application/json' } });
+          if (recRes.status === 401) {
+            const back = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `/views/auth/login.html?redirect=${back}`;
+            return;
+          }
+          recJson = await parseSafe(recRes);
+        }
+        if(!recRes.ok){
+          const msg = (recJson && (recJson.message || recJson.error?.message)) || 'Unknown error';
+          alert(`[${recRes.status}] GET /proposes/received failed: ${msg}`);
+          return;
+        }
+      }
+
+      // 2) Sent next
+      let sentRes = await fetch(`${API_BASE}/sent`, { headers: headersBase });
+      if (sentRes.status === 401) {
+        const back = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/views/auth/login.html?redirect=${back}`;
+        return;
+      }
+      let sentJson = await parseSafe(sentRes);
+      if(!sentRes.ok){
+        if ((sentRes.status === 401 || sentRes.status === 500) && token) {
+          localStorage.removeItem('authToken');
+          sentRes = await fetch(`${API_BASE}/sent`, { headers: { 'Content-Type': 'application/json' } });
+          if (sentRes.status === 401) {
+            const back = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `/views/auth/login.html?redirect=${back}`;
+            return;
+          }
+          sentJson = await parseSafe(sentRes);
+        }
+        if(!sentRes.ok){
+          const msg = (sentJson && (sentJson.message || sentJson.error?.message)) || 'Unknown error';
+          alert(`[${sentRes.status}] GET /proposes/sent failed: ${msg}`);
+          return;
+        }
+      }
+
+      receivedProposals = (recJson && recJson.data) || [];
+      sentProposals = (sentJson && sentJson.data) || [];
+      render();
+    }catch(err){
+      alert((err && err.message) || 'Failed to load proposals');
+    }
+  }
+
+  async function acceptProposal(proposeId){
+    try{
+      const res = await fetch(`${API_BASE}/${proposeId}/respond`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ action: 'accept' })
+      });
+      const json = await res.json();
+      if(!res.ok) throw new Error(json.message || 'Failed to accept');
+      await loadData();
+      alert('Accepted. You are now matched!');
+    } catch(err){ alert(err.message || 'Failed to accept'); }
+  }
+
+  async function denyProposal(proposeId){
+    try{
+      const res = await fetch(`${API_BASE}/${proposeId}/respond`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ action: 'deny' })
+      });
+      const json = await res.json();
+      if(!res.ok) throw new Error(json.message || 'Failed to deny');
+      await loadData();
+      alert('Denied the proposal.');
+    } catch(err){ alert(err.message || 'Failed to deny'); }
+  }
+
+  async function cancelProposal(proposeId){
+    try{
+      const res = await fetch(`${API_BASE}/${proposeId}`, {
+        method: 'DELETE',
+        headers: { ...authHeader() }
+      });
+      const json = await res.json().catch(()=>({}));
+      if(!res.ok) throw new Error(json.message || 'Failed to cancel');
+      await loadData();
+      alert('Canceled your proposal.');
+    } catch(err){ alert(err.message || 'Failed to cancel'); }
+  }
+
+  // Modal logic
+  const modal = document.getElementById('profileModal');
+  const closeModalBtn = document.getElementById('closeModal');
+  const modalName = document.getElementById('modalName');
+  const modalProgram = document.getElementById('modalProgram');
+  const modalBatch = document.getElementById('modalBatch');
+  const modalMbti = document.getElementById('modalMbti');
+  const modalZodiac = document.getElementById('modalZodiac');
+  const modalBio = document.getElementById('modalBio');
+  const modalHobbies = document.getElementById('modalHobbies');
+  const modalActions = document.getElementById('modalActions');
+
+  function openModal(item, type){
+    const user = type==='received' ? item.from : item.to;
+    const name = displayName(user);
+    modalName.textContent = name + (user?.age ? ' • ' + user.age : '');
+    modalProgram.textContent = user?.program ? ('Program: ' + user.program) : '';
+    modalBatch.textContent = user?.batch ? ('Batch: ' + user.batch) : '';
+    modalMbti.textContent = 'MBTI: ' + (user?.mbti||'—');
+    modalZodiac.textContent = 'Zodiac: ' + (user?.zodiac||'—');
+    modalBio.textContent = user?.bio || 'No bio provided.';
+    modalHobbies.innerHTML='';
+    (user?.hobbies||[]).forEach(h=> modalHobbies.appendChild(pill(h)));
+    const modalImgEl = document.getElementById('modalImg');
+    modalImgEl.src = userPrimaryPhoto(user);
+    modalImgEl.onerror = function(){ this.onerror=null; this.src='/img/bgimg.jpg'; };
+
+    modalActions.innerHTML='';
+    if(type==='received'){
+      const a=document.createElement('button'); a.textContent='Accept'; a.className='btn-soft px-4 py-2 rounded-full text-sm text-green-700 hover:bg-green-100'; a.onclick=async()=>{await acceptProposal(item._id); closeModal();};
+      const d=document.createElement('button'); d.textContent='Deny'; d.className='btn-soft px-4 py-2 rounded-full text-sm text-red-700 hover:bg-red-100'; d.onclick=async()=>{await denyProposal(item._id); closeModal();};
+      modalActions.append(a,d);
+    } else {
+      const c=document.createElement('button'); c.textContent='Cancel Proposal'; c.className='btn-soft px-4 py-2 rounded-full text-sm text-red-700 hover:bg-red-100'; c.onclick=async()=>{await cancelProposal(item._id); closeModal();};
+      modalActions.append(c);
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeModal(){
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  closeModalBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+
+  loadData();
+  </script>
+</body>
+</html>

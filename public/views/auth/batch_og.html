@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Select Program & Batch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;600&display=swap" rel="stylesheet">
+    
+<!-- Font Awesome (working CDN) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20%,
+        60% {
+          transform: translateX(-10px);
+        }
+        40%,
+        80% {
+          transform: translateX(10px);
+        }
+      }
+      .animate-float {
+        animation: float 4s ease-in-out infinite;
+        will-change: transform;
+      }
+      .shake {
+        animation: shake 0.5s ease;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      /* Dropdown list hover color update */
+      #programList li:hover {
+        background-color: #FF4D6D !important; /* bright pink hover */
+        color: black !important; /* white text on hover */
+        border-radius: 9999px; /* fully rounded pill shape */
+        margin: 2px 6px; /* small inner spacing so rounded edges don't touch sides */
+        transition: all 0.2s ease;
+      }
+
+      /* Back button */
+      .mbti-btn { position: relative; background: radial-gradient(circle at 30% 100%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.25) 35%, rgba(255,182,193,0.18) 60%, rgba(255,160,180,0.1) 80%, rgba(255,150,170,0.05) 100%), rgba(255,192,203,0.25); border-radius: 1.2rem; color:#111; font-weight:500; transition: all 0.25s ease-in-out; overflow:hidden; z-index:1; box-shadow: inset 0 0 1px rgba(255,255,255,0.6), inset 0 -1px 3px rgba(255,255,255,0.4); }
+      .mbti-btn::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1.4px; background:linear-gradient(150deg, rgba(255,255,255,0.9), rgba(255,190,210,0.65)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; z-index:-1; }
+      .mbti-btn:hover { transform: scale(1.06); box-shadow: 0 0 18px rgba(255,180,200,0.85); }
+
+      /* Shared next button */
+      .next-btn { width:96px; padding:6px; font-family:'Rufina',serif; font-size:14px; color:black; background:linear-gradient(135deg,#F78998 0%,#fa97a9 50%,#F78998 100%); position:relative; overflow:hidden; border-width:0.11rem; border-style:solid; border-top-color:#ffffffcc; border-bottom-color:#ffffffcc; border-left-color:#fa97a9; border-right-color:#fa97a9; border-radius:55px; box-shadow:0px 36.86px 13.98px rgba(255,106,106,0.02),0px 20.34px 12.71px rgba(255,106,106,0.08),0px 8.9px 8.9px rgba(255,106,106,0.13),0px 2.54px 5.08px rgba(255,106,106,0.15); cursor:pointer; transition:0.25s ease; }
+      .next-btn::before { content:""; position:absolute; top:0; left:0; height:100%; width:100%; background:linear-gradient(90deg,rgba(255,255,255,0.35) 0%,rgba(255,255,255,0) 40%,rgba(255,255,255,0) 60%,rgba(255,255,255,0.35) 100%); pointer-events:none; border-radius:55px; }
+      .next-btn:hover { transform:translateY(-2px) scale(1.02); }
+
+      /* Dropdown hover */
+      #programList li:hover { background-color: #F7788F !important; color: black !important; border-radius: 9999px; margin: 2px 6px; transition: all 0.2s ease; }
+
+
+      
+  /* ====== MODAL FIX ====== */
+#uploadGuidanceModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  justify-content: center;
+  align-items: flex-start; /* top pop-up */
+  z-index: 9999;
+  /* pointer-events: none; */
+}
+
+/* NEW: visible state */
+#uploadGuidanceModal.open {
+  display: flex;
+  pointer-events: auto;
+  animation: slideDown 260ms ease-out;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-10px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* UPDATED modal content to be a top bar with responsive width */
+.modal-content {
+  width: min(720px, calc(100% - 32px));
+  max-height: 35vh; /* <-- limit height to 80% of viewport */
+  margin-top: 28px;
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Body scroll */
+.modal-body {
+  padding: 16px;
+  overflow-y: auto;  /* <-- scroll vertically if content is too tall */
+  flex: 1 1 auto;    /* take remaining space in modal */
+}
+
+/* NEW: header bar (red/pink) */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(90deg,#F78998,#fa97a9 60%);
+  color: white;
+}
+
+/* NEW: header title */
+.modal-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* NEW: close button using Font Awesome */
+.modal-close-button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+}
+.modal-close-button:focus { outline: 2px solid rgba(255,255,255,0.3); }
+
+/* small-screen tweak */
+@media (max-width:420px) {
+  .modal-content { width: calc(100% - 16px); margin-top: 16px; }
+  .modal-header h2 { font-size: 0.95rem; }
+}
+
+
+.info-icon {
+  font-size: 20px;
+  color: black;
+  cursor: pointer;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+}
+
+.custom-leading {
+  line-height: 1.6; /* adjust this value as needed */
+}
+
+    </style>
+  </head>
+  <body
+    class="flex items-center justify-center min-h-screen px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 relative"
+    style="
+      background-image: url('/img/bgimg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    "
+  >
+    <!-- Back Button -->
+    <a href="birthday.html" class="mbti-btn absolute top-6 left-6 inline-flex items-center justify-start font-medium w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px] px-4 sm:px-6 text-base sm:text-lg transition-all duration-200 z-20">
+      <i class="fa-solid fa-arrow-left mr-2"></i>
+      <span class="font-serif leading-none">Back</span>
+    </a>
+    <div
+      id="card"
+      class="bg-white/15 backdrop-blur-lg rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14 shadow-2xl w-full max-w-[360px] sm:max-w-[480px] md:max-w-[520px] lg:max-w-[600px] xl:max-w-[700px] 2xl:max-w-[800px] border border-white/30 animate-float"
+    >
+
+    <span class="info-icon" onclick="openGuidanceModal()" role="button" aria-label="Upload guidance" title="Upload guidance">
+  <i class="fa-solid fa-circle-exclamation" style="font-size:20px; color:black;"></i>
+</span>
+
+<!-- modal inner structure with a top-bar header + body -->
+<div id="uploadGuidanceModal" aria-hidden="true" role="dialog" aria-labelledby="uploadGuidanceTitle">
+  <div class="modal-content" role="document">
+    <div class="modal-header">
+      <h2 id="uploadGuidanceTitle" class="text-base sm:text-lg md:text-xl lg:text-2xl custom-leading">User guidance</h2>
+      <!-- Font Awesome X icon (accessible button) -->
+      <button class="modal-close-button" onclick="closeGuidanceModal()" aria-label="Close upload guidance">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" style="padding:16px; text-align:left;">
+      <div class="modal-body p-4 text-left font-inter font-normal">
+        <p class="mb-4 text-sm sm:text-base md:text-lg lg:text-xl font-medium custom-leading">How to fill the data correctly:</p>
+  
+        <ul class="list-disc list-inside text-xs sm:text-sm md:text-base lg:text-lg mb-4 custom-leading">
+  <li>The program must correspond to the level you are currently attending.</li>
+  <li>For the batch, enter only the number. For example, if your batch is <strong>HND58</strong>, enter <strong>58</strong> only.</li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div>
+      <!-- Program Selection Row -->
+      <div
+        class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 mt-8"
+      >
+
+    
+        <label
+          class="text-black font-medium text-base sm:text-lg mb-2 sm:mb-0 sm:w-1/2"
+        >
+          Select Your Program
+        </label>
+        <div class="relative w-full sm:w-1/2">
+          <button id="programBtn" class="w-full px-4 py-2 rounded-full border border-black-500 bg-transparent text-black flex justify-between items-center mb-4">
+            <span>Programs</span>
+            <span>▼</span>
+          </button>
+          <ul id="programList" class="absolute left-0 top-full mt-2 hidden bg-[#EEE6E6] rounded-xl max-h-56 overflow-y-auto no-scrollbar text-gray-700 w-full z-50 shadow-lg">
+            <li class="px-3 py-2 cursor-pointer">Pre IGCSE</li>
+            <li class="px-3 py-2 cursor-pointer">IGCSE</li>
+            <li class="px-3 py-2 cursor-pointer">PRE GED</li>
+            <li class="px-3 py-2 cursor-pointer">GED</li>
+            <li class="px-3 py-2 cursor-pointer">Level 3 Foundation</li>
+            <li class="px-3 py-2 cursor-pointer">GUF Foundation</li>
+            <li class="px-3 py-2 cursor-pointer">HND Computing</li>
+            <li class="px-3 py-2 cursor-pointer">HND Business</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Batch Selection Row -->
+      <div
+        class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8"
+      >
+        <label
+          class="text-black font-medium text-base sm:text-lg mb-2 sm:mb-0 sm:w-1/2"
+        >
+          Enter Your Batch Number
+        </label>
+<input
+  id="batchInput"
+  type="text"
+  placeholder="Eg: 21, 57, 58"
+  class="w-full sm:w-1/2 px-4 py-2 rounded-full border border-black-500 bg-transparent text-black placeholder-black text-base focus:ring-2 focus:ring-pink-400"
+  oninput="validateBatchInput(this)"
+>
+
+      </div>
+
+      <!-- Next Button -->
+      <div class="flex justify-end">
+        <button id="nextBtn" class="next-btn">Next</button>
+      </div>
+    </div>
+
+    <script>
+      const programBtn = document.getElementById("programBtn");
+      const programList = document.getElementById("programList");
+
+      // Toggle dropdown
+      programBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        programList.classList.toggle("hidden");
+        programBtn.querySelector("span:last-child").textContent =
+          programList.classList.contains("hidden") ? "▼" : "▲";
+      });
+
+      document.addEventListener("click", () => {
+        programList.classList.add("hidden");
+        programBtn.querySelector("span:last-child").textContent = "▼";
+      });
+
+      // Select Program
+      document.querySelectorAll("#programList li").forEach((li) => {
+        li.addEventListener("click", () => {
+          programBtn.querySelector("span:first-child").textContent =
+            li.textContent;
+          programBtn.classList.add("bg-[#E78597]", "text-black", "font-medium");
+          programList.classList.add("hidden");
+          programBtn.querySelector("span:last-child").textContent = "▼";
+        });
+      });
+
+      // Next button with shake effect
+      const batchInput = document.getElementById("batchInput");
+
+      document.getElementById("nextBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.dispatchEvent(new Event('registration:submit'));
+      });
+
+      // Registration hooks
+      window.prefillPage = function(prefill) {
+        const program = prefill.program ?? localStorage.getItem('program');
+        const batch = prefill.batch ?? localStorage.getItem('batch');
+        if (program) programBtn.querySelector('span:first-child').textContent = program;
+        if (batch) batchInput.value = batch;
+      };
+
+      window.collectPageData = function() {
+        const program = programBtn.querySelector("span:first-child").textContent;
+        const batch = batchInput.value.trim();
+        if (program === "Programs" || batch === "") {
+          [programBtn, batchInput].forEach((el) => el.classList.add("shake"));
+          setTimeout(() => {
+            [programBtn, batchInput].forEach((el) =>
+              el.classList.remove("shake")
+            );
+          }, 500);
+          alert("⚠️ Please select your program and enter your batch number!");
+          return null;
+        }
+        if (batch.length > 50) {
+          alert("⚠️ Batch number must be 50 characters or less.");
+          return null;
+        }
+        localStorage.setItem('program', program);
+        localStorage.setItem('batch', batch);
+        return { program, batch };
+      };
+
+function validateBatchInput(input) {
+  // If there are any non-digit characters
+  if (/[^0-9]/.test(input.value)) {
+    alert("⚠️ Please only type numbers. If you have no idea how to fill the data, please press the guidance icon on the top-right corner.");
+    // Remove non-digit characters
+    input.value = input.value.replace(/[^0-9]/g, '');
+  }
+}
+
+         function openGuidanceModal() {
+  document.getElementById('uploadGuidanceModal').style.display = 'flex';
+}
+function closeGuidanceModal() {
+  document.getElementById('uploadGuidanceModal').style.display = 'none';
+}
+    </script>
+  <script type="module" src="/js/registration.js"></script>
+  </body>
+</html>

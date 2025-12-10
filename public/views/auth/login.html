@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Account</title>
+    <style>
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      .animate-float {
+        animation: float 4s ease-in-out infinite;
+        will-change: transform;
+      }
+    </style>
+    <style>
+      body {
+        margin: 0;
+        background-image: url("/img/bgimg.jpg");
+
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        font-family: "Poppins", sans-serif;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .navbar-space {
+        height: 60px;
+        width: 100%;
+        position: absolute;
+        top: 0;
+      }
+
+      .container {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 20px;
+        padding: 60px 60px;
+        width: 480px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        position: relative;
+        border: 1px solid rgba(255,255,255,0.3);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      /* Adjust input and button spacing for balance */
+      input {
+        width: 100%; /* full width inside wider container */
+        padding: 14px;
+        margin: 14px 0; /* more vertical spacing */
+        border: none;
+        border-bottom: 1px solid #000;
+        background: transparent;
+        outline: none;
+        font-size: 16px;
+        color: black;
+      }
+
+      /* Placeholder (preview text) color */
+      input::placeholder {
+        color: black; /* pink placeholder */
+        opacity: 0.8;
+      }
+
+      /* Standard next/skip button style (from birthday) */
+      .next-btn { width: 96px; padding: 6px; font-family: 'Rufina', serif; font-size: 14px; color: black; background: linear-gradient(135deg, #F78998 0%, #fa97a9 50%, #F78998 100%); position: relative; overflow: hidden; border-width: 0.11rem; border-style: solid; border-top-color: #ffffffcc; border-bottom-color: #ffffffcc; border-left-color: #fa97a9; border-right-color: #fa97a9; border-radius: 55px; box-shadow: 0px 36.86px 13.98px rgba(255, 106, 106, 0.02), 0px 20.34px 12.71px rgba(255, 106, 106, 0.08), 0px 8.9px 8.9px rgba(255, 106, 106, 0.13), 0px 2.54px 5.08px rgba(255, 106, 106, 0.15); cursor: pointer; transition: 0.25s ease; }
+      .next-btn::before { content: ""; position: absolute; top: 0; left: 0; height: 100%; width: 100%; background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100%); pointer-events: none; border-radius: 55px; }
+      .next-btn:hover { transform: translateY(-2px) scale(1.02); }
+
+      /* Larger login CTA for prominence and spacing */
+      .login-cta {
+        width: 220px !important;
+        padding: 12px 24px !important;
+        font-size: 16px !important;
+        border-radius: 40px !important;
+        margin: 18px 0 !important;
+      }
+
+      a {
+        color: #ff3366;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .remember {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        width: 80%;
+        margin: 18px auto 6px;
+        font-size: 15px;
+        color: black;
+      }
+
+      #remember {
+        all: unset; /* resets all browser default styles */
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid black;
+        border-radius: 4px;
+        background: transparent;
+        cursor: pointer;
+        position: relative;
+        vertical-align: middle;
+        transition: 0.15s ease-in-out;
+        margin-left: 4px;
+      }
+
+      #remember:checked::after {
+        content: "✔";
+        font-size: 9px;
+        color: black;
+        position: absolute;
+        top: -2px;
+        left: 1px;
+      }
+
+      /* Ensure login button uses same visual as next-btn when present */
+      .login-btn { width: 80%; padding: 12px; border: none; border-radius: 30px; font-weight: bold; color: white; background: linear-gradient(90deg, #ef3063, #f68229); cursor: pointer; transition: 0.3s; }
+      .login-btn:hover { transform: scale(1.05); background: linear-gradient(90deg, #ff3366, #ff5c8a); }
+
+      /* Account + Register line */
+      /* Left-right layout for bottom line */
+      .account-register {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 80%; /* matches button width for symmetry */
+        margin: 30px auto 0;
+        font-size: 15px;
+        color: black;
+      }
+
+      /* Left text (Don’t have an account?) */
+      .account-register span {
+        font-weight: 500;
+      }
+
+      /* Right text (Register) */
+      .account-register a {
+        color: #ff4d6d;
+        font-weight: 600;
+        text-decoration: none;
+        text-shadow: 0 0 6px rgba(255, 77, 109, 0.6); /* soft glow */
+        transition: all 0.3s ease;
+      }
+
+      .account-register a:hover {
+        color: #ff1e50;
+        text-shadow: 0 0 10px rgba(255, 77, 109, 0.9);
+        transform: scale(1.05);
+      }
+
+      .type3 {
+        padding-left: 0;
+      }
+
+      .next1 {
+        margin-left: 72%;
+      }
+
+      /* Make Forget Password and Register links clearer */
+      .forgot-link {
+        font-size: 15px;
+        color: #ff3366;
+        font-weight: 600;
+      }
+
+      .account-register a {
+        font-size: 16px;
+        color: #ff4d6d;
+        font-weight: 700;
+        text-shadow: 0 0 6px rgba(255, 77, 109, 0.6);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Placeholder for Navigation Bar -->
+    <div class="navbar-space"></div>
+    <div class="container animate-float">
+      <h2>Login Account</h2>
+      <form id="loginForm">
+        <input
+          type="text"
+          id="username"
+          placeholder="Enter your Username"
+          required
+        /><br />
+        <input
+          type="password"
+          id="password"
+          placeholder="Password"
+          required
+        /><br />
+        <div class="remember">
+          <label for="remember">Remember Me</label>
+          <div class="type3">
+            <input type="checkbox" id="remember" />
+          </div>
+        </div>
+        <div style="width:100%; display:flex; justify-content:center;">
+          <button type="submit" class="next-btn login-cta">Login</button>
+        </div>
+        <p style="margin-top:12px;"><a href="#" class="forgot-link">Forget Password?</a></p>
+        <div class="account-register">
+          <span>Don't have an Account?</span>
+          <a href="enter-name.html">Register</a>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      const API_BASE = "/api/v1/users";
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("password").value;
+          const remember = document.getElementById("remember").checked;
+
+          if (!username || !password) {
+            alert("⚠️ Please enter both username and password.");
+            return;
+          }
+
+          try {
+            const response = await fetch(`${API_BASE}/login`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ username, password }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+              throw new Error(
+                result.message || "Login failed. Please try again."
+              );
+            }
+
+            // Store token if remember me is checked
+            if (remember && result.token) {
+              localStorage.setItem("authToken", result.token);
+            }
+
+            alert("Login successful!");
+            const params = new URLSearchParams(window.location.search);
+            const redirectTo = params.get('redirect');
+            window.location.href = redirectTo || "/";
+          } catch (error) {
+            alert(
+              error.message ||
+                "An error occurred during login. Please try again."
+            );
+          }
+        });
+    </script>
+  </body>
+</html>

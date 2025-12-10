@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Rufina', serif;
+      background: linear-gradient(180deg, #FFCAD4 6%, #FF4D6D 200%);
+    }
+    .gallery-box { background-color: rgba(231, 133, 151, 0.4); border: 2.2px solid #FF8BA0; border-radius: 22px; }
+    .container-bg { background: rgba(231,133,151,0.3); border: 2px solid #FF8BA0; border-radius: 1rem; }
+    .mbti-btnB {
+      position: relative; background: radial-gradient(circle at 30% 100%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 60%), rgba(255,255,255,0.15);
+      border-radius: 1.2rem; color: #111; font-weight: 500; transition: all 0.25s ease-in-out; overflow: hidden; z-index: 1;
+      border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 0 8px rgba(255,255,255,0.4), inset 0 0 1px rgba(255,255,255,0.6);
+    }
+    .mbti-btnB:hover { transform: scale(1.06); box-shadow: 0 0 18px rgba(255,255,255,0.6); }
+
+    .guidance-border {
+    border: 2px solid #F27087;     /* thicker = brighter */
+    border-radius: 24px; 
+  }
+    
+  </style>
+</head>
+
+<body class="min-h-screen overflow-y-scroll">
+
+    <!-- Top Bar -->
+  <div class="flex items-center justify-between max-w-4xl mx-auto p-4">
+    <button class="flex items-center gap-2 bg-white/30 backdrop-blur-sm px-3 py-2 rounded-full shadow-sm hover:scale-105 transition">
+      <i class="fa-solid fa-arrow-left"></i>
+      Back
+    </button>
+
+    <div class="flex flex-col items-center gap-2">
+      <button class="bg-white/30 backdrop-blur-sm w-10 h-10 rounded-xl shadow-sm hover:scale-105 transition mr-8">
+        <i class="fa-solid fa-pen text-md"></i>
+      </button>
+
+      <button class="bg-white/30 backdrop-blur-sm w-6 h-7 rounded-full shadow-sm hover:scale-105 transition">
+        <i class="fa-solid fa-question text-sm"></i>
+      </button>
+    </div>
+  </div>
+
+<div class="max-w-4xl mx-auto p-4">
+
+  <div class="flex gap-2 overflow-x-auto sm:grid sm:grid-cols-5 h-40">
+    <div class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"><i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i></div>
+    <div class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"><i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i></div>
+    <div class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"><i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i></div>
+    <div class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"><i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i></div>
+    <div class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"><i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i></div>
+  </div>
+
+  <!-- PERSONAL INFO -->
+  <div id="info-box" class="container-bg w-full p-6 rounded-xl shadow-lg mt-6">
+    <h2 class="text-2xl mb-6 ml-6">Personal Information</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm ml-6 mr-20">
+      <div id="left-column" class="space-y-2 text-left"></div>
+      <div id="right-column" class="space-y-2 text-left sm:justify-self-end"></div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT SECURITY -->
+ <div id="account-security" class="container-bg mt-6 p-5 rounded-xl shadow-lg w-full"></div>
+  
+  <!-- ADDITIONAL INFO -->
+  <div id="additional-info-container" class="container-bg mt-6 p-5 rounded-xl shadow-lg w-full"></div>
+
+  <!-- DANGER ZONE -->
+  <div class="container-bg p-5 rounded-xl shadow-lg w-full mt-6">
+    <h2 class="text-2xl sm:text-2xl text-gray-1200/90 ml-6 mb-10">Danger Zone</h2>
+    <p class="mbti-btnB text-center border p-4 w-90% rounded-[1.4rem] mx-auto text-base leading-relaxed mb-6">
+      Deleting your account requires your password and admin approval. 
+      This action cannot be undone.
+    </p>
+    <div class="flex gap-4 mt-4 justify-center">
+      <button class="mbti-btnB flex items-center gap-2 px-4 py-2 text-sm sm:text-base md:text-lg">
+        <i class="fa-solid fa-trash"></i> Delete Account
+      </button>
+      <button class="mbti-btnB px-4 py-2 text-sm sm:text-base md:text-lg">Log out</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- 🔥🔥🔥 PASSWORD POPUP ADDED HERE 🔥🔥🔥 -->
+<div id="passwordModal"
+     class="fixed inset-0 flex justify-center items-center hidden z-50 px-4 sm:px-0">
+
+  <!-- Frosted gradient modal -->
+  <div class="w-full max-w-md sm:max-w-md md:max-w-md
+              h-[560px] sm:h-[560px] 
+              bg-gradient-to-b from-[#FFCAD4]/30 via-[#FF7A90]/20 to-[#FF4D6D]/30 
+              backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl text-center relative">
+
+    <!-- Close Button -->
+    <button onclick="closePasswordModal()" 
+            class="absolute top-4 right-4 text-white text-3xl">&times;</button>
+
+    <div class="flex justify-center mb-4 mt-2">
+      <div class="relative inline-block">
+        <!-- Background icon -->
+        <i class="fa-solid fa-rotate-left text-7xl drop-shadow-xl sm:text-7xl md:text-7xl" style="color:#FF4D6D;"></i>
+        <!-- Centered lock icon -->
+        <i class="fa-solid fa-lock text-xl sm:text-2xl absolute top-1/2 left-1/2 
+              -translate-x-1/2 -translate-y-1/2" 
+           style="color:#FF4D6D;"></i>
+      </div>
+    </div>
+
+    <h2 class="text-2xl sm:text-3xl mb-6 text-black">Change Password</h2>
+
+    <div class="w-full sm:w-4/5 mx-auto">
+     <div class="relative mb-4 sm:mb-6">
+  <input id="oldPassword" type="password" placeholder="Old Password"
+         class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base">
+  <i id="toggleOldPassword" class="fa-regular fa-eye absolute right-4 top-3.5 text-sm sm:text-base cursor-pointer"></i>
+</div>
+
+      <div class="relative mb-4 sm:mb-6">
+        <input type="password" placeholder="New Password"
+          class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base">
+        <i class="fa-solid fa-lock absolute right-4 top-3.5 text-sm sm:text-base"></i>
+      </div>
+
+      <div class="relative mb-4 sm:mb-6">
+        <input type="password" placeholder="Confirm Password"
+          class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base">
+      </div>
+
+      <button class="w-full p-2 sm:p-2 rounded-2xl text-black text-base sm:text-md
+            bg-[#FE5171] border border-white/50">
+        Save Change
+      </button>
+
+      <p class="mt-2 text-white/70 text-center cursor-pointer text-sm sm:text-base">
+          Forget Password
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<!-- 🔥 Change Username Modal 🔥 -->
+<div id="usernameModal" class="fixed inset-0 flex justify-center items-center hidden z-50 px-4 sm:px-0">
+  <div class="w-full max-w-md sm:max-w-md md:max-w-md
+              h-[460px] sm:h-[460px] 
+              bg-gradient-to-b from-[#FFCAD4]/30 via-[#FF7A90]/20 to-[#FF4D6D]/30 
+              backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl text-center relative">
+
+    <!-- Close Button -->
+    <button onclick="closeUsernameModal()" class="absolute top-4 right-4 text-white text-3xl">&times;</button>
+
+    <div class="flex justify-center mb-4 mt-2">
+      <div class="relative inline-block">
+        <i class="fa-solid fa-user-pen text-6xl drop-shadow-xl sm:text-6xl md:text-6xl" style="color:#FF4D6D;"></i>
+      </div>
+    </div>
+
+    <h2 class="text-2xl sm:text-2xl mb-6 text-black">Change Username</h2>
+
+    <div class="w-full sm:w-4/5 mx-auto">
+
+      <div class="mb-4 text-left">
+  <span class="text-sm sm:text-base text-gray-700">Current Username:</span>
+  <span class="text-sm sm:text-sm font-semibold">Htet Oo Wai Yan</span>
+</div>
+
+
+      <!-- NEW USERNAME FIELD -->
+      <div class="relative mb-4 sm:mb-6">
+        <input id="newUsername" type="text" placeholder="New Username" readonly
+               class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base">
+        <i id="toggleNewUsername" class="fa-solid fa-pen absolute right-4 top-3.5 text-sm sm:text-base cursor-pointer"></i>
+      </div>
+
+      <!-- PASSWORD FIELD -->
+      <div class="relative mb-3 sm:mb-3">
+        <input id="usernamePassword" type="password" placeholder="Password"
+               class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base">
+        <i id="toggleUsernamePassword" class="fa-regular fa-eye absolute right-4 top-3.5 text-sm sm:text-base cursor-pointer"></i>
+      </div>
+       <label for="usernamePassword" class="text-[8px] sm:text-[10px] text-gray-700 mb-1 block text-left">
+  Enter your current password to validate the username change:
+</label>
+      <button class="w-full p-2 sm:p-2 rounded-2xl text-black text-base sm:text-md bg-[#FE5171] border border-white/50 mb-2 mt-4">
+        Save Change
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- 🔥 Upload Guidance Modal 🔥 -->
+<div id="uploadGuidanceModal" class="fixed inset-0 flex justify-center items-center hidden z-50 px-4">
+  <div class="w-full max-w-md bg-gradient-to-b from-[#FFCAD4]/40 via-[#FF7A90]/30 to-[#FF4D6D]/40 backdrop-blur-xl 
+              border border-white/30 rounded-3xl p-6 shadow-xl text-center relative">
+
+    <!-- CLOSE BUTTON -->
+    <button onclick="closeGuidanceModal()" class="absolute top-4 right-4 text-white text-3xl">&times;</button>
+
+<h2 class="text-xl text-gray-1200 mb-2 font-medium">Upload Guidance</h2>
+    <p class="text-md text-black/1200 mb-4">How to make photos more attractive</p>
+
+    <p class="text-xs text-gray-1200 mb-6">
+      Choosing photos with clear faces and just you to upload is more likely to make other users like you.
+      Avoid uploading blurry photos.
+    </p>
+
+    <!-- ICON GRID -->
+   <div class="grid grid-cols-3 gap-2">
+
+  <div class="flex flex-col items-center">
+    <div class="guidance-border w-24 h-28 "></div>
+    <p class="text-xs mt-2">Only you ✔️</p>
+  </div>
+
+  <div class="flex flex-col items-center">
+    <div class="guidance-border w-24 h-28"></div>
+    <p class="text-xs mt-2">Clear face ✔️</p>
+  </div>
+
+  <div class="flex flex-col items-center">
+    <div class="guidance-border w-24 h-28"></div>
+    <p class="text-xs mt-2">Clear light ✔️</p>
+  </div>
+
+   <div class="flex flex-col items-center">
+    <div class="guidance-border w-24 h-28 "></div>
+    <p class="text-xs mt-2">Multiple faces ❌</p>
+  </div>
+
+   <div class="flex flex-col items-center">
+    <div class="guidance-border w-24 h-28 "></div>
+    <p class="text-xs mt-2">Small face ❌</p>
+  </div>
+
+   <div class="flex flex-col items-center">
+    <div class="guidance-border w-24 h-28 "></div>
+    <p class="text-xs mt-2">Blurred screen ❌</p>
+  </div>
+
+
+
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+
+<script>
+/* PERSONAL INFO */
+const personalInfo = {
+  left: [
+    { label: "Display Name", value: "John Smith" },
+    { label: "Gender", value: "Female" },
+    { label: "Date of Birth", value: "Jan 3, 2006" }
+  ],
+  right: [
+    { label: "Batch", value: "HND-63" },
+    { label: "Sexuality", value: "Heterosexual" },
+    { label: "Student ID", value: "2024001234" }
+  ]
+};
+
+function renderColumn(id, items) {
+  const col = document.getElementById(id);
+  col.innerHTML = "";
+  items.forEach(item => col.innerHTML += `
+    <p class="text-md text-gray-700 mb-0">${item.label}</p>
+    <p class="text-xl mb-4">${item.value}</p>
+  `);
+}
+
+renderColumn("left-column", personalInfo.left);
+renderColumn("right-column", personalInfo.right);
+
+/* ACCOUNT SECURITY */
+const accountSecurity = [
+  { label: "Username", value: "Change your username", icon: "fa-pen" },
+  { label: "Password", value: "Change your password", icon: "fa-key" },
+];
+
+function renderAccountSecurity(containerId, items) {
+  const container = document.getElementById(containerId);
+  container.style.border = "2px solid #FF8BA0";
+  const h2 = document.createElement("h2");
+  h2.className = "text-2xl mb-6 ml-6";
+  h2.textContent = "Account Security";
+  container.appendChild(h2);
+
+  items.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "mb-4";
+
+    const label = document.createElement("p");
+    label.className = "text-md text-gray-700/100 mb-1 ml-6";
+    label.textContent = item.label;
+    row.appendChild(label);
+
+    const btn = document.createElement("button");
+    btn.className = "px-3 py-2 rounded-md text-xl flex justify-between items-center text-gray-1200/90 w-full ml-3";
+    btn.innerHTML = `${item.value} <i class="fa-solid ${item.icon} text-xl"></i>`;
+
+     // OPEN POPUP BASED ON ICON
+  if (item.icon === "fa-key") {
+    btn.addEventListener("click", () => {
+      document.getElementById("passwordModal").classList.remove("hidden");
+    });
+  } else if (item.icon === "fa-pen") {
+    btn.addEventListener("click", () => {
+      document.getElementById("usernameModal").classList.remove("hidden");
+    });
+  }
+
+
+    row.appendChild(btn);
+    container.appendChild(row);
+  });
+}
+
+renderAccountSecurity("account-security", accountSecurity);
+
+/* CLOSE POPUP */
+function closePasswordModal() {
+  document.getElementById("passwordModal").classList.add("hidden");
+}
+
+/* ADDITIONAL INFO */
+const additionalInfo = [
+  { label: "Bio", value: "You can edit these details anytime" },
+  { label: "Phone", value: "09 00000000" },
+  { label: "Email", value: "email@example.com" },
+  { label: "Instagram", value: "@instaname" },
+  { label: "Location", value: "USA" },
+  { label: "Twitter", value: "@twitter" },
+];
+
+function renderAdditionalInfo(containerId, items) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  container.style.border = "2px solid #FF8BA0";
+
+  const h2 = document.createElement("h2");
+  h2.className = "text-2xl mb-6 ml-6";
+  h2.textContent = "Additional Information";
+  container.appendChild(h2);
+
+  const grid = document.createElement("div");
+  grid.className = "grid grid-cols-1 sm:grid-cols-2 gap-2 ml-6 mr-6";
+
+  const mid = Math.ceil(items.length / 2);
+  const leftItems = items.slice(0, mid);
+  const rightItems = items.slice(mid);
+
+  function createColumn(colItems) {
+    const col = document.createElement("div");
+    col.className = "space-y-2 text-left";
+
+    colItems.forEach(item => {
+      const div = document.createElement("div");
+
+      const labelP = document.createElement("p");
+      labelP.className = "text-md mb-1";
+      labelP.innerHTML = `${item.label} <i class="fa-solid fa-pen ml-3 text-lg cursor-pointer edit-icon"></i>`;
+
+      const valueP = document.createElement("p");
+      valueP.className = "text-xl mb-5 value-text";
+      valueP.textContent = item.value;
+
+      div.appendChild(labelP);
+      div.appendChild(valueP);
+
+      const pen = labelP.querySelector(".edit-icon");
+
+      pen.addEventListener("click", () => {
+        const current = div.querySelector(".value-text") || div.querySelector("input");
+        const editing = pen.classList.contains("fa-check");
+
+        if (!editing) {
+          const input = document.createElement("input");
+          input.value = current.textContent;
+          input.className = "border rounded px-2 py-1 w-full";
+          current.replaceWith(input);
+          pen.classList.replace("fa-pen", "fa-check");
+          pen.style.color = "green";
+        } else {
+          const input = div.querySelector("input");
+          const newP = document.createElement("p");
+          newP.className = "text-xl mb-5 value-text";
+          newP.textContent = input.value;
+          input.replaceWith(newP);
+          pen.classList.replace("fa-check", "fa-pen");
+          pen.style.color = "";
+        }
+      });
+
+      col.appendChild(div);
+    });
+
+    return col;
+  }
+
+  grid.appendChild(createColumn(leftItems));
+  grid.appendChild(createColumn(rightItems));
+  container.appendChild(grid);
+}
+
+renderAdditionalInfo("additional-info-container", additionalInfo);
+
+// *****
+// OLD PASSWORD: Eye toggle + numeric only
+const oldPasswordInput = document.getElementById('oldPassword');
+const toggleOldPassword = document.getElementById('toggleOldPassword');
+
+toggleOldPassword.addEventListener('click', () => {
+  const type = oldPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  oldPasswordInput.setAttribute('type', type);
+
+  // Toggle icon class
+  toggleOldPassword.classList.toggle('fa-eye');
+  toggleOldPassword.classList.toggle('fa-eye-slash');
+});
+
+// Numeric only validation for Old Password
+oldPasswordInput.addEventListener('input', () => {
+  if (/[^0-9]/.test(oldPasswordInput.value)) {
+    alert('Only numbers 0-9 are allowed!');
+    oldPasswordInput.value = oldPasswordInput.value.replace(/[^0-9]/g, '');
+  }
+});
+
+// NEW PASSWORD & CONFIRM PASSWORD: numeric only
+const newPasswordInput = document.querySelector('input[placeholder="New Password"]');
+const confirmPasswordInput = document.querySelector('input[placeholder="Confirm Password"]');
+
+[newPasswordInput, confirmPasswordInput].forEach(input => {
+  input.addEventListener('input', () => {
+    if (/[^0-9]/.test(input.value)) {
+      alert('Only numbers 0-9 are allowed!');
+      input.value = input.value.replace(/[^0-9]/g, '');
+    }
+  });
+});
+  // *****
+
+  function openUsernameModal() {
+  document.getElementById("usernameModal").classList.remove("hidden");
+}
+function closeUsernameModal() {
+  document.getElementById("usernameModal").classList.add("hidden");
+}
+
+// Toggle pen for New Username
+const newUsernameInput = document.getElementById('newUsername');
+const toggleNewUsername = document.getElementById('toggleNewUsername');
+
+toggleNewUsername.addEventListener('click', () => {
+  if (toggleNewUsername.classList.contains('fa-pen')) {
+    newUsernameInput.removeAttribute('readonly');
+    newUsernameInput.focus();
+    toggleNewUsername.classList.replace('fa-pen', 'fa-check');
+    toggleNewUsername.style.color = 'green';
+  } else {
+    newUsernameInput.setAttribute('readonly', true);
+    toggleNewUsername.classList.replace('fa-check', 'fa-pen');
+    toggleNewUsername.style.color = '';
+  }
+});
+
+// Toggle eye for Password field
+const usernamePasswordInput = document.getElementById('usernamePassword');
+const toggleUsernamePassword = document.getElementById('toggleUsernamePassword');
+
+toggleUsernamePassword.addEventListener('click', () => {
+  const type = usernamePasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  usernamePasswordInput.setAttribute('type', type);
+
+  toggleUsernamePassword.classList.toggle('fa-eye');
+  toggleUsernamePassword.classList.toggle('fa-eye-slash');
+});
+
+// Numeric only validation for Password
+usernamePasswordInput.addEventListener('input', () => {
+  if (/[^0-9]/.test(usernamePasswordInput.value)) {
+    alert('Only numbers 0-9 are allowed!');
+    usernamePasswordInput.value = usernamePasswordInput.value.replace(/[^0-9]/g, '');
+  }
+});
+
+document.querySelector('.fa-question').addEventListener('click', () => {
+  document.getElementById("uploadGuidanceModal").classList.remove("hidden");
+});
+
+/* CLOSE UPLOAD GUIDANCE POPUP */
+function closeGuidanceModal() {
+  document.getElementById("uploadGuidanceModal").classList.add("hidden");
+}
+    
+</script>
+</body>
+</html>
