@@ -378,7 +378,7 @@
 
     // Clear existing
     svg.innerHTML = "";
-    Array.from(container.querySelectorAll(".orbit-node, .group-glow")).forEach(el => el.remove());
+    Array.from(container.querySelectorAll(".orbit-node, .group-glow, .orbit-label")).forEach(el => el.remove());
 
     const rect = container.getBoundingClientRect();
     const cx = rect.width / 2;
@@ -523,14 +523,16 @@
         img.alt = node.name;
         div.appendChild(img);
 
-        // name label
+        // name label positioned beneath the node using its absolute center and radius
         const label = document.createElement("div");
         label.className = "orbit-label";
         label.textContent = node.name;
         label.style.position = "absolute";
-        label.style.top = "100%";
-        label.style.left = "50%";
-        label.style.transform = "translate(-50%, 6px)";
+        const rNode = getNodeRadiusByLevel(node.level);
+        label.style.left = pos.x + "px";
+        label.style.top = (pos.y + rNode + 14) + "px"; // small gap below circle
+        label.style.transform = "translate(-50%, 0)";
+        label.style.pointerEvents = "none";
         container.appendChild(label);
 
         // pop-in animation
@@ -585,6 +587,19 @@
         });
     });
     teamNodes.forEach(n => createNodeEl(n));
+
+    // Ensure labels don't overlap the section below by adding bottom margin if needed
+    requestAnimationFrame(() => {
+      const labels = container.querySelectorAll('.orbit-label');
+      let maxBottom = 0;
+      labels.forEach(el => {
+        const b = el.offsetTop + el.offsetHeight;
+        if (b > maxBottom) maxBottom = b;
+      });
+      const containerHeight = rect.height;
+      const overflow = Math.max(0, maxBottom - containerHeight);
+      container.style.marginBottom = overflow > 0 ? (overflow + 24) + 'px' : '0px';
+    });
     }
 
 
