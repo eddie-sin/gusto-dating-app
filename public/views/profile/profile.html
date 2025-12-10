@@ -1,519 +1,2058 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile Page</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&display=swap" rel="stylesheet">
-
-  <style>
-    body {
-      font-family: 'Rufina', serif;
-      background: linear-gradient(180deg, #FFCAD4 6%, #FF4D6D 200%);
-    }
-    .gallery-box { background-color: rgba(231, 133, 151, 0.4); border: 2.2px solid #FF8BA0; border-radius: 22px; }
-    .container-bg { background: rgba(231,133,151,0.3); border: 2px solid #FF8BA0; border-radius: 1rem; }
-    .mbti-btnB {
-      position: relative; background: radial-gradient(circle at 30% 100%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 60%), rgba(255,255,255,0.15);
-      border-radius: 1.2rem; color: #111; font-weight: 500; transition: all 0.25s ease-in-out; overflow: hidden; z-index: 1;
-      border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 0 8px rgba(255,255,255,0.4), inset 0 0 1px rgba(255,255,255,0.6);
-    }
-    .mbti-btnB:hover { transform: scale(1.06); box-shadow: 0 0 18px rgba(255,255,255,0.6); }
-
-    .guidance-border {
-    border: 2px solid #F27087;     /* thicker = brighter */
-    border-radius: 24px; 
-  }
-    
-  </style>
-</head>
-
-<body class="min-h-screen overflow-y-scroll">
-
-    <!-- Top Bar -->
-  <div class="flex items-center justify-between max-w-4xl mx-auto p-4">
-    <button class="flex items-center gap-2 bg-white/30 backdrop-blur-sm px-3 py-2 rounded-full shadow-sm hover:scale-105 transition">
-      <i class="fa-solid fa-arrow-left"></i>
-      Back
-    </button>
-
-    <div class="flex flex-col items-center gap-2">
-      <button class="bg-white/30 backdrop-blur-sm w-10 h-10 rounded-xl shadow-sm hover:scale-105 transition mr-8">
-        <i class="fa-solid fa-pen text-md"></i>
-      </button>
-
-      <button class="bg-white/30 backdrop-blur-sm w-6 h-7 rounded-full shadow-sm hover:scale-105 transition">
-        <i class="fa-solid fa-question text-sm"></i>
-      </button>
-    </div>
-  </div>
-
-<div class="max-w-4xl mx-auto p-4">
-
-  <div class="flex gap-2 overflow-x-auto sm:grid sm:grid-cols-5 h-40">
-    <div class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"><i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i></div>
-    <div class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"><i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i></div>
-    <div class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"><i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i></div>
-    <div class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"><i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i></div>
-    <div class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"><i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i></div>
-  </div>
-
-  <!-- PERSONAL INFO -->
-  <div id="info-box" class="container-bg w-full p-6 rounded-xl shadow-lg mt-6">
-    <h2 class="text-2xl mb-6 ml-6">Personal Information</h2>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm ml-6 mr-20">
-      <div id="left-column" class="space-y-2 text-left"></div>
-      <div id="right-column" class="space-y-2 text-left sm:justify-self-end"></div>
-    </div>
-  </div>
-
-  <!-- ACCOUNT SECURITY -->
- <div id="account-security" class="container-bg mt-6 p-5 rounded-xl shadow-lg w-full"></div>
-  
-  <!-- ADDITIONAL INFO -->
-  <div id="additional-info-container" class="container-bg mt-6 p-5 rounded-xl shadow-lg w-full"></div>
-
-  <!-- DANGER ZONE -->
-  <div class="container-bg p-5 rounded-xl shadow-lg w-full mt-6">
-    <h2 class="text-2xl sm:text-2xl text-gray-1200/90 ml-6 mb-10">Danger Zone</h2>
-    <p class="mbti-btnB text-center border p-4 w-90% rounded-[1.4rem] mx-auto text-base leading-relaxed mb-6">
-      Deleting your account requires your password and admin approval. 
-      This action cannot be undone.
-    </p>
-    <div class="flex gap-4 mt-4 justify-center">
-      <button class="mbti-btnB flex items-center gap-2 px-4 py-2 text-sm sm:text-base md:text-lg">
-        <i class="fa-solid fa-trash"></i> Delete Account
-      </button>
-      <button class="mbti-btnB px-4 py-2 text-sm sm:text-base md:text-lg">Log out</button>
-    </div>
-  </div>
-
-</div>
-
-<!-- 🔥🔥🔥 PASSWORD POPUP ADDED HERE 🔥🔥🔥 -->
-<div id="passwordModal"
-     class="fixed inset-0 flex justify-center items-center hidden z-50 px-4 sm:px-0">
-
-  <!-- Frosted gradient modal -->
-  <div class="w-full max-w-md sm:max-w-md md:max-w-md
-              h-[560px] sm:h-[560px] 
-              bg-gradient-to-b from-[#FFCAD4]/30 via-[#FF7A90]/20 to-[#FF4D6D]/30 
-              backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl text-center relative">
-
-    <!-- Close Button -->
-    <button onclick="closePasswordModal()" 
-            class="absolute top-4 right-4 text-white text-3xl">&times;</button>
-
-    <div class="flex justify-center mb-4 mt-2">
-      <div class="relative inline-block">
-        <!-- Background icon -->
-        <i class="fa-solid fa-rotate-left text-7xl drop-shadow-xl sm:text-7xl md:text-7xl" style="color:#FF4D6D;"></i>
-        <!-- Centered lock icon -->
-        <i class="fa-solid fa-lock text-xl sm:text-2xl absolute top-1/2 left-1/2 
-              -translate-x-1/2 -translate-y-1/2" 
-           style="color:#FF4D6D;"></i>
-      </div>
-    </div>
-
-    <h2 class="text-2xl sm:text-3xl mb-6 text-black">Change Password</h2>
-
-    <div class="w-full sm:w-4/5 mx-auto">
-     <div class="relative mb-4 sm:mb-6">
-  <input id="oldPassword" type="password" placeholder="Old Password"
-         class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base">
-  <i id="toggleOldPassword" class="fa-regular fa-eye absolute right-4 top-3.5 text-sm sm:text-base cursor-pointer"></i>
-</div>
-
-      <div class="relative mb-4 sm:mb-6">
-        <input type="password" placeholder="New Password"
-          class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base">
-        <i class="fa-solid fa-lock absolute right-4 top-3.5 text-sm sm:text-base"></i>
-      </div>
-
-      <div class="relative mb-4 sm:mb-6">
-        <input type="password" placeholder="Confirm Password"
-          class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base">
-      </div>
-
-      <button class="w-full p-2 sm:p-2 rounded-2xl text-black text-base sm:text-md
-            bg-[#FE5171] border border-white/50">
-        Save Change
-      </button>
-
-      <p class="mt-2 text-white/70 text-center cursor-pointer text-sm sm:text-base">
-          Forget Password
-      </p>
-    </div>
-
-  </div>
-</div>
-
-<!-- 🔥 Change Username Modal 🔥 -->
-<div id="usernameModal" class="fixed inset-0 flex justify-center items-center hidden z-50 px-4 sm:px-0">
-  <div class="w-full max-w-md sm:max-w-md md:max-w-md
-              h-[460px] sm:h-[460px] 
-              bg-gradient-to-b from-[#FFCAD4]/30 via-[#FF7A90]/20 to-[#FF4D6D]/30 
-              backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl text-center relative">
-
-    <!-- Close Button -->
-    <button onclick="closeUsernameModal()" class="absolute top-4 right-4 text-white text-3xl">&times;</button>
-
-    <div class="flex justify-center mb-4 mt-2">
-      <div class="relative inline-block">
-        <i class="fa-solid fa-user-pen text-6xl drop-shadow-xl sm:text-6xl md:text-6xl" style="color:#FF4D6D;"></i>
-      </div>
-    </div>
-
-    <h2 class="text-2xl sm:text-2xl mb-6 text-black">Change Username</h2>
-
-    <div class="w-full sm:w-4/5 mx-auto">
-
-      <div class="mb-4 text-left">
-  <span class="text-sm sm:text-base text-gray-700">Current Username:</span>
-  <span class="text-sm sm:text-sm font-semibold">Htet Oo Wai Yan</span>
-</div>
-
-
-      <!-- NEW USERNAME FIELD -->
-      <div class="relative mb-4 sm:mb-6">
-        <input id="newUsername" type="text" placeholder="New Username" readonly
-               class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base">
-        <i id="toggleNewUsername" class="fa-solid fa-pen absolute right-4 top-3.5 text-sm sm:text-base cursor-pointer"></i>
-      </div>
-
-      <!-- PASSWORD FIELD -->
-      <div class="relative mb-3 sm:mb-3">
-        <input id="usernamePassword" type="password" placeholder="Password"
-               class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base">
-        <i id="toggleUsernamePassword" class="fa-regular fa-eye absolute right-4 top-3.5 text-sm sm:text-base cursor-pointer"></i>
-      </div>
-       <label for="usernamePassword" class="text-[8px] sm:text-[10px] text-gray-700 mb-1 block text-left">
-  Enter your current password to validate the username change:
-</label>
-      <button class="w-full p-2 sm:p-2 rounded-2xl text-black text-base sm:text-md bg-[#FE5171] border border-white/50 mb-2 mt-4">
-        Save Change
-      </button>
-    </div>
-  </div>
-</div>
-
-
-
-<!-- 🔥 Upload Guidance Modal 🔥 -->
-<div id="uploadGuidanceModal" class="fixed inset-0 flex justify-center items-center hidden z-50 px-4">
-  <div class="w-full max-w-md bg-gradient-to-b from-[#FFCAD4]/40 via-[#FF7A90]/30 to-[#FF4D6D]/40 backdrop-blur-xl 
-              border border-white/30 rounded-3xl p-6 shadow-xl text-center relative">
-
-    <!-- CLOSE BUTTON -->
-    <button onclick="closeGuidanceModal()" class="absolute top-4 right-4 text-white text-3xl">&times;</button>
-
-<h2 class="text-xl text-gray-1200 mb-2 font-medium">Upload Guidance</h2>
-    <p class="text-md text-black/1200 mb-4">How to make photos more attractive</p>
-
-    <p class="text-xs text-gray-1200 mb-6">
-      Choosing photos with clear faces and just you to upload is more likely to make other users like you.
-      Avoid uploading blurry photos.
-    </p>
-
-    <!-- ICON GRID -->
-   <div class="grid grid-cols-3 gap-2">
-
-  <div class="flex flex-col items-center">
-    <div class="guidance-border w-24 h-28 "></div>
-    <p class="text-xs mt-2">Only you ✔️</p>
-  </div>
-
-  <div class="flex flex-col items-center">
-    <div class="guidance-border w-24 h-28"></div>
-    <p class="text-xs mt-2">Clear face ✔️</p>
-  </div>
-
-  <div class="flex flex-col items-center">
-    <div class="guidance-border w-24 h-28"></div>
-    <p class="text-xs mt-2">Clear light ✔️</p>
-  </div>
-
-   <div class="flex flex-col items-center">
-    <div class="guidance-border w-24 h-28 "></div>
-    <p class="text-xs mt-2">Multiple faces ❌</p>
-  </div>
-
-   <div class="flex flex-col items-center">
-    <div class="guidance-border w-24 h-28 "></div>
-    <p class="text-xs mt-2">Small face ❌</p>
-  </div>
-
-   <div class="flex flex-col items-center">
-    <div class="guidance-border w-24 h-28 "></div>
-    <p class="text-xs mt-2">Blurred screen ❌</p>
-  </div>
-
-
-
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-
-<script>
-/* PERSONAL INFO */
-const personalInfo = {
-  left: [
-    { label: "Display Name", value: "John Smith" },
-    { label: "Gender", value: "Female" },
-    { label: "Date of Birth", value: "Jan 3, 2006" }
-  ],
-  right: [
-    { label: "Batch", value: "HND-63" },
-    { label: "Sexuality", value: "Heterosexual" },
-    { label: "Student ID", value: "2024001234" }
-  ]
-};
-
-function renderColumn(id, items) {
-  const col = document.getElementById(id);
-  col.innerHTML = "";
-  items.forEach(item => col.innerHTML += `
-    <p class="text-md text-gray-700 mb-0">${item.label}</p>
-    <p class="text-xl mb-4">${item.value}</p>
-  `);
-}
-
-renderColumn("left-column", personalInfo.left);
-renderColumn("right-column", personalInfo.right);
-
-/* ACCOUNT SECURITY */
-const accountSecurity = [
-  { label: "Username", value: "Change your username", icon: "fa-pen" },
-  { label: "Password", value: "Change your password", icon: "fa-key" },
-];
-
-function renderAccountSecurity(containerId, items) {
-  const container = document.getElementById(containerId);
-  container.style.border = "2px solid #FF8BA0";
-  const h2 = document.createElement("h2");
-  h2.className = "text-2xl mb-6 ml-6";
-  h2.textContent = "Account Security";
-  container.appendChild(h2);
-
-  items.forEach(item => {
-    const row = document.createElement("div");
-    row.className = "mb-4";
-
-    const label = document.createElement("p");
-    label.className = "text-md text-gray-700/100 mb-1 ml-6";
-    label.textContent = item.label;
-    row.appendChild(label);
-
-    const btn = document.createElement("button");
-    btn.className = "px-3 py-2 rounded-md text-xl flex justify-between items-center text-gray-1200/90 w-full ml-3";
-    btn.innerHTML = `${item.value} <i class="fa-solid ${item.icon} text-xl"></i>`;
-
-     // OPEN POPUP BASED ON ICON
-  if (item.icon === "fa-key") {
-    btn.addEventListener("click", () => {
-      document.getElementById("passwordModal").classList.remove("hidden");
-    });
-  } else if (item.icon === "fa-pen") {
-    btn.addEventListener("click", () => {
-      document.getElementById("usernameModal").classList.remove("hidden");
-    });
-  }
-
-
-    row.appendChild(btn);
-    container.appendChild(row);
-  });
-}
-
-renderAccountSecurity("account-security", accountSecurity);
-
-/* CLOSE POPUP */
-function closePasswordModal() {
-  document.getElementById("passwordModal").classList.add("hidden");
-}
-
-/* ADDITIONAL INFO */
-const additionalInfo = [
-  { label: "Bio", value: "You can edit these details anytime" },
-  { label: "Phone", value: "09 00000000" },
-  { label: "Email", value: "email@example.com" },
-  { label: "Instagram", value: "@instaname" },
-  { label: "Location", value: "USA" },
-  { label: "Twitter", value: "@twitter" },
-];
-
-function renderAdditionalInfo(containerId, items) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = "";
-  container.style.border = "2px solid #FF8BA0";
-
-  const h2 = document.createElement("h2");
-  h2.className = "text-2xl mb-6 ml-6";
-  h2.textContent = "Additional Information";
-  container.appendChild(h2);
-
-  const grid = document.createElement("div");
-  grid.className = "grid grid-cols-1 sm:grid-cols-2 gap-2 ml-6 mr-6";
-
-  const mid = Math.ceil(items.length / 2);
-  const leftItems = items.slice(0, mid);
-  const rightItems = items.slice(mid);
-
-  function createColumn(colItems) {
-    const col = document.createElement("div");
-    col.className = "space-y-2 text-left";
-
-    colItems.forEach(item => {
-      const div = document.createElement("div");
-
-      const labelP = document.createElement("p");
-      labelP.className = "text-md mb-1";
-      labelP.innerHTML = `${item.label} <i class="fa-solid fa-pen ml-3 text-lg cursor-pointer edit-icon"></i>`;
-
-      const valueP = document.createElement("p");
-      valueP.className = "text-xl mb-5 value-text";
-      valueP.textContent = item.value;
-
-      div.appendChild(labelP);
-      div.appendChild(valueP);
-
-      const pen = labelP.querySelector(".edit-icon");
-
-      pen.addEventListener("click", () => {
-        const current = div.querySelector(".value-text") || div.querySelector("input");
-        const editing = pen.classList.contains("fa-check");
-
-        if (!editing) {
-          const input = document.createElement("input");
-          input.value = current.textContent;
-          input.className = "border rounded px-2 py-1 w-full";
-          current.replaceWith(input);
-          pen.classList.replace("fa-pen", "fa-check");
-          pen.style.color = "green";
-        } else {
-          const input = div.querySelector("input");
-          const newP = document.createElement("p");
-          newP.className = "text-xl mb-5 value-text";
-          newP.textContent = input.value;
-          input.replaceWith(newP);
-          pen.classList.replace("fa-check", "fa-pen");
-          pen.style.color = "";
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Rufina", serif;
+        background: linear-gradient(180deg, #ffcad4 6%, #ff4d6d 200%);
+      }
+      .gallery-box {
+        background-color: rgba(231, 133, 151, 0.4);
+        border: 2.2px solid #ff8ba0;
+        border-radius: 22px;
+      }
+      .container-bg {
+        background: rgba(231, 133, 151, 0.3);
+        border: 2px solid #ff8ba0;
+        border-radius: 1rem;
+      }
+      .mbti-btnB {
+        position: relative;
+        background: radial-gradient(
+            circle at 30% 100%,
+            rgba(255, 255, 255, 0.35) 0%,
+            rgba(255, 255, 255, 0.1) 60%
+          ),
+          rgba(255, 255, 255, 0.15);
+        border-radius: 1.2rem;
+        color: #111;
+        font-weight: 500;
+        transition: all 0.25s ease-in-out;
+        overflow: hidden;
+        z-index: 1;
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.4),
+          inset 0 0 1px rgba(255, 255, 255, 0.6);
+      }
+      .mbti-btnB:hover {
+        transform: scale(1.06);
+        box-shadow: 0 0 18px rgba(255, 255, 255, 0.6);
+      }
+
+      .guidance-border {
+        border: 2px solid #f27087; /* thicker = brighter */
+        border-radius: 24px;
+      }
+      /* Consistent Modal Styling */
+      .modal-backdrop {
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(3px);
+      }
+
+      .modal-container {
+        background: linear-gradient(
+          135deg,
+          #ffcad4 0%,
+          #ff8ba0 50%,
+          #ff4d6d 100%
+        );
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+          0 0 15px rgba(255, 77, 109, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      }
+
+      .modal-header {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .modal-input {
+        background: rgba(255, 255, 255, 0.25);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+      }
+
+      .modal-input:focus {
+        background: rgba(255, 255, 255, 0.35);
+        border-color: #ff4d6d;
+        box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.2);
+        outline: none;
+      }
+
+      .modal-input::placeholder {
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .modal-btn-primary {
+        background: linear-gradient(135deg, #ff4d6d 0%, #ff3357 100%);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+      }
+
+      .modal-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        background: linear-gradient(135deg, #ff3357 0%, #ff1a40 100%);
+      }
+
+      .modal-btn-secondary {
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+      }
+
+      .modal-btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .form-label {
+        color: #5a1a1f;
+        font-weight: 600;
+        text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+      }
+
+      .current-value {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.75rem;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+      }
+
+      /* Animation Classes */
+      .modal-enter {
+        animation: modalFadeIn 0.3s ease-out;
+      }
+
+      @keyframes modalFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px) scale(0.95);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* Icon Styling */
+      .modal-icon-container {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.3) 0%,
+          rgba(255, 255, 255, 0.1) 100%
+        );
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.3),
+          0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Field Specific Colors */
+      .bio-field {
+        border-left: 4px solid #ff9eb5;
+      }
+      .phone-field {
+        border-left: 4px solid #ff8ba0;
+      }
+      .email-field {
+        border-left: 4px solid #ff7791;
+      }
+      .instagram-field {
+        border-left: 4px solid #ff6382;
+      }
+      .location-field {
+        border-left: 4px solid #ff4d6d;
+      }
+      .twitter-field {
+        border-left: 4px solid #ff3357;
+      }
+
+      /* Select Input Styling */
+      .custom-select {
+        background: rgba(255, 255, 255, 0.25);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(5px);
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23FF4D6D'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1.5em;
+      }
+
+      /* Textarea Styling */
+      .modal-textarea {
+        background: rgba(255, 255, 255, 0.25);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(5px);
+        resize: vertical;
+        min-height: 100px;
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen overflow-y-scroll">
+    <!-- Top Bar -->
+    <div class="flex items-center justify-between max-w-4xl mx-auto p-4">
+      <button
+        class="flex items-center gap-2 bg-white/30 backdrop-blur-sm px-3 py-2 rounded-full shadow-sm hover:scale-105 transition"
+      >
+        <i class="fa-solid fa-arrow-left"></i>
+        Back
+      </button>
+
+      <div class="flex flex-col items-center gap-2">
+        <button
+          class="bg-white/30 backdrop-blur-sm w-10 h-10 rounded-xl shadow-sm hover:scale-105 transition mr-8"
+        >
+          <i class="fa-solid fa-pen text-md"></i>
+        </button>
+
+        <button
+          class="bg-white/30 backdrop-blur-sm w-6 h-7 rounded-full shadow-sm hover:scale-105 transition"
+        >
+          <i class="fa-solid fa-question text-sm"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto p-4">
+      <div class="flex gap-2 overflow-x-auto sm:grid sm:grid-cols-5 h-40">
+        <div
+          class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"
+        >
+          <i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i>
+        </div>
+        <div
+          class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"
+        >
+          <i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i>
+        </div>
+        <div
+          class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"
+        >
+          <i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i>
+        </div>
+        <div
+          class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"
+        >
+          <i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i>
+        </div>
+        <div
+          class="gallery-box flex justify-center items-center min-w-[40%] sm:min-w-0"
+        >
+          <i class="fa-regular fa-image text-2xl sm:text-2xl md:text-3xl"></i>
+        </div>
+      </div>
+
+      <!-- PERSONAL INFO -->
+      <div
+        id="info-box"
+        class="container-bg w-full p-6 rounded-xl shadow-lg mt-6"
+      >
+        <h2 class="text-2xl mb-6 ml-6">Personal Information</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm ml-6 mr-20">
+          <div id="left-column" class="space-y-2 text-left"></div>
+          <div
+            id="right-column"
+            class="space-y-2 text-left sm:justify-self-end"
+          ></div>
+        </div>
+      </div>
+
+      <!-- ACCOUNT SECURITY -->
+      <div
+        id="account-security"
+        class="container-bg mt-6 p-5 rounded-xl shadow-lg w-full"
+      ></div>
+
+      <!-- ADDITIONAL INFO -->
+      <div
+        id="additional-info-container"
+        class="container-bg mt-6 p-5 rounded-xl shadow-lg w-full"
+      ></div>
+
+      <!-- DANGER ZONE -->
+      <div class="container-bg p-5 rounded-xl shadow-lg w-full mt-6">
+        <h2 class="text-2xl sm:text-2xl text-gray-1200/90 ml-6 mb-10">
+          Danger Zone
+        </h2>
+        <p
+          class="mbti-btnB text-center border p-4 w-90% rounded-[1.4rem] mx-auto text-base leading-relaxed mb-6"
+        >
+          Deleting your account requires your password and admin approval. This
+          action cannot be undone.
+        </p>
+        <div class="flex gap-4 mt-4 justify-center">
+          <button
+            class="mbti-btnB flex items-center gap-2 px-4 py-2 text-sm sm:text-base md:text-lg"
+          >
+            <i class="fa-solid fa-trash"></i> Delete Account
+          </button>
+          <button class="mbti-btnB px-4 py-2 text-sm sm:text-base md:text-lg">
+            Log out
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔥🔥🔥 PASSWORD POPUP ADDED HERE 🔥🔥🔥 -->
+    <div
+      id="passwordModal"
+      class="fixed inset-0 flex justify-center items-center hidden z-50 px-4 sm:px-0"
+    >
+      <!-- Frosted gradient modal -->
+      <div
+        class="w-full max-w-md sm:max-w-md md:max-w-md h-[560px] sm:h-[560px] bg-gradient-to-b from-[#FFCAD4]/30 via-[#FF7A90]/20 to-[#FF4D6D]/30 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl text-center relative"
+      >
+        <!-- Close Button -->
+        <button
+          onclick="closePasswordModal()"
+          class="absolute top-4 right-4 text-white text-3xl"
+        >
+          &times;
+        </button>
+
+        <div class="flex justify-center mb-4 mt-2">
+          <div class="relative inline-block">
+            <!-- Background icon -->
+            <i
+              class="fa-solid fa-rotate-left text-7xl drop-shadow-xl sm:text-7xl md:text-7xl"
+              style="color: #ff4d6d"
+            ></i>
+            <!-- Centered lock icon -->
+            <i
+              class="fa-solid fa-lock text-xl sm:text-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+              style="color: #ff4d6d"
+            ></i>
+          </div>
+        </div>
+
+        <h2 class="text-2xl sm:text-3xl mb-6 text-black">Change Password</h2>
+
+        <div class="w-full sm:w-4/5 mx-auto">
+          <div class="relative mb-4 sm:mb-6">
+            <input
+              id="oldPassword"
+              type="password"
+              placeholder="Old Password"
+              class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base"
+            />
+            <i
+              id="toggleOldPassword"
+              class="fa-regular fa-eye absolute right-4 top-3.5 text-sm sm:text-base cursor-pointer"
+            ></i>
+          </div>
+
+          <div class="relative mb-4 sm:mb-6">
+            <input
+              type="password"
+              placeholder="New Password"
+              class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base"
+            />
+            <i
+              class="fa-solid fa-lock absolute right-4 top-3.5 text-sm sm:text-base"
+            ></i>
+          </div>
+
+          <div class="relative mb-4 sm:mb-6">
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base"
+            />
+          </div>
+
+          <button
+            class="w-full p-2 sm:p-2 rounded-2xl text-black text-base sm:text-md bg-[#FE5171] border border-white/50"
+          >
+            Save Change
+          </button>
+
+          <p
+            class="mt-2 text-white/70 text-center cursor-pointer text-sm sm:text-base"
+          >
+            Forget Password
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- 🔥 Bio Edit Modal -->
+    <div
+      id="bioModal"
+      class="fixed inset-0 z-50 hidden items-center justify-center px-4 modal-backdrop"
+    >
+      <div class="modal-container w-full max-w-md rounded-3xl p-6 modal-enter">
+        <div class="modal-header rounded-t-2xl p-4 -mx-6 -mt-6 mb-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div
+                class="modal-icon-container w-12 h-12 rounded-xl flex items-center justify-center"
+              >
+                <i
+                  class="fa-solid fa-quote-left text-xl"
+                  style="color: #ff4d6d"
+                ></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Edit Bio</h2>
+                <p class="text-sm text-gray-600">Tell others about yourself</p>
+              </div>
+            </div>
+            <button
+              onclick="closeModal('bioModal')"
+              class="text-2xl text-gray-600 hover:text-gray-800 transition"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="form-label block mb-2">Current Bio</label>
+            <div class="current-value mb-4">
+              <span id="currentBioText">Loading...</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label block mb-2">New Bio</label>
+            <textarea
+              id="newBio"
+              class="modal-textarea w-full p-4 rounded-2xl text-gray-800 placeholder-gray-600"
+              rows="4"
+              maxlength="500"
+              placeholder="Write a short bio about yourself..."
+            ></textarea>
+            <div class="text-right mt-1 text-sm text-gray-600">
+              <span id="bioCharCount">0</span>/500 characters
+            </div>
+          </div>
+
+          <div class="flex gap-3 pt-4">
+            <button
+              onclick="closeModal('bioModal')"
+              class="modal-btn-secondary flex-1 py-3 rounded-xl text-gray-800 font-semibold"
+            >
+              Cancel
+            </button>
+            <button
+              onclick="saveBio()"
+              class="modal-btn-primary flex-1 py-3 rounded-xl text-white font-semibold"
+            >
+              <i class="fa-solid fa-check mr-2"></i> Save Bio
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔥 Contact Info Edit Modal -->
+    <div
+      id="contactModal"
+      class="fixed inset-0 z-50 hidden items-center justify-center px-4 modal-backdrop"
+    >
+      <div class="modal-container w-full max-w-md rounded-3xl p-6 modal-enter">
+        <div class="modal-header rounded-t-2xl p-4 -mx-6 -mt-6 mb-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div
+                class="modal-icon-container w-12 h-12 rounded-xl flex items-center justify-center"
+              >
+                <i
+                  class="fa-solid fa-address-card text-xl"
+                  style="color: #ff4d6d"
+                ></i>
+              </div>
+              <div>
+                <h2
+                  class="text-2xl font-bold text-gray-800"
+                  id="contactModalTitle"
+                >
+                  Edit Contact
+                </h2>
+                <p class="text-sm text-gray-600" id="contactModalSubtitle">
+                  Update your contact information
+                </p>
+              </div>
+            </div>
+            <button
+              onclick="closeModal('contactModal')"
+              class="text-2xl text-gray-600 hover:text-gray-800 transition"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div id="currentContactValue" class="text-center mb-2">
+            <p class="text-sm text-gray-600 mb-1">Current Value</p>
+            <div class="current-value">
+              <span id="currentContactText">Loading...</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label block mb-2">New Value</label>
+            <div id="contactInputContainer">
+              <!-- Dynamic input field will be inserted here -->
+            </div>
+            <p class="text-xs text-gray-600 mt-2" id="contactHelpText"></p>
+          </div>
+
+          <div class="flex gap-3 pt-4">
+            <button
+              onclick="closeModal('contactModal')"
+              class="modal-btn-secondary flex-1 py-3 rounded-xl text-gray-800 font-semibold"
+            >
+              Cancel
+            </button>
+            <button
+              onclick="saveContact()"
+              class="modal-btn-primary flex-1 py-3 rounded-xl text-white font-semibold"
+            >
+              <i class="fa-solid fa-save mr-2"></i> Update
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔥 Personal Info Edit Modal -->
+    <div
+      id="personalInfoModal"
+      class="fixed inset-0 z-50 hidden items-center justify-center px-4 modal-backdrop"
+    >
+      <div class="modal-container w-full max-w-lg rounded-3xl p-6 modal-enter">
+        <div class="modal-header rounded-t-2xl p-4 -mx-6 -mt-6 mb-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div
+                class="modal-icon-container w-12 h-12 rounded-xl flex items-center justify-center"
+              >
+                <i
+                  class="fa-solid fa-user-edit text-xl"
+                  style="color: #ff4d6d"
+                ></i>
+              </div>
+              <div>
+                <h2
+                  class="text-2xl font-bold text-gray-800"
+                  id="personalModalTitle"
+                >
+                  Edit Information
+                </h2>
+                <p class="text-sm text-gray-600" id="personalModalSubtitle">
+                  Update your personal details
+                </p>
+              </div>
+            </div>
+            <button
+              onclick="closeModal('personalInfoModal')"
+              class="text-2xl text-gray-600 hover:text-gray-800 transition"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label block mb-2">Current Value</label>
+              <div class="current-value">
+                <span id="currentPersonalText">Loading...</span>
+              </div>
+            </div>
+            <div>
+              <label class="form-label block mb-2">Field Type</label>
+              <div class="current-value">
+                <span id="fieldTypeText">Text</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="personalInputContainer">
+            <!-- Dynamic input field will be inserted here -->
+          </div>
+
+          <div class="text-sm text-gray-600" id="personalHelpText"></div>
+
+          <div class="flex gap-3 pt-4">
+            <button
+              onclick="closeModal('personalInfoModal')"
+              class="modal-btn-secondary flex-1 py-3 rounded-xl text-gray-800 font-semibold"
+            >
+              Cancel
+            </button>
+            <button
+              onclick="savePersonalInfo()"
+              class="modal-btn-primary flex-1 py-3 rounded-xl text-white font-semibold"
+            >
+              <i class="fa-solid fa-user-check mr-2"></i> Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔥 Confirmation Modal -->
+    <div
+      id="confirmationModal"
+      class="fixed inset-0 z-50 hidden items-center justify-center px-4 modal-backdrop"
+    >
+      <div class="modal-container w-full max-w-md rounded-3xl p-6 modal-enter">
+        <div class="modal-header rounded-t-2xl p-4 -mx-6 -mt-6 mb-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div
+                class="modal-icon-container w-12 h-12 rounded-xl flex items-center justify-center"
+              >
+                <i
+                  class="fa-solid fa-check-circle text-xl"
+                  style="color: #10b981"
+                ></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Success!</h2>
+                <p class="text-sm text-gray-600">Information Updated</p>
+              </div>
+            </div>
+            <button
+              onclick="closeModal('confirmationModal')"
+              class="text-2xl text-gray-600 hover:text-gray-800 transition"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <div class="text-center py-6">
+          <div
+            class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+          >
+            <i class="fa-solid fa-check text-3xl" style="color: #10b981"></i>
+          </div>
+          <h3
+            class="text-xl font-semibold text-gray-800 mb-2"
+            id="confirmationTitle"
+          >
+            Update Successful
+          </h3>
+          <p class="text-gray-600" id="confirmationMessage">
+            Your information has been updated successfully.
+          </p>
+        </div>
+
+        <button
+          onclick="closeModal('confirmationModal')"
+          class="modal-btn-primary w-full py-3 rounded-xl text-white font-semibold"
+        >
+          <i class="fa-solid fa-thumbs-up mr-2"></i> Got it!
+        </button>
+      </div>
+    </div>
+
+    <!-- 🔥 Loading Modal -->
+    <div
+      id="loadingModal"
+      class="fixed inset-0 z-50 hidden items-center justify-center px-4 modal-backdrop"
+    >
+      <div class="modal-container w-full max-w-sm rounded-3xl p-8 modal-enter">
+        <div class="text-center">
+          <div class="inline-block relative">
+            <div
+              class="w-20 h-20 border-4 border-t-[#FF4D6D] border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin mb-4"
+            ></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <i class="fa-solid fa-sync text-xl" style="color: #ff4d6d"></i>
+            </div>
+          </div>
+          <h3
+            class="text-xl font-semibold text-gray-800 mb-2"
+            id="loadingTitle"
+          >
+            Updating...
+          </h3>
+          <p class="text-gray-600" id="loadingMessage">
+            Please wait while we save your changes.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔥 Change Username Modal 🔥 -->
+    <div
+      id="usernameModal"
+      class="fixed inset-0 flex justify-center items-center hidden z-50 px-4 sm:px-0"
+    >
+      <div
+        class="w-full max-w-md sm:max-w-md md:max-w-md h-[460px] sm:h-[460px] bg-gradient-to-b from-[#FFCAD4]/30 via-[#FF7A90]/20 to-[#FF4D6D]/30 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl text-center relative"
+      >
+        <!-- Close Button -->
+        <button
+          onclick="closeUsernameModal()"
+          class="absolute top-4 right-4 text-white text-3xl"
+        >
+          &times;
+        </button>
+
+        <div class="flex justify-center mb-4 mt-2">
+          <div class="relative inline-block">
+            <i
+              class="fa-solid fa-user-pen text-6xl drop-shadow-xl sm:text-6xl md:text-6xl"
+              style="color: #ff4d6d"
+            ></i>
+          </div>
+        </div>
+
+        <h2 class="text-2xl sm:text-2xl mb-6 text-black">Change Username</h2>
+
+        <div class="w-full sm:w-4/5 mx-auto">
+          <div class="mb-4 text-left">
+            <span class="text-sm sm:text-base text-gray-700"
+              >Current Username:</span
+            >
+            <span class="text-sm sm:text-sm font-semibold"
+              >Htet Oo Wai Yan</span
+            >
+          </div>
+
+          <!-- NEW USERNAME FIELD -->
+          <div class="relative mb-4 sm:mb-6">
+            <input
+              id="newUsername"
+              type="text"
+              placeholder="New Username"
+              readonly
+              class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base"
+            />
+            <i
+              id="toggleNewUsername"
+              class="fa-solid fa-pen absolute right-4 top-3.5 text-sm sm:text-base cursor-pointer"
+            ></i>
+          </div>
+
+          <!-- PASSWORD FIELD -->
+          <div class="relative mb-3 sm:mb-3">
+            <input
+              id="usernamePassword"
+              type="password"
+              placeholder="Password"
+              class="w-full p-3 rounded-2xl bg-white/30 border border-white/50 placeholder-black outline-none text-sm sm:text-base"
+            />
+            <i
+              id="toggleUsernamePassword"
+              class="fa-regular fa-eye absolute right-4 top-3.5 text-sm sm:text-base cursor-pointer"
+            ></i>
+          </div>
+          <label
+            for="usernamePassword"
+            class="text-[8px] sm:text-[10px] text-gray-700 mb-1 block text-left"
+          >
+            Enter your current password to validate the username change:
+          </label>
+          <button
+            class="w-full p-2 sm:p-2 rounded-2xl text-black text-base sm:text-md bg-[#FE5171] border border-white/50 mb-2 mt-4"
+          >
+            Save Change
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔥 Upload Guidance Modal 🔥 -->
+    <div
+      id="uploadGuidanceModal"
+      class="fixed inset-0 flex justify-center items-center hidden z-50 px-4"
+    >
+      <div
+        class="w-full max-w-md bg-gradient-to-b from-[#FFCAD4]/40 via-[#FF7A90]/30 to-[#FF4D6D]/40 backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-xl text-center relative"
+      >
+        <!-- CLOSE BUTTON -->
+        <button
+          onclick="closeGuidanceModal()"
+          class="absolute top-4 right-4 text-white text-3xl"
+        >
+          &times;
+        </button>
+
+        <h2 class="text-xl text-gray-1200 mb-2 font-medium">Upload Guidance</h2>
+        <p class="text-md text-black/1200 mb-4">
+          How to make photos more attractive
+        </p>
+
+        <p class="text-xs text-gray-1200 mb-6">
+          Choosing photos with clear faces and just you to upload is more likely
+          to make other users like you. Avoid uploading blurry photos.
+        </p>
+
+        <!-- ICON GRID -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="flex flex-col items-center">
+            <div class="guidance-border w-24 h-28"></div>
+            <p class="text-xs mt-2">Only you ✔️</p>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div class="guidance-border w-24 h-28"></div>
+            <p class="text-xs mt-2">Clear face ✔️</p>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div class="guidance-border w-24 h-28"></div>
+            <p class="text-xs mt-2">Clear light ✔️</p>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div class="guidance-border w-24 h-28"></div>
+            <p class="text-xs mt-2">Multiple faces ❌</p>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div class="guidance-border w-24 h-28"></div>
+            <p class="text-xs mt-2">Small face ❌</p>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div class="guidance-border w-24 h-28"></div>
+            <p class="text-xs mt-2">Blurred screen ❌</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add this JavaScript at the end of your HTML, before the closing </body> tag -->
+    <script>
+      // ============================
+      // Configuration
+      // ============================
+      const API_BASE_URL = window.location.origin + "/api/v1/users";
+
+      // ============================
+      // Helper Functions
+      // ============================
+      function getAuthToken() {
+        // Try to get token from localStorage first, then cookies
+        return (
+          localStorage.getItem("jwt") ||
+          document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("jwt="))
+            ?.split("=")[1]
+        );
+      }
+
+      async function makeAuthenticatedRequest(url, options = {}) {
+        const token = getAuthToken();
+
+        if (!token) {
+          alert("Please log in to continue");
+          window.location.href = "/login.html";
+          return null;
+        }
+
+        const defaultOptions = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Important for cookies
+        };
+
+        const mergedOptions = { ...defaultOptions, ...options };
+
+        try {
+          const response = await fetch(url, mergedOptions);
+
+          if (response.status === 401) {
+            // Token expired or invalid
+            alert("Session expired. Please log in again.");
+            clearAuthToken();
+            window.location.href = "/login.html";
+            return null;
+          }
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP ${response.status}`);
+          }
+
+          return await response.json();
+        } catch (error) {
+          console.error("API Error:", error);
+          alert(error.message || "An error occurred. Please try again.");
+          return null;
+        }
+      }
+
+      function clearAuthToken() {
+        localStorage.removeItem("jwt");
+        // Clear cookie by setting expired date
+        document.cookie =
+          "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      }
+
+      // ============================
+      // Data Fetching Functions
+      // ============================
+      async function fetchCurrentUser() {
+        const data = await makeAuthenticatedRequest(`${API_BASE_URL}/me`);
+        return data?.data?.user || null;
+      }
+
+      async function fetchUserById(userId) {
+        const data = await makeAuthenticatedRequest(
+          `${API_BASE_URL}/${userId}`
+        );
+        return data?.data?.user || null;
+      }
+
+      // ============================
+      // Update Functions
+      // ============================
+      async function updateUserProfile(updateData) {
+        const data = await makeAuthenticatedRequest(`${API_BASE_URL}/me`, {
+          method: "PATCH",
+          body: JSON.stringify(updateData),
+        });
+
+        if (data) {
+          alert("Profile updated successfully!");
+          return data.data.user;
+        }
+        return null;
+      }
+
+      async function updateUserPassword(currentPassword, newPassword) {
+        const data = await makeAuthenticatedRequest(
+          `${API_BASE_URL}/updatePassword`,
+          {
+            method: "PATCH",
+            body: JSON.stringify({
+              currentPassword,
+              newPassword,
+              passwordConfirm: newPassword,
+            }),
+          }
+        );
+
+        if (data) {
+          alert("Password changed successfully!");
+          return data;
+        }
+        return null;
+      }
+
+      async function deleteUserAccount() {
+        const confirmed = confirm(
+          "Are you sure you want to delete your account? This action cannot be undone."
+        );
+        if (!confirmed) return false;
+
+        const password = prompt(
+          "Please enter your password to confirm account deletion:"
+        );
+        if (!password) return false;
+
+        // First verify the password
+        try {
+          const verifyResponse = await fetch(
+            `${API_BASE_URL.replace("/users", "/auth")}/login`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                username: window.currentUser?.username,
+                password: password,
+              }),
+            }
+          );
+
+          if (!verifyResponse.ok) {
+            throw new Error("Incorrect password");
+          }
+
+          // Delete the account
+          const data = await makeAuthenticatedRequest(`${API_BASE_URL}/me`, {
+            method: "DELETE",
+          });
+
+          if (data) {
+            alert("Account deleted successfully.");
+            clearAuthToken();
+            window.location.href = "/login.html";
+            return true;
+          }
+        } catch (error) {
+          alert(error.message || "Failed to delete account");
+        }
+        return false;
+      }
+
+      async function logoutUser() {
+        if (confirm("Are you sure you want to log out?")) {
+          clearAuthToken();
+          window.location.href = "/login.html";
+        }
+      }
+
+      // ============================
+      // UI Update Functions
+      // ============================
+      function updatePersonalInfoUI(user) {
+        if (!user) return;
+
+        const formatDate = (dateString) => {
+          if (!dateString) return "Not set";
+          const date = new Date(dateString);
+          return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+        };
+
+        const personalInfo = {
+          left: [
+            { label: "Display Name", value: user.nickname || "Not set" },
+            { label: "Gender", value: user.gender || "Not set" },
+            { label: "Date of Birth", value: formatDate(user.dob) },
+          ],
+          right: [
+            { label: "Batch", value: user.batch || "Not set" },
+            { label: "Sexuality", value: user.sexuality || "Not set" },
+            { label: "Program", value: user.program || "Not set" },
+          ],
+        };
+
+        // Update left column
+        const leftColumn = document.getElementById("left-column");
+        if (leftColumn) {
+          leftColumn.innerHTML = personalInfo.left
+            .map(
+              (item) => `
+            <p class="text-md text-gray-700 mb-0">${item.label}</p>
+            <p class="text-xl mb-4">${item.value}</p>
+        `
+            )
+            .join("");
+        }
+
+        // Update right column
+        const rightColumn = document.getElementById("right-column");
+        if (rightColumn) {
+          rightColumn.innerHTML = personalInfo.right
+            .map(
+              (item) => `
+            <p class="text-md text-gray-700 mb-0">${item.label}</p>
+            <p class="text-xl mb-4">${item.value}</p>
+        `
+            )
+            .join("");
+        }
+      }
+
+      function updateAdditionalInfoUI(user) {
+        if (!user) return;
+
+        const additionalInfo = [
+          {
+            label: "Bio",
+            value: user.bio || "You can edit these details anytime",
+            field: "bio",
+          },
+          {
+            label: "Phone",
+            value: user.contact?.phone || "09 00000000",
+            field: "contact.phone",
+          },
+          {
+            label: "Email",
+            value: user.contact?.email || "email@example.com",
+            field: "contact.email",
+          },
+          {
+            label: "Instagram",
+            value: user.contact?.instagram || "@instaname",
+            field: "contact.instagram",
+          },
+          {
+            label: "Location",
+            value: user.location || "USA",
+            field: "location",
+          },
+          {
+            label: "Twitter",
+            value: user.contact?.twitter || "@twitter",
+            field: "contact.twitter",
+          },
+        ];
+
+        const container = document.getElementById("additional-info-container");
+        if (container) {
+          const grid = container.querySelector(".grid");
+          if (grid) {
+            const [leftCol, rightCol] = grid.children;
+
+            // Update left column
+            leftCol.innerHTML = additionalInfo
+              .slice(0, 3)
+              .map(
+                (item) => `
+                <div class="mb-4">
+                    <p class="text-md mb-1">
+                        ${item.label} 
+                        <i class="fa-solid fa-pen ml-3 text-lg cursor-pointer edit-icon" 
+                           data-field="${item.field}"
+                           data-value="${item.value}"></i>
+                    </p>
+                    <p class="text-xl mb-5 value-text">${item.value}</p>
+                </div>
+            `
+              )
+              .join("");
+
+            // Update right column
+            rightCol.innerHTML = additionalInfo
+              .slice(3)
+              .map(
+                (item) => `
+                <div class="mb-4">
+                    <p class="text-md mb-1">
+                        ${item.label} 
+                        <i class="fa-solid fa-pen ml-3 text-lg cursor-pointer edit-icon" 
+                           data-field="${item.field}"
+                           data-value="${item.value}"></i>
+                    </p>
+                    <p class="text-xl mb-5 value-text">${item.value}</p>
+                </div>
+            `
+              )
+              .join("");
+          }
+        }
+      }
+
+      function updateGalleryUI(user) {
+        if (!user || !user.photos) return;
+
+        const galleryBoxes = document.querySelectorAll(".gallery-box");
+        user.photos.forEach((photo, index) => {
+          if (galleryBoxes[index]) {
+            galleryBoxes[index].innerHTML = `
+                <img src="${photo.url}" 
+                     alt="Profile photo ${index + 1}" 
+                     class="w-full h-full object-cover rounded-xl">
+            `;
+          }
+        });
+      }
+
+      // ============================
+      // Event Handlers
+      // ============================
+      function setupPasswordModal() {
+        const savePasswordBtn = document.querySelector("#passwordModal button");
+        if (savePasswordBtn) {
+          savePasswordBtn.addEventListener("click", async () => {
+            const oldPassword = document.getElementById("oldPassword").value;
+            const newPassword = document.querySelector(
+              'input[placeholder="New Password"]'
+            ).value;
+            const confirmPassword = document.querySelector(
+              'input[placeholder="Confirm Password"]'
+            ).value;
+
+            if (!oldPassword || !newPassword || !confirmPassword) {
+              alert("Please fill in all password fields");
+              return;
+            }
+
+            if (newPassword !== confirmPassword) {
+              alert("New passwords do not match");
+              return;
+            }
+
+            await updateUserPassword(oldPassword, newPassword);
+            closePasswordModal();
+          });
+        }
+      }
+
+      function setupUsernameModal() {
+        const saveUsernameBtn = document.querySelector("#usernameModal button");
+        if (saveUsernameBtn) {
+          saveUsernameBtn.addEventListener("click", async () => {
+            const newUsername = document.getElementById("newUsername").value;
+            const password = document.getElementById("usernamePassword").value;
+
+            if (!newUsername || !password) {
+              alert("Please fill in both fields");
+              return;
+            }
+
+            try {
+              // Verify password first
+              const verifyResponse = await fetch(
+                `${API_BASE_URL.replace("/users", "/auth")}/login`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    username: window.currentUser?.username,
+                    password: password,
+                  }),
+                }
+              );
+
+              if (!verifyResponse.ok) {
+                throw new Error("Incorrect password");
+              }
+
+              // Update username
+              const updatedUser = await updateUserProfile({
+                username: newUsername,
+              });
+              if (updatedUser) {
+                closeUsernameModal();
+                window.currentUser = updatedUser;
+                // Update username in account security section
+                const usernameBtn = document.querySelector(
+                  "#account-security button:first-child"
+                );
+                if (usernameBtn) {
+                  usernameBtn.innerHTML = `${newUsername} <i class="fa-solid fa-pen text-xl"></i>`;
+                }
+              }
+            } catch (error) {
+              alert(error.message || "Failed to update username");
+            }
+          });
+        }
+      }
+
+      function setupEditListeners() {
+        // Edit icon click handler for additional info
+        document.addEventListener("click", async (e) => {
+          if (e.target.classList.contains("edit-icon")) {
+            const icon = e.target;
+            const field = icon.dataset.field;
+            const currentValue = icon.dataset.value;
+
+            const newValue = prompt(
+              `Enter new value for ${field.split(".")[0]}:`,
+              currentValue
+            );
+
+            if (newValue !== null && newValue !== currentValue) {
+              // Update the UI immediately for better UX
+              const valueElement = icon
+                .closest("div")
+                .querySelector(".value-text");
+              if (valueElement) {
+                valueElement.textContent = newValue;
+                icon.dataset.value = newValue;
+              }
+
+              // Prepare update data
+              let updateData = {};
+              if (field.includes(".")) {
+                const parts = field.split(".");
+                updateData[parts[0]] = { [parts[1]]: newValue };
+              } else {
+                updateData[field] = newValue;
+              }
+
+              // Send update to server
+              const updatedUser = await updateUserProfile(updateData);
+              if (updatedUser) {
+                window.currentUser = { ...window.currentUser, ...updatedUser };
+              }
+            }
+          }
+        });
+      }
+
+      function setupAccountSecurity() {
+        // Username change button
+        const usernameBtn = document.querySelector(
+          "#account-security button:first-child"
+        );
+        if (usernameBtn && window.currentUser) {
+          usernameBtn.innerHTML = `${
+            window.currentUser.username || "Set username"
+          } <i class="fa-solid fa-pen text-xl"></i>`;
+          usernameBtn.addEventListener("click", () => {
+            document.getElementById("usernameModal").classList.remove("hidden");
+          });
+        }
+
+        // Password change button
+        const passwordBtn = document.querySelector(
+          "#account-security button:last-child"
+        );
+        if (passwordBtn) {
+          passwordBtn.addEventListener("click", () => {
+            document.getElementById("passwordModal").classList.remove("hidden");
+          });
+        }
+      }
+
+      function setupDangerZone() {
+        // Delete account button
+        const deleteBtn = document
+          .querySelector(".mbti-btnB .fa-trash")
+          ?.closest("button");
+        if (deleteBtn) {
+          deleteBtn.addEventListener("click", deleteUserAccount);
+        }
+
+        // Logout button
+        const logoutBtn = document.querySelector(".mbti-btnB:last-child");
+        if (logoutBtn && !logoutBtn.querySelector(".fa-trash")) {
+          logoutBtn.addEventListener("click", logoutUser);
+        }
+      }
+
+      // ============================
+      // Modal Functions (keep your existing ones)
+      // ============================
+      function closePasswordModal() {
+        document.getElementById("passwordModal").classList.add("hidden");
+        // Clear password fields
+        document.getElementById("oldPassword").value = "";
+        document.querySelector('input[placeholder="New Password"]').value = "";
+        document.querySelector('input[placeholder="Confirm Password"]').value =
+          "";
+      }
+
+      function closeUsernameModal() {
+        document.getElementById("usernameModal").classList.add("hidden");
+        // Clear fields
+        document.getElementById("newUsername").value = "";
+        document.getElementById("usernamePassword").value = "";
+      }
+
+      // ============================
+      // Initialize Application
+      // ============================
+      async function initializeApp() {
+        try {
+          // Check if user is logged in
+          const token = getAuthToken();
+          if (!token) {
+            alert("Please log in to view your profile");
+            window.location.href = "/login.html";
+            return;
+          }
+
+          // Fetch user data
+          window.currentUser = await fetchCurrentUser();
+          if (!window.currentUser) {
+            alert("Failed to load user data");
+            return;
+          }
+
+          // Update UI with user data
+          updatePersonalInfoUI(window.currentUser);
+          updateAdditionalInfoUI(window.currentUser);
+          updateGalleryUI(window.currentUser);
+
+          // Setup event listeners
+          setupAccountSecurity();
+          setupPasswordModal();
+          setupUsernameModal();
+          setupEditListeners();
+          setupDangerZone();
+
+          console.log("Profile loaded successfully");
+        } catch (error) {
+          console.error("Initialization error:", error);
+          alert("Failed to load profile. Please try again.");
+        }
+      }
+
+      // Start the application when DOM is loaded
+      document.addEventListener("DOMContentLoaded", initializeApp);
+    </script>
+    <script>
+      // ============================
+      // Modal Management Functions
+      // ============================
+      let currentEditField = null;
+      let currentEditValue = null;
+      let currentEditType = null;
+
+      function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.remove("hidden");
+          modal.classList.add("modal-enter");
+          document.body.style.overflow = "hidden"; // Prevent scrolling
+        }
+      }
+
+      function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.add("hidden");
+          modal.classList.remove("modal-enter");
+          document.body.style.overflow = ""; // Restore scrolling
+
+          // Reset form fields if needed
+          if (modalId === "bioModal") {
+            document.getElementById("newBio").value = "";
+          }
+        }
+      }
+
+      // Close modal when clicking outside
+      document.addEventListener("click", (e) => {
+        const modals = [
+          "bioModal",
+          "contactModal",
+          "personalInfoModal",
+          "confirmationModal",
+          "loadingModal",
+        ];
+        modals.forEach((modalId) => {
+          const modal = document.getElementById(modalId);
+          if (
+            modal &&
+            !modal.classList.contains("hidden") &&
+            e.target === modal
+          ) {
+            closeModal(modalId);
+          }
+        });
       });
 
-      col.appendChild(div);
-    });
+      // ============================
+      // Bio Modal Functions
+      // ============================
+      function openBioModal(currentBio) {
+        currentEditField = "bio";
+        currentEditValue = currentBio;
+        currentEditType = "text";
 
-    return col;
-  }
+        document.getElementById("currentBioText").textContent =
+          currentBio || "No bio yet";
+        document.getElementById("newBio").value = currentBio || "";
+        updateBioCharCount();
 
-  grid.appendChild(createColumn(leftItems));
-  grid.appendChild(createColumn(rightItems));
-  container.appendChild(grid);
-}
+        openModal("bioModal");
+      }
 
-renderAdditionalInfo("additional-info-container", additionalInfo);
+      function updateBioCharCount() {
+        const textarea = document.getElementById("newBio");
+        const charCount = document.getElementById("bioCharCount");
+        const count = textarea.value.length;
+        charCount.textContent = count;
 
-// *****
-// OLD PASSWORD: Eye toggle + numeric only
-const oldPasswordInput = document.getElementById('oldPassword');
-const toggleOldPassword = document.getElementById('toggleOldPassword');
+        // Color coding for character count
+        if (count > 450) {
+          charCount.style.color = "#EF4444";
+        } else if (count > 300) {
+          charCount.style.color = "#F59E0B";
+        } else {
+          charCount.style.color = "#6B7280";
+        }
+      }
 
-toggleOldPassword.addEventListener('click', () => {
-  const type = oldPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-  oldPasswordInput.setAttribute('type', type);
+      // Attach event listener for bio character count
+      document
+        .getElementById("newBio")
+        ?.addEventListener("input", updateBioCharCount);
 
-  // Toggle icon class
-  toggleOldPassword.classList.toggle('fa-eye');
-  toggleOldPassword.classList.toggle('fa-eye-slash');
-});
+      async function saveBio() {
+        const newBio = document.getElementById("newBio").value.trim();
 
-// Numeric only validation for Old Password
-oldPasswordInput.addEventListener('input', () => {
-  if (/[^0-9]/.test(oldPasswordInput.value)) {
-    alert('Only numbers 0-9 are allowed!');
-    oldPasswordInput.value = oldPasswordInput.value.replace(/[^0-9]/g, '');
-  }
-});
+        if (!newBio) {
+          showError("Please enter a bio");
+          return;
+        }
 
-// NEW PASSWORD & CONFIRM PASSWORD: numeric only
-const newPasswordInput = document.querySelector('input[placeholder="New Password"]');
-const confirmPasswordInput = document.querySelector('input[placeholder="Confirm Password"]');
+        if (newBio.length > 500) {
+          showError("Bio must be 500 characters or less");
+          return;
+        }
 
-[newPasswordInput, confirmPasswordInput].forEach(input => {
-  input.addEventListener('input', () => {
-    if (/[^0-9]/.test(input.value)) {
-      alert('Only numbers 0-9 are allowed!');
-      input.value = input.value.replace(/[^0-9]/g, '');
-    }
-  });
-});
-  // *****
+        showLoading("Saving your bio...");
 
-  function openUsernameModal() {
-  document.getElementById("usernameModal").classList.remove("hidden");
-}
-function closeUsernameModal() {
-  document.getElementById("usernameModal").classList.add("hidden");
-}
+        try {
+          const updatedUser = await updateUserProfile({ bio: newBio });
+          if (updatedUser) {
+            // Update UI
+            const bioElement = document.querySelector('[data-field="bio"]');
+            if (bioElement) {
+              bioElement.dataset.value = newBio;
+              bioElement
+                .closest("div")
+                .querySelector(".value-text").textContent = newBio;
+            }
 
-// Toggle pen for New Username
-const newUsernameInput = document.getElementById('newUsername');
-const toggleNewUsername = document.getElementById('toggleNewUsername');
+            closeModal("bioModal");
+            showConfirmation(
+              "Bio Updated",
+              "Your bio has been updated successfully!"
+            );
+          }
+        } catch (error) {
+          showError("Failed to update bio: " + error.message);
+        } finally {
+          hideLoading();
+        }
+      }
 
-toggleNewUsername.addEventListener('click', () => {
-  if (toggleNewUsername.classList.contains('fa-pen')) {
-    newUsernameInput.removeAttribute('readonly');
-    newUsernameInput.focus();
-    toggleNewUsername.classList.replace('fa-pen', 'fa-check');
-    toggleNewUsername.style.color = 'green';
-  } else {
-    newUsernameInput.setAttribute('readonly', true);
-    toggleNewUsername.classList.replace('fa-check', 'fa-pen');
-    toggleNewUsername.style.color = '';
-  }
-});
+      // ============================
+      // Contact Modal Functions
+      // ============================
+      function openContactModal(field, currentValue, fieldLabel) {
+        currentEditField = field;
+        currentEditValue = currentValue;
+        currentEditType = getFieldType(field);
 
-// Toggle eye for Password field
-const usernamePasswordInput = document.getElementById('usernamePassword');
-const toggleUsernamePassword = document.getElementById('toggleUsernamePassword');
+        // Set modal title and subtitle
+        document.getElementById(
+          "contactModalTitle"
+        ).textContent = `Edit ${fieldLabel}`;
+        document.getElementById(
+          "contactModalSubtitle"
+        ).textContent = `Update your ${fieldLabel.toLowerCase()}`;
+        document.getElementById("currentContactText").textContent =
+          currentValue || "Not set";
 
-toggleUsernamePassword.addEventListener('click', () => {
-  const type = usernamePasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-  usernamePasswordInput.setAttribute('type', type);
+        // Create appropriate input field
+        const inputContainer = document.getElementById("contactInputContainer");
+        inputContainer.innerHTML = "";
 
-  toggleUsernamePassword.classList.toggle('fa-eye');
-  toggleUsernamePassword.classList.toggle('fa-eye-slash');
-});
+        let inputField = "";
+        let helpText = "";
 
-// Numeric only validation for Password
-usernamePasswordInput.addEventListener('input', () => {
-  if (/[^0-9]/.test(usernamePasswordInput.value)) {
-    alert('Only numbers 0-9 are allowed!');
-    usernamePasswordInput.value = usernamePasswordInput.value.replace(/[^0-9]/g, '');
-  }
-});
+        switch (field) {
+          case "phone":
+            inputField = `
+        <input type="tel" 
+               id="newContactValue" 
+               value="${currentValue || ""}"
+               class="modal-input w-full p-4 rounded-2xl text-gray-800 phone-field"
+               placeholder="09 123 456 789"
+               pattern="[0-9]{10,11}"
+               maxlength="11">
+      `;
+            helpText = "Enter your phone number (10-11 digits)";
+            break;
 
-document.querySelector('.fa-question').addEventListener('click', () => {
-  document.getElementById("uploadGuidanceModal").classList.remove("hidden");
-});
+          case "email":
+            inputField = `
+        <input type="email" 
+               id="newContactValue" 
+               value="${currentValue || ""}"
+               class="modal-input w-full p-4 rounded-2xl text-gray-800 email-field"
+               placeholder="name@example.com">
+      `;
+            helpText = "Enter your email address";
+            break;
 
-/* CLOSE UPLOAD GUIDANCE POPUP */
-function closeGuidanceModal() {
-  document.getElementById("uploadGuidanceModal").classList.add("hidden");
-}
-    
-</script>
-</body>
+          case "instagram":
+            inputField = `
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">@</span>
+          <input type="text" 
+                 id="newContactValue" 
+                 value="${currentValue ? currentValue.replace("@", "") : ""}"
+                 class="modal-input w-full pl-10 pr-4 py-4 rounded-2xl text-gray-800 instagram-field"
+                 placeholder="username">
+        </div>
+      `;
+            helpText = "Enter your Instagram username (without @)";
+            break;
+
+          case "twitter":
+            inputField = `
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600">@</span>
+          <input type="text" 
+                 id="newContactValue" 
+                 value="${currentValue ? currentValue.replace("@", "") : ""}"
+                 class="modal-input w-full pl-10 pr-4 py-4 rounded-2xl text-gray-800 twitter-field"
+                 placeholder="username">
+        </div>
+      `;
+            helpText = "Enter your Twitter username (without @)";
+            break;
+
+          case "location":
+            inputField = `
+        <input type="text" 
+               id="newContactValue" 
+               value="${currentValue || ""}"
+               class="modal-input w-full p-4 rounded-2xl text-gray-800 location-field"
+               placeholder="City, Country">
+      `;
+            helpText = "Enter your current location";
+            break;
+        }
+
+        inputContainer.innerHTML = inputField;
+        document.getElementById("contactHelpText").textContent = helpText;
+
+        openModal("contactModal");
+      }
+
+      function getFieldType(field) {
+        const fieldTypes = {
+          phone: "tel",
+          email: "email",
+          instagram: "text",
+          twitter: "text",
+          location: "text",
+          gender: "select",
+          sexuality: "select",
+          dob: "date",
+          batch: "text",
+          program: "text",
+          nickname: "text",
+        };
+
+        return fieldTypes[field] || "text";
+      }
+
+      async function saveContact() {
+        const inputElement = document.getElementById("newContactValue");
+        if (!inputElement) return;
+
+        let newValue = inputElement.value.trim();
+
+        // Validate based on field type
+        switch (currentEditField) {
+          case "phone":
+            if (!/^[0-9]{10,11}$/.test(newValue.replace(/\s/g, ""))) {
+              showError("Please enter a valid phone number (10-11 digits)");
+              return;
+            }
+            break;
+
+          case "email":
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newValue)) {
+              showError("Please enter a valid email address");
+              return;
+            }
+            break;
+
+          case "instagram":
+          case "twitter":
+            if (newValue) {
+              newValue = "@" + newValue.replace("@", "");
+            }
+            break;
+        }
+
+        if (newValue === currentEditValue) {
+          showError("No changes detected");
+          return;
+        }
+
+        showLoading("Updating contact information...");
+
+        try {
+          const updateData = {};
+          if (currentEditField.includes(".")) {
+            const parts = currentEditField.split(".");
+            updateData[parts[0]] = { [parts[1]]: newValue };
+          } else {
+            updateData[currentEditField] = newValue;
+          }
+
+          const updatedUser = await updateUserProfile(updateData);
+          if (updatedUser) {
+            // Update UI
+            const fieldElement = document.querySelector(
+              `[data-field="${currentEditField}"]`
+            );
+            if (fieldElement) {
+              fieldElement.dataset.value = newValue;
+              fieldElement
+                .closest("div")
+                .querySelector(".value-text").textContent =
+                newValue || "Not set";
+            }
+
+            closeModal("contactModal");
+            showConfirmation(
+              `${
+                currentEditField.charAt(0).toUpperCase() +
+                currentEditField.slice(1)
+              } Updated`,
+              "Your contact information has been updated successfully!"
+            );
+          }
+        } catch (error) {
+          showError("Failed to update: " + error.message);
+        } finally {
+          hideLoading();
+        }
+      }
+
+      // ============================
+      // Personal Info Modal Functions
+      // ============================
+      function openPersonalInfoModal(field, currentValue, fieldLabel) {
+        currentEditField = field;
+        currentEditValue = currentValue;
+        currentEditType = getFieldType(field);
+
+        // Set modal title
+        document.getElementById(
+          "personalModalTitle"
+        ).textContent = `Edit ${fieldLabel}`;
+        document.getElementById(
+          "personalModalSubtitle"
+        ).textContent = `Update your ${fieldLabel.toLowerCase()}`;
+        document.getElementById("currentPersonalText").textContent =
+          currentValue || "Not set";
+        document.getElementById("fieldTypeText").textContent =
+          getFieldTypeLabel(field);
+
+        // Create appropriate input field
+        const inputContainer = document.getElementById(
+          "personalInputContainer"
+        );
+        inputContainer.innerHTML = "";
+
+        let inputField = "";
+        let helpText = "";
+
+        switch (field) {
+          case "gender":
+            inputField = `
+        <select id="newPersonalValue" class="custom-select w-full p-4 rounded-2xl text-gray-800">
+          <option value="">Select Gender</option>
+          <option value="Male" ${
+            currentValue === "Male" ? "selected" : ""
+          }>Male</option>
+          <option value="Female" ${
+            currentValue === "Female" ? "selected" : ""
+          }>Female</option>
+          <option value="Other" ${
+            currentValue === "Other" ? "selected" : ""
+          }>Other</option>
+          <option value="Prefer not to say" ${
+            currentValue === "Prefer not to say" ? "selected" : ""
+          }>Prefer not to say</option>
+        </select>
+      `;
+            helpText = "Select your gender identity";
+            break;
+
+          case "sexuality":
+            inputField = `
+        <select id="newPersonalValue" class="custom-select w-full p-4 rounded-2xl text-gray-800">
+          <option value="">Select Sexuality</option>
+          <option value="Heterosexual" ${
+            currentValue === "Heterosexual" ? "selected" : ""
+          }>Heterosexual</option>
+          <option value="Homosexual" ${
+            currentValue === "Homosexual" ? "selected" : ""
+          }>Homosexual</option>
+          <option value="Bisexual" ${
+            currentValue === "Bisexual" ? "selected" : ""
+          }>Bisexual</option>
+          <option value="Pansexual" ${
+            currentValue === "Pansexual" ? "selected" : ""
+          }>Pansexual</option>
+          <option value="Asexual" ${
+            currentValue === "Asexual" ? "selected" : ""
+          }>Asexual</option>
+          <option value="Prefer not to say" ${
+            currentValue === "Prefer not to say" ? "selected" : ""
+          }>Prefer not to say</option>
+        </select>
+      `;
+            helpText = "Select your sexual orientation";
+            break;
+
+          case "dob":
+            const formattedDate = currentValue
+              ? new Date(currentValue).toISOString().split("T")[0]
+              : "";
+            inputField = `
+        <input type="date" 
+               id="newPersonalValue" 
+               value="${formattedDate}"
+               class="modal-input w-full p-4 rounded-2xl text-gray-800"
+               max="${new Date().toISOString().split("T")[0]}">
+      `;
+            helpText = "Select your date of birth (must be 18+)";
+            break;
+
+          case "batch":
+            inputField = `
+        <input type="text" 
+               id="newPersonalValue" 
+               value="${currentValue || ""}"
+               class="modal-input w-full p-4 rounded-2xl text-gray-800"
+               placeholder="HND-63">
+      `;
+            helpText = "Enter your batch code";
+            break;
+
+          case "program":
+            inputField = `
+        <input type="text" 
+               id="newPersonalValue" 
+               value="${currentValue || ""}"
+               class="modal-input w-full p-4 rounded-2xl text-gray-800"
+               placeholder="Your program name">
+      `;
+            helpText = "Enter your program name";
+            break;
+
+          case "nickname":
+            inputField = `
+        <input type="text" 
+               id="newPersonalValue" 
+               value="${currentValue || ""}"
+               class="modal-input w-full p-4 rounded-2xl text-gray-800"
+               placeholder="Your display name"
+               maxlength="30">
+      `;
+            helpText = "Enter your display name (max 30 characters)";
+            break;
+
+          default:
+            inputField = `
+        <input type="text" 
+               id="newPersonalValue" 
+               value="${currentValue || ""}"
+               class="modal-input w-full p-4 rounded-2xl text-gray-800"
+               placeholder="Enter new value">
+      `;
+            helpText = "Enter new value";
+        }
+
+        inputContainer.innerHTML = inputField;
+        document.getElementById("personalHelpText").textContent = helpText;
+
+        openModal("personalInfoModal");
+      }
+
+      function getFieldTypeLabel(field) {
+        const labels = {
+          gender: "Selection",
+          sexuality: "Selection",
+          dob: "Date",
+          batch: "Text",
+          program: "Text",
+          nickname: "Text",
+        };
+
+        return labels[field] || "Text";
+      }
+
+      async function savePersonalInfo() {
+        const inputElement = document.getElementById("newPersonalValue");
+        if (!inputElement) return;
+
+        let newValue = inputElement.value.trim();
+
+        // Validation
+        if (!newValue) {
+          showError("Please enter a value");
+          return;
+        }
+
+        if (currentEditField === "dob") {
+          const birthDate = new Date(newValue);
+          const age = new Date().getFullYear() - birthDate.getFullYear();
+          if (age < 18) {
+            showError("You must be at least 18 years old");
+            return;
+          }
+        }
+
+        if (currentEditField === "nickname" && newValue.length > 30) {
+          showError("Nickname must be 30 characters or less");
+          return;
+        }
+
+        if (newValue === currentEditValue) {
+          showError("No changes detected");
+          return;
+        }
+
+        showLoading("Updating personal information...");
+
+        try {
+          const updateData = { [currentEditField]: newValue };
+          const updatedUser = await updateUserProfile(updateData);
+
+          if (updatedUser) {
+            // Update UI
+            updatePersonalInfoUI(updatedUser);
+
+            closeModal("personalInfoModal");
+            showConfirmation(
+              `${
+                currentEditField.charAt(0).toUpperCase() +
+                currentEditField.slice(1)
+              } Updated`,
+              "Your personal information has been updated successfully!"
+            );
+          }
+        } catch (error) {
+          showError("Failed to update: " + error.message);
+        } finally {
+          hideLoading();
+        }
+      }
+
+      // ============================
+      // Utility Modal Functions
+      // ============================
+      function showLoading(message = "Processing...") {
+        document.getElementById("loadingMessage").textContent = message;
+        openModal("loadingModal");
+      }
+
+      function hideLoading() {
+        closeModal("loadingModal");
+      }
+
+      function showConfirmation(title, message) {
+        document.getElementById("confirmationTitle").textContent = title;
+        document.getElementById("confirmationMessage").textContent = message;
+        openModal("confirmationModal");
+      }
+
+      function showError(message) {
+        // Create or show error modal
+        let errorModal = document.getElementById("errorModal");
+        if (!errorModal) {
+          errorModal = document.createElement("div");
+          errorModal.id = "errorModal";
+          errorModal.className =
+            "fixed inset-0 z-50 hidden items-center justify-center px-4 modal-backdrop";
+          errorModal.innerHTML = `
+      <div class="modal-container w-full max-w-md rounded-3xl p-6 modal-enter">
+        <div class="modal-header rounded-t-2xl p-4 -mx-6 -mt-6 mb-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="modal-icon-container w-12 h-12 rounded-xl flex items-center justify-center bg-red-100">
+                <i class="fa-solid fa-exclamation-triangle text-xl" style="color: #EF4444;"></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Error</h2>
+                <p class="text-sm text-gray-600">Something went wrong</p>
+              </div>
+            </div>
+            <button onclick="closeModal('errorModal')" class="text-2xl text-gray-600 hover:text-gray-800 transition">
+              &times;
+            </button>
+          </div>
+        </div>
+        <div class="text-center py-4">
+          <p class="text-gray-800" id="errorMessage"></p>
+        </div>
+        <button onclick="closeModal('errorModal')" 
+                class="modal-btn-primary w-full py-3 rounded-xl text-white font-semibold bg-red-500 hover:bg-red-600">
+          <i class="fa-solid fa-times mr-2"></i> Close
+        </button>
+      </div>
+    `;
+          document.body.appendChild(errorModal);
+        }
+
+        document.getElementById("errorMessage").textContent = message;
+        openModal("errorModal");
+      }
+
+      // ============================
+      // Update Event Listeners
+      // ============================
+      function setupEditListeners() {
+        // Remove old edit icon listeners and add new ones
+        document.addEventListener("click", async (e) => {
+          if (e.target.classList.contains("edit-icon")) {
+            const icon = e.target;
+            const field = icon.dataset.field;
+            const currentValue = icon.dataset.value;
+            const label = icon.closest("p").textContent.split(" ")[0];
+
+            // Determine which modal to open based on field type
+            if (field === "bio") {
+              openBioModal(currentValue);
+            } else if (
+              ["phone", "email", "instagram", "twitter", "location"].includes(
+                field
+              )
+            ) {
+              openContactModal(field, currentValue, label);
+            } else if (
+              [
+                "gender",
+                "sexuality",
+                "dob",
+                "batch",
+                "program",
+                "nickname",
+              ].includes(field)
+            ) {
+              openPersonalInfoModal(field, currentValue, label);
+            } else {
+              // Default modal for other fields
+              openContactModal(field, currentValue, label);
+            }
+          }
+        });
+      }
+
+      // ============================
+      // Initialize
+      // ============================
+      // Add this to your initializeApp function
+      function initializeAppWithModals() {
+        // ... your existing initialization code ...
+
+        // Setup modal event listeners
+        setupEditListeners();
+
+        // Add character count listener for bio
+        document
+          .getElementById("newBio")
+          ?.addEventListener("input", updateBioCharCount);
+      }
+
+      // Replace your existing initializeApp call with:
+      document.addEventListener("DOMContentLoaded", async () => {
+        await initializeApp(); // Your existing function
+        initializeAppWithModals(); // Add modal functionality
+      });
+    </script>
+  </body>
 </html>
