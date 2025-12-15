@@ -127,6 +127,8 @@
         /* Scoped Crush styles from CrushPage.html */
         #crushSection {
           min-height: calc(100vh - 56px);
+          position: relative;
+          z-index: 1;
         }
 
         #crushSection .column-box {
@@ -291,7 +293,7 @@
         <!-- LEFT COLUMN -->
         <div>
           <div class="column-box">
-            <h2 class="column-title">People You’ve Crushed</h2>
+            <h2 class="column-title">Your Crushes</h2>
             <div id="crush-left-column" class="scrollable">
               <p class="text-placeholder">Loading your crushes...</p>
             </div>
@@ -327,11 +329,16 @@
     <!-- Propose Section (from propose.html) -->
     <section id="proposeSection" class="hidden pt-6">
       <style>
-        /* Scoped Propose styles from propose.html */
+        /* Scoped Propose styles from propose.html (adjusted to be translucent)
+           Use transparent background so the page-level body background shows through
+           and make proposal cards use a glass-like translucent surface. */
         #proposeSection {
-          background: url('/img/bgimg.jpg') center/cover no-repeat;
+          background: transparent;
           font-family: 'Poppins', sans-serif;
           min-height: calc(100vh - 56px);
+          position: relative;
+          z-index: 0;
+          overflow: visible;
         }
 
         #proposeSection .glass {
@@ -359,12 +366,15 @@
 
         #proposeSection .proposal-card {
           transition: all .28s ease;
-          background: rgba(255, 255, 255, 0.55);
+          background: rgba(255, 255, 255, 0.14);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255,255,255,0.12);
           min-height: 320px;
         }
 
         #proposeSection .proposal-card:hover {
-          box-shadow: 0 10px 26px rgba(255, 120, 150, 0.35);
+          box-shadow: 0 10px 26px rgba(255, 80, 120, 0.12);
         }
 
         #proposeSection .proposal-img {
@@ -374,17 +384,30 @@
           display: block;
         }
 
+        /* Darken lower part of image so white name text pops without its own background */
+        #proposeSection .img-overlay {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 25%;
+          background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.75) 50%, rgba(0,0,0,0.95) 100%);
+          z-index: 1;
+          pointer-events: none;
+        }
+
         #proposeSection .overlay-name {
           position: absolute;
           left: 12px;
-          bottom: 12px;
+          bottom: 16px;
           z-index: 2;
           font-size: 15px;
-          font-weight: 600;
-          padding: 6px 12px;
-          border-radius: 14px;
-          background: rgba(255, 255, 255, 0.75);
-          color: #222;
+          font-weight: 700;
+          padding: 4px 8px;
+          border-radius: 6px;
+          background: transparent; /* removed solid background per request */
+          color: #fff; /* rely on dark overlay for contrast */
+          text-shadow: 0 2px 8px rgba(0,0,0,0.6);
         }
 
         #proposeSection .overlay-mini {
@@ -510,19 +533,20 @@
     <!-- Match Section (from match-list.html) -->
     <section id="matchSection" class="hidden pt-6">
       <style>
-        /* Scoped Match styles from match-list.html */
+        /* Scoped Match styles from match-list.html (adjusted to use page background)
+           Keep layout but inherit the global body background so cards appear in front. */
         #matchSection {
           margin: 0;
           padding: 0;
           font-family: "Poppins", sans-serif;
-          background-image: url("../../img/bgimg.jpg");
-          background-size: cover;
-          background-position: center;
-          background-repeat: no-repeat;
+          background: transparent;
           min-height: calc(100vh - 56px);
           display: flex;
           justify-content: center;
           align-items: center;
+          position: relative;
+          z-index: 0;
+          overflow: visible;
         }
 
         #matchSection .thumbs-track {
@@ -700,7 +724,7 @@
         imgWrapper.className = 'block w-full h-[240px] relative';
         const photo = userPrimaryPhoto(user);
         const name = displayName(user);
-        imgWrapper.innerHTML = `<img src="${photo}" alt="${name}" class="proposal-img" onerror="this.onerror=null;this.src='/img/bgimg.jpg';" />`;
+        imgWrapper.innerHTML = `<img src="${photo}" alt="${name}" class="proposal-img" onerror="this.onerror=null;this.src='/img/bgimg.jpg';" /><div class="img-overlay"></div>`;
         imgWrapper.addEventListener('click', () => openModal(item, type));
 
         const nameOverlay = document.createElement('div');
@@ -1007,7 +1031,7 @@
           )
           .join('');
 
-        const bioLines = [match.bio || '', match.zodiac || '', match.batch || '', match.phone || ''].filter(Boolean);
+        const bioLines = [match.bio || '', match.zodiac || '', match.batch || '', match.contact || ''].filter(Boolean);
 
         return `
           <div class="match-card relative w-[90vw] max-w-[1200px]
@@ -1264,8 +1288,12 @@
           if (!sec) return;
           if (i === index) {
             sec.classList.remove('hidden');
+            sec.style.display = '';
+            sec.style.zIndex = '1';
           } else {
             sec.classList.add('hidden');
+            sec.style.display = 'none';
+            sec.style.zIndex = '0';
           }
         });
 

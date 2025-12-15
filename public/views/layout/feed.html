@@ -10,6 +10,20 @@
     />
     <title>Feed Page</title>
 
+      <style>
+    /* Align global navbar pill with this page's content width */
+    :root {
+      --nav-max: 100%;  /* let width be controlled by padding instead of fixed max */
+      --nav-pad: 4rem;  /* match lg:px-16 side padding */
+    }
+
+    @media (max-width: 1024px) {
+      :root {
+        --nav-pad: 1rem; /* match px-4 on smaller screens */
+      }
+    }
+  </style>
+
     <style>
       /* =========================================
    1. GLOBAL & FONTS
@@ -1077,5 +1091,6 @@ modal.addEventListener("click", (e) => {
 initFeed();
 
     </script>
+    <script src="/js/navbar.js" defer></script>
   </body>
 </html>

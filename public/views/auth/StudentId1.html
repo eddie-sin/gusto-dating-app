@@ -281,9 +281,9 @@ async function capturePhoto() {
   stream.getTracks().forEach(track => track.stop());
   cameraStarted = false;
 
-  // Save and redirect
+  // Save and trigger registration step save (step 13)
   localStorage.setItem('capturedID', imgData);
-  window.location.href = 'StudentId1Holder.html';
+  document.dispatchEvent(new Event('registration:submit'));
 }
 
 // ✅ Handle camera button click
@@ -312,8 +312,8 @@ fileUpload.addEventListener('change', (e) => {
   const reader = new FileReader();
   reader.onload = function(event) {
     localStorage.setItem('capturedID', event.target.result);
-    // keep existing UX: navigate to holder/preview page
-    window.location.href = 'StudentId1Holder.html';
+    // Trigger registration flow to save this step and advance
+    document.dispatchEvent(new Event('registration:submit'));
   };
   reader.readAsDataURL(file);
 });
