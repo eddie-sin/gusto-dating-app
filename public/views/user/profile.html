@@ -286,13 +286,43 @@
       <div
         id="account-security"
         class="container-bg mt-6 p-5 rounded-xl shadow-lg w-full"
-      ></div>
+      >
+        <h2 class="text-2xl sm:text-2xl text-gray-1200/90 ml-6 mb-6">
+          Account Security
+        </h2>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mx-6">
+          <!-- Username button text will be filled by setupAccountSecurity() -->
+          <button
+            class="mbti-btnB flex-1 px-4 py-3 text-sm sm:text-base md:text-lg flex items-center justify-between"
+          >
+            <span>Username</span>
+            <i class="fa-solid fa-pen text-xl"></i>
+          </button>
+          <!-- Password button opens password modal -->
+          <button
+            class="mbti-btnB flex-1 px-4 py-3 text-sm sm:text-base md:text-lg flex items-center justify-between"
+          >
+            <span>Change Password</span>
+            <i class="fa-solid fa-lock text-xl"></i>
+          </button>
+        </div>
+      </div>
 
       <!-- ADDITIONAL INFO -->
       <div
         id="additional-info-container"
         class="container-bg mt-6 p-5 rounded-xl shadow-lg w-full"
-      ></div>
+      >
+        <h2 class="text-2xl sm:text-2xl text-gray-1200/90 ml-6 mb-6">
+          Additional Info
+        </h2>
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm ml-6 mr-6 mt-2"
+        >
+          <div class="space-y-2 text-left"></div>
+          <div class="space-y-2 text-left sm:justify-self-end"></div>
+        </div>
+      </div>
 
       <!-- DANGER ZONE -->
       <div class="container-bg p-5 rounded-xl shadow-lg w-full mt-6">
@@ -856,44 +886,25 @@
       // ============================
       // Helper Functions
       // ============================
-      function getAuthToken() {
-        // Try to get token from localStorage first, then cookies
-        return (
-          localStorage.getItem("jwt") ||
-          document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("jwt="))
-            ?.split("=")[1]
-        );
-      }
-
       async function makeAuthenticatedRequest(url, options = {}) {
-        const token = getAuthToken();
-
-        if (!token) {
-          alert("Please log in to continue");
-          window.location.href = "views/auth/login.html";
-          return null;
-        }
-
         const defaultOptions = {
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            ...(options.headers || {}),
           },
-          credentials: "include", // Important for cookies
+          credentials: "include", // send cookies (server reads JWT)
+          ...options,
         };
 
-        const mergedOptions = { ...defaultOptions, ...options };
-
         try {
-          const response = await fetch(url, mergedOptions);
+          const response = await fetch(url, defaultOptions);
 
           if (response.status === 401) {
-            // Token expired or invalid
-            alert("Session expired. Please log in again.");
-            clearAuthToken();
-            window.location.href = "views/auth/login.html";
+            // Not logged in or session expired -> redirect to login like partner page
+            const back = encodeURIComponent(
+              window.location.pathname + window.location.search
+            );
+            window.location.href = `/views/auth/login.html?redirect=${back}`;
             return null;
           }
 
@@ -911,8 +922,9 @@
       }
 
       function clearAuthToken() {
+        // For safety, clear any stray localStorage token
         localStorage.removeItem("jwt");
-        // Clear cookie by setting expired date
+        // Let server-side logout clear http-only cookie when used
         document.cookie =
           "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       }
@@ -1005,7 +1017,7 @@
           if (data) {
             alert("Account deleted successfully.");
             clearAuthToken();
-            window.location.href = "views/auth/login.html";
+            window.location.href = "/views/auth/login.html";
             return true;
           }
         } catch (error) {
@@ -1017,7 +1029,7 @@
       async function logoutUser() {
         if (confirm("Are you sure you want to log out?")) {
           clearAuthToken();
-          window.location.href = "views/auth/login.html";
+          window.location.href = "/views/auth/login.html";
         }
       }
 
@@ -1363,15 +1375,7 @@
       // ============================
       async function initializeApp() {
         try {
-          // Check if user is logged in
-          const token = getAuthToken();
-          if (!token) {
-            alert("Please log in to view your profile");
-            window.location.href = "views/auth/login.html";
-            return;
-          }
-
-          // Fetch user data
+          // Fetch user data; makeAuthenticatedRequest will redirect on 401
           window.currentUser = await fetchCurrentUser();
           if (!window.currentUser) {
             alert("Failed to load user data");
