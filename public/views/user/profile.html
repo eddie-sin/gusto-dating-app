@@ -224,16 +224,97 @@
 
       <div class="flex flex-col items-center gap-2">
         <button
+          id="edit-photos-btn"
           class="bg-white/30 backdrop-blur-sm w-10 h-10 rounded-xl shadow-sm hover:scale-105 transition mr-8"
         >
           <i class="fa-solid fa-pen text-md"></i>
         </button>
+      </div>
+    </div>
 
-        <button
-          class="bg-white/30 backdrop-blur-sm w-6 h-7 rounded-full shadow-sm hover:scale-105 transition"
-        >
-          <i class="fa-solid fa-question text-sm"></i>
-        </button>
+    <!-- Hidden file input for updating profile photos (unused after modal editor, kept for safety) -->
+    <input
+      type="file"
+      id="photoUploadInput"
+      accept="image/*"
+      multiple
+      class="hidden"
+    />
+
+    <!-- 🔥 Photo Editor Modal 🔥 -->
+    <div
+      id="photoEditorModal"
+      class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 modal-backdrop"
+    >
+      <div
+        class="modal-container w-full max-w-3xl rounded-3xl p-6 modal-enter"
+      >
+        <div class="modal-header rounded-t-2xl p-4 -mx-6 -mt-6 mb-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div
+                class="modal-icon-container w-12 h-12 rounded-xl flex items-center justify-center"
+              >
+                <i
+                  class="fa-solid fa-images text-xl"
+                  style="color: #ff4d6d"
+                ></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">
+                  Edit Profile Photos
+                </h2>
+                <p class="text-sm text-gray-600">
+                  You must have at least 3 and at most 5 photos.
+                </p>
+              </div>
+            </div>
+            <button
+              onclick="closeModal('photoEditorModal')"
+              class="text-2xl text-gray-600 hover:text-gray-800 transition"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <p class="text-sm text-gray-700">
+            The first photo will be used as your main profile photo. You can
+            remove or replace photos below. Changes are only saved when you
+            click <span class="font-semibold">Save Photos</span>.
+          </p>
+
+          <div
+            id="photoEditorGrid"
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"
+          >
+            <!-- Slots will be populated by JavaScript using currentUser.photos -->
+          </div>
+
+          <p
+            id="photoEditorError"
+            class="text-sm text-red-600 mt-2 hidden"
+          ></p>
+
+          <div class="flex gap-3 pt-4 justify-end">
+            <button
+              type="button"
+              onclick="closeModal('photoEditorModal')"
+              class="modal-btn-secondary px-4 py-3 rounded-xl text-gray-800 font-semibold"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              id="photoEditorSaveButton"
+              class="modal-btn-primary px-4 py-3 rounded-xl text-white font-semibold"
+            >
+              <i class="fa-solid fa-check mr-2"></i>
+              Save Photos
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -937,6 +1018,16 @@
         return data?.data?.user || null;
       }
 
+      // Optional auth header helper (for media upload) using stored token
+      function authHeader() {
+        try {
+          const token = localStorage.getItem("authToken");
+          return token ? { Authorization: `Bearer ${token}` } : {};
+        } catch (_) {
+          return {};
+        }
+      }
+
       async function fetchUserById(userId) {
         const data = await makeAuthenticatedRequest(
           `${API_BASE_URL}/${userId}`
@@ -958,6 +1049,237 @@
           return data.data.user;
         }
         return null;
+      }
+
+      // Upload new profile photos via media upload API and refresh gallery
+      async function uploadProfilePhotos(keptFileIds, newFiles) {
+        const kept = Array.isArray(keptFileIds) ? keptFileIds : [];
+        const files = Array.isArray(newFiles) ? newFiles : [];
+
+        if (kept.length + files.length === 0) return;
+
+        const formData = new FormData();
+        formData.append("keptFileIds", JSON.stringify(kept));
+        files.forEach((file) => {
+          formData.append("photos", file);
+        });
+
+        try {
+          const response = await fetch("/api/v1/users/media/upload", {
+            method: "POST",
+            body: formData,
+            credentials: "include",
+            headers: {
+              ...authHeader(),
+            },
+          });
+
+          let data = null;
+          try {
+            data = await response.json();
+          } catch (_) {}
+
+          if (!response.ok) {
+            const msg =
+              (data && (data.message || data.error?.message)) ||
+              "We could not update your photos right now. Please try again later.";
+            throw new Error(msg);
+          }
+
+          const updatedUser = data?.data?.user;
+          if (updatedUser && Array.isArray(updatedUser.photos)) {
+            window.currentUser = {
+              ...(window.currentUser || {}),
+              ...updatedUser,
+            };
+            updateGalleryUI(window.currentUser);
+            alert("Photos updated successfully.");
+          } else {
+            alert(
+              "Photos were uploaded, but we could not refresh your profile view automatically."
+            );
+          }
+        } catch (error) {
+          alert(error.message || "Failed to update photos.");
+        }
+      }
+
+      // ============================
+      // Photo Editor Modal Logic
+      // ============================
+      let photoEditorSlots = [];
+
+      function createEmptyPhotoSlot() {
+        return {
+          existingFileId: null,
+          existingUrl: null,
+          file: null,
+        };
+      }
+
+      function openPhotoEditorModal() {
+        const existingPhotos = Array.isArray(window.currentUser?.photos)
+          ? window.currentUser.photos
+          : [];
+
+        photoEditorSlots = Array.from({ length: 5 }, (_, index) => {
+          const p = existingPhotos[index];
+          if (p) {
+            return {
+              existingFileId: p.fileId || p._id || null,
+              existingUrl: p.url || null,
+              file: null,
+            };
+          }
+          return createEmptyPhotoSlot();
+        });
+
+        renderPhotoEditorSlots();
+
+        const errorEl = document.getElementById("photoEditorError");
+        if (errorEl) {
+          errorEl.textContent = "";
+          errorEl.classList.add("hidden");
+        }
+
+        openModal("photoEditorModal");
+      }
+
+      function renderPhotoEditorSlots() {
+        const grid = document.getElementById("photoEditorGrid");
+        if (!grid) return;
+
+        grid.innerHTML = "";
+
+        photoEditorSlots.forEach((slot, index) => {
+          const hasImage = !!slot.existingUrl || !!slot.file;
+          const label = index === 0 ? "Main" : `Photo ${index + 1}`;
+
+          const wrapper = document.createElement("div");
+          wrapper.className =
+            "relative border-2 border-pink-300 rounded-2xl overflow-hidden bg-white/40 cursor-pointer group h-32 sm:h-36 md:h-40";
+
+          const uploadArea = document.createElement("div");
+          uploadArea.className =
+            "absolute inset-0 flex flex-col items-center justify-center text-gray-700 text-xs sm:text-sm";
+          uploadArea.innerHTML = `
+            <span class="text-3xl mb-1">+</span>
+            <p>${label}</p>
+          `;
+
+          const preview = document.createElement("div");
+          preview.className = "w-full h-full";
+
+          if (hasImage) {
+            const img = document.createElement("img");
+            img.className = "w-full h-full object-cover";
+            if (slot.file) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                img.src = e.target.result;
+              };
+              reader.readAsDataURL(slot.file);
+            } else if (slot.existingUrl) {
+              img.src = slot.existingUrl;
+            }
+            preview.appendChild(img);
+            uploadArea.classList.add("hidden");
+          }
+
+          const removeBtn = document.createElement("button");
+          removeBtn.type = "button";
+          removeBtn.className =
+            "absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition";
+          removeBtn.textContent = "✕";
+          if (!hasImage) {
+            removeBtn.classList.add("hidden");
+          }
+
+          const fileInput = document.createElement("input");
+          fileInput.type = "file";
+          fileInput.accept = "image/*";
+          fileInput.className = "hidden";
+
+          wrapper.addEventListener("click", (event) => {
+            if (event.target === removeBtn) return;
+            fileInput.click();
+          });
+
+          fileInput.addEventListener("change", () => {
+            const file = fileInput.files && fileInput.files[0];
+            if (!file) return;
+
+            photoEditorSlots[index].file = file;
+            photoEditorSlots[index].existingFileId = null;
+            photoEditorSlots[index].existingUrl = null;
+
+            renderPhotoEditorSlots();
+          });
+
+          removeBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            photoEditorSlots[index] = createEmptyPhotoSlot();
+            renderPhotoEditorSlots();
+          });
+
+          wrapper.appendChild(preview);
+          wrapper.appendChild(uploadArea);
+          wrapper.appendChild(removeBtn);
+          wrapper.appendChild(fileInput);
+
+          if (index === 0) {
+            const badge = document.createElement("div");
+            badge.className =
+              "absolute top-2 left-2 px-2 py-1 rounded-full text-[10px] font-semibold text-white bg-gradient-to-r from-yellow-400 to-pink-400 shadow";
+            badge.textContent = "Profile";
+            wrapper.appendChild(badge);
+          }
+
+          grid.appendChild(wrapper);
+        });
+      }
+
+      async function savePhotoEditorChanges() {
+        const keptFileIds = photoEditorSlots
+          .filter((slot) => !!slot.existingFileId)
+          .map((slot) => String(slot.existingFileId));
+
+        const newFiles = photoEditorSlots
+          .filter((slot) => !!slot.file)
+          .map((slot) => slot.file);
+
+        const total = keptFileIds.length + newFiles.length;
+
+        const errorEl = document.getElementById("photoEditorError");
+        if (errorEl) {
+          errorEl.textContent = "";
+          errorEl.classList.add("hidden");
+        }
+
+        if (total < 3) {
+          if (errorEl) {
+            errorEl.textContent =
+              "You must have at least 3 photos before saving your profile.";
+            errorEl.classList.remove("hidden");
+          } else {
+            alert("You must have at least 3 photos.");
+          }
+          return;
+        }
+
+        if (total > 5) {
+          if (errorEl) {
+            errorEl.textContent =
+              "You can have at most 5 photos. Please remove some before saving.";
+            errorEl.classList.remove("hidden");
+          } else {
+            alert("You can have at most 5 photos.");
+          }
+          return;
+        }
+
+        await uploadProfilePhotos(keptFileIds, newFiles);
+        closeModal("photoEditorModal");
       }
 
       async function updateUserPassword(currentPassword, newPassword) {
@@ -1351,6 +1673,19 @@
         }
       }
 
+      function setupPhotoUpload() {
+        const editBtn = document.getElementById("edit-photos-btn");
+        const saveBtn = document.getElementById("photoEditorSaveButton");
+
+        if (editBtn) {
+          editBtn.addEventListener("click", openPhotoEditorModal);
+        }
+
+        if (saveBtn) {
+          saveBtn.addEventListener("click", savePhotoEditorChanges);
+        }
+      }
+
       // ============================
       // Modal Functions (keep your existing ones)
       // ============================
@@ -1393,6 +1728,7 @@
           setupUsernameModal();
           setupEditListeners();
           setupDangerZone();
+          setupPhotoUpload();
 
           console.log("Profile loaded successfully");
         } catch (error) {
