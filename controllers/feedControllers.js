@@ -46,11 +46,17 @@ exports.getFeedChunk = catchAsync(async (req, res, next) => {
   console.log(`shownProfiles: ${currentUser.shownProfiles.length}`);
   console.log(`allUnseens: ${unseen.length}`);
 
-  // Check if it is time to remove the FIRST HALF of shwonProfiles, so it continues
+  // Check if it is time to remove the FIRST HALF of shownProfiles, so it continues
   if (unseen.length < 5 && currentUser.shownProfiles.length > 0) {
     const half = Math.floor(currentUser.shownProfiles.length / 2);
     currentUser.shownProfiles.splice(0, half);
-    await currentUser.save({ validateBeforeSave: false });
+
+    // Use atomic update instead of doc.save() to avoid VersionError when
+    // multiple /feed/chunk requests run at the same time
+    await User.updateOne(
+      { _id: currentUser._id },
+      { $set: { shownProfiles: currentUser.shownProfiles } }
+    );
 
     // recalc unseen after shrinking history
     unseen = allCandidates.filter(
@@ -68,7 +74,13 @@ exports.getFeedChunk = catchAsync(async (req, res, next) => {
 
   // 6️⃣ Save these 5 into shownProfiles history
   currentUser.shownProfiles.push(...chunk.map((u) => u._id.toString()));
-  await currentUser.save({ validateBeforeSave: false });
+
+  // Use atomic update instead of doc.save() to avoid VersionError when
+  // multiple /feed/chunk requests run at the same time
+  await User.updateOne(
+    { _id: currentUser._id },
+    { $set: { shownProfiles: currentUser.shownProfiles } }
+  );
 
   // 7️⃣ Fetch full user docs to return (exclude sensitive fields)
   const profiles = await User.find({
