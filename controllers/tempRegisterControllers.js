@@ -91,7 +91,8 @@ exports.saveStep = catchAsync(async (req, res, next) => {
 
   if (!registrationId)
     return next(new AppError("registrationId required", 400));
-  if (!Number.isInteger(step) || step < 1 || step > 14)
+  // Allow all defined registration steps (currently 1..16)
+  if (!Number.isInteger(step) || step < 1 || step > 16)
     return next(new AppError("Invalid step", 400));
 
   const temp = await TempRegister.findOne({ registrationId });

@@ -25,6 +25,17 @@
           a.classList.add('gda-link--active');
         }
       });
+
+      // If the user has uploaded photos in this session, prefer the first photo as avatar
+      try {
+        const photos = JSON.parse(localStorage.getItem('photos') || '[]');
+        const avatar = document.querySelector('.gda-avatar');
+        if (avatar && Array.isArray(photos) && photos.length > 0 && photos[0]) {
+          avatar.src = photos[0];
+        }
+      } catch (e) {
+        // ignore
+      }
     }catch(err){
       console.warn('[navbar] injection failed:', err);
     }
