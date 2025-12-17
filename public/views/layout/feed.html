@@ -51,18 +51,23 @@
 
 body {
   margin: 0;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
+  background: linear-gradient(to bottom, #ffcad4 24%, #ff4d6d 100%);
+  font-family: "Jomolhari", serif;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Page-level wrapper so content is centered like on partner page,
+   while navbar (injected via /partials/navbar.html) stays at the top */
+.feed-page-main {
+  min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* Match partner page background so global navbar looks identical */
-  background: url('/img/bgimg.jpg') no-repeat center center fixed;
-  background-size: cover;
-  overflow: hidden; /* Important for the scroll effect */
-  /* Match partner page font to keep nav text consistent */
-  font-family: "Rufina", serif;
 }
 
 /* =========================================
@@ -71,13 +76,12 @@ body {
 .feed-container {
   position: relative;
   width: 100%;
-  max-width: 25rem; /* 400px to match navbar */
+  max-width: 400px;
   height: 650px; /* Adjusted height to fit card + buttons */
   display: flex;
   justify-content: center;
   align-items: center;
   perspective: 1000px;
-  margin-top: 12px; /* small gap below navbar, matches design */
 }
 
 /* =========================================
@@ -519,7 +523,9 @@ body {
     </style>
   </head>
   <body>
-    <div id="feed-container" class="feed-container"></div>
+    <main class="feed-page-main">
+      <div id="feed-container" class="feed-container"></div>
+    </main>
 
     <div id="userModal" class="modal">
       <div class="modal-content">
@@ -941,13 +947,26 @@ async function crushUser(targetId) {
     method: 'POST',
     headers: headersBase,
   });
+
   if (res.status === 401) {
     const back = encodeURIComponent(window.location.pathname + window.location.search);
     window.location.href = `/views/auth/login.html?redirect=${back}`;
     return;
   }
-  // Ignore non-auth errors to avoid noisy popups; proceed to next profile
-  try { await res.json(); } catch {}
+
+  let json = null;
+  try {
+    json = await res.json();
+  } catch (_) {}
+
+  if (!res.ok) {
+    const msg = (json && (json.message || json.error?.message))
+      || 'We could not process your crush request right now. Please try again later.';
+    alert(msg);
+    return;
+  }
+
+  // Only move to next profile on successful crush
   handleNextProfile();
 }
 
@@ -958,13 +977,26 @@ async function proposeUser(targetId) {
     method: 'POST',
     headers: headersBase,
   });
+
   if (res.status === 401) {
     const back = encodeURIComponent(window.location.pathname + window.location.search);
     window.location.href = `/views/auth/login.html?redirect=${back}`;
     return;
   }
-  // Ignore non-auth errors to avoid noisy popups; proceed to next profile
-  try { await res.json(); } catch {}
+
+  let json = null;
+  try {
+    json = await res.json();
+  } catch (_) {}
+
+  if (!res.ok) {
+    const msg = (json && (json.message || json.error?.message))
+      || 'We could not send your proposal right now. Please try again later.';
+    alert(msg);
+    return;
+  }
+
+  // Only move to next profile on successful proposal
   handleNextProfile();
 }
 

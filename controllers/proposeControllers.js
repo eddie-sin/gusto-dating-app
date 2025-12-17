@@ -37,7 +37,7 @@ exports.createPropose = catchAsync(async (req, res, next) => {
     return next(new AppError("Both users must be approved", 400));
   }
 
-  //4. Prevent Duplicate Propose
+  //4. Prevent Duplicate Propose (any existing proposal in list blocks new one)
   const existing = await Propose.findOne({ from: fromId, to: targetId });
   if (existing) {
     return next(new AppError("You already have a proposal for this user", 400));
@@ -61,24 +61,17 @@ exports.createPropose = catchAsync(async (req, res, next) => {
     );
   }
 
-  // ---- ✅ RESET DAILY COUNT IF NEW DAY (Myanmar 12AM) ----
-  const nowMM = new Date().toLocaleString("en-US", { timeZone: "Asia/Yangon" }); //output: "11/10/2025, 1:00 AM"
-  const lastResetMM = new Date(fromUser.lastProposeReset).toLocaleString(
-    "en-US",
-    { timeZone: "Asia/Yangon" }
-  );
+  // ---- ✅ DAILY LIMIT ENFORCEMENT (2 per day, Myanmar time) ----
+  // Compute "today" in Myanmar timezone and enforce limit based on Propose.createdAt
+  const todayStartMM = resetMyanmarMidnight();
+  const tomorrowStartMM = new Date(todayStartMM.getTime() + 24 * 60 * 60 * 1000);
 
-  const todayDay = new Date(nowMM).toDateString(); //"Sun Nov 09 2025"
-  const lastResetDay = new Date(lastResetMM).toDateString();
+  const todayCount = await Propose.countDocuments({
+    from: fromId,
+    createdAt: { $gte: todayStartMM, $lt: tomorrowStartMM },
+  });
 
-  //if a day or more has passed, --> RESET
-  if (todayDay !== lastResetDay) {
-    fromUser.dailyProposeCount = 0;
-    fromUser.lastProposeReset = resetMyanmarMidnight();
-  }
-
-  //6. Prevent Proposing More Than 2 Users A Day
-  if (fromUser.dailyProposeCount >= 2) {
+  if (todayCount >= 2) {
     return next(new AppError("Daily propose limit reached (2 per day)", 403));
   }
 
@@ -88,10 +81,6 @@ exports.createPropose = catchAsync(async (req, res, next) => {
     to: targetId,
     status: "pending",
   });
-
-  // ---- INCREMENT COUNT & SAVE ----
-  fromUser.dailyProposeCount += 1;
-  await fromUser.save();
 
   res.status(201).json({ status: "success", data: propose });
 });

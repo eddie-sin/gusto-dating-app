@@ -33,20 +33,16 @@ exports.addCrush = catchAsync(async (req, res, next) => {
     return next(new AppError("User not found", 404));
   }
 
-  // ---- RESET DAILY COUNT IF NEW DAY (Myanmar 12AM) ----
-  const nowMM = new Date().toLocaleString("en-US", { timeZone: "Asia/Yangon" });
-  const lastResetMM = new Date(fromUser.lastCrushReset).toLocaleString("en-US", { timeZone: "Asia/Yangon" });
+  // ---- DAILY LIMIT: MAX 3 CRUSHES PER DAY (Myanmar time) ----
+  const todayStartMM = resetMyanmarMidnight();
+  const tomorrowStartMM = new Date(todayStartMM.getTime() + 24 * 60 * 60 * 1000);
 
-  const todayDay = new Date(nowMM).toDateString();
-  const lastResetDay = new Date(lastResetMM).toDateString();
+  const todayCrushCount = await Crush.countDocuments({
+    user: userId,
+    createdAt: { $gte: todayStartMM, $lt: tomorrowStartMM },
+  });
 
-  if (todayDay !== lastResetDay) {
-    fromUser.dailyCrushCount = 0;
-    fromUser.lastCrushReset = resetMyanmarMidnight();
-  }
-
-  // ---- LIMIT TO 3 CRUSHES PER DAY ----
-  if (fromUser.dailyCrushCount >= 3) {
+  if (todayCrushCount >= 3) {
     return next(new AppError("Daily crush limit reached (3 per day)", 403));
   }
 
@@ -56,10 +52,6 @@ exports.addCrush = catchAsync(async (req, res, next) => {
 
   // ---- CREATE CRUSH ----
   const crush = await Crush.create({ user: userId, target: targetId });
-
-  // ---- INCREMENT USER COUNT & SAVE ----
-  fromUser.dailyCrushCount += 1;
-  await fromUser.save();
 
   await User.findByIdAndUpdate(targetId, { $inc: { crushCount: 1 } });
 
