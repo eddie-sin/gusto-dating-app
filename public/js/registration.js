@@ -96,6 +96,18 @@ import {
       })
       .catch((err) => {
         alert(err.message || "Failed to save step");
+        // restore any button loaders in case of error
+        try {
+          document.querySelectorAll('.next-btn, .btn-soft, button[id^="camera"] , #uploadLabel').forEach(el => {
+            try {
+              el.disabled = false;
+            } catch(e){}
+            const text = el.querySelector && el.querySelector('.btn-text');
+            if (text) text.textContent = (el.dataset.originalText) ? el.dataset.originalText : 'Next';
+            const loader = el.querySelector && el.querySelector('.loading');
+            if (loader) loader.classList.add('hidden');
+          });
+        } catch (e) {}
       });
   }
   // If form exists → also handle form submit
@@ -106,6 +118,30 @@ import {
 
   // Always listen for custom events
   document.addEventListener("registration:submit", handleSave);
+
+  // Show spinner on Next/Skip buttons immediately when clicked so users see feedback
+  function attachButtonSpinners() {
+    const buttons = document.querySelectorAll('.next-btn');
+    buttons.forEach(btn => {
+      // avoid attaching multiple times
+      if (btn.dataset.spinnerAttached) return;
+      btn.dataset.spinnerAttached = 'true';
+      btn.addEventListener('click', () => {
+        try {
+          if (btn.disabled) return;
+          btn.disabled = true;
+          const text = btn.querySelector('.btn-text');
+          const loader = btn.querySelector('.loading');
+          if (text) text.textContent = 'Processing...';
+          if (loader) loader.classList.remove('hidden');
+        } catch (e) {
+          // ignore
+        }
+      });
+    });
+  }
+
+  attachButtonSpinners();
 
   /* Back Step Back logic */
   const backBtn = document.getElementById("backBtn");

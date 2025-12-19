@@ -83,6 +83,15 @@ exports.getData = catchAsync(async (req, res, next) => {
   });
 });
 
+// GET /api/register/check-username?username=abc
+exports.checkUsername = catchAsync(async (req, res, next) => {
+  const username = (req.query.username || '').toString().trim().toLowerCase();
+  if (!username) return next(new AppError('username query required', 400));
+
+  const existing = await User.findOne({ username }).select('_id');
+  res.json({ success: true, available: !existing });
+});
+
 // POST /api/register/step/:step
 exports.saveStep = catchAsync(async (req, res, next) => {
   const registrationId = getRegistrationIdFromReq(req);

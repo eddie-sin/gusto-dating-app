@@ -56,6 +56,11 @@
     pointer-events:none; border-radius:55px; }
   .next-btn:hover { transform: translateY(-2px) scale(1.02); }
 
+  /* Spinner for Next/Skip buttons */
+  .loading { display:inline-block; width:16px; height:16px; border:3px solid rgba(255,255,255,0.3); border-radius:50%; border-top-color:white; animation:spin 1s linear infinite; margin-left:8px; }
+  .hidden { display:none !important; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   /* Mobile triangle layout */
   @media (max-width: 640px) {
     #genderGroup { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; justify-items: center; }
@@ -126,7 +131,7 @@
 
       <!-- Next Button -->
       <div class="flex justify-center items-center mt-4 sm:mt-8 md:mt-10">
-        <button id="nextButton" class="next-btn cursor-not-allowed opacity-80">Next</button>
+        <button id="nextButton" class="next-btn cursor-not-allowed opacity-80"><span class="btn-text">Next</span><span class="loading hidden"></span></button>
       </div>
 
     </div>

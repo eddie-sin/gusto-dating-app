@@ -162,6 +162,11 @@
     .next-btn { width:96px; padding:6px; font-family:'Rufina',serif; font-size:14px; color:black; background:linear-gradient(135deg,#F78998 0%,#fa97a9 50%,#F78998 100%); position:relative; overflow:hidden; border-width:0.11rem; border-style:solid; border-top-color:#ffffffcc; border-bottom-color:#ffffffcc; border-left-color:#fa97a9; border-right-color:#fa97a9; border-radius:55px; box-shadow:0px 36.86px 13.98px rgba(255,106,106,0.02),0px 20.34px 12.71px rgba(255,106,106,0.08),0px 8.9px 8.9px rgba(255,106,106,0.13),0px 2.54px 5.08px rgba(255,106,106,0.15); cursor:pointer; transition:0.25s ease; }
     .next-btn::before { content:""; position:absolute; top:0; left:0; height:100%; width:100%; background:linear-gradient(90deg,rgba(255,255,255,0.35) 0%,rgba(255,255,255,0) 40%,rgba(255,255,255,0) 60%,rgba(255,255,255,0.35) 100%); pointer-events:none; border-radius:55px; }
     .next-btn:hover { transform:translateY(-2px) scale(1.02); }
+
+    /* Spinner for Next/Skip buttons */
+    .loading { display:inline-block; width:16px; height:16px; border:3px solid rgba(255,255,255,0.3); border-radius:50%; border-top-color:white; animation:spin 1s linear infinite; margin-left:8px; }
+    .hidden { display:none !important; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -186,8 +191,8 @@
     </div>
 
     <div class="btn-row">
-      <button id="skipBtn" class="next-btn">Skip</button>
-      <button id="nextBtn" class="next-btn">Next</button>
+      <button id="skipBtn" class="next-btn"><span class="btn-text">Skip</span><span class="loading hidden"></span></button>
+      <button id="nextBtn" class="next-btn"><span class="btn-text">Next</span><span class="loading hidden"></span></button>
     </div>
   </div>
 

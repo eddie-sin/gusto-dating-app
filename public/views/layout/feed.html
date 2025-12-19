@@ -74,6 +74,14 @@ body {
    2. FEED CONTAINER (The Stack)
    ========================================= */
 .feed-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 2rem;
+}
+
+.feed-slot {
   position: relative;
   width: 100%;
   max-width: 400px;
@@ -514,17 +522,42 @@ body {
   display: none !important;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 1023px) {
+  .feed-container {
+    max-width: 400px;
+  }
+
+  #feed-right {
+    display: none;
+  }
+
+  .feed-slot {
+    max-width: 400px;
+  }
+
   .card {
     max-width: 90%;
     height: 520px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .feed-container {
+    max-width: 900px;
+  }
+
+  #feed-right {
+    display: flex;
   }
 }
     </style>
   </head>
   <body>
     <main class="feed-page-main">
-      <div id="feed-container" class="feed-container"></div>
+      <div id="feed-container" class="feed-container">
+        <div id="feed-left" class="feed-slot"></div>
+        <div id="feed-right" class="feed-slot"></div>
+      </div>
     </main>
 
     <div id="userModal" class="modal">
@@ -621,7 +654,14 @@ body {
 const usersData = [];
 
 const feedContainer = document.getElementById("feed-container");
+const feedLeft = document.getElementById("feed-left");
+const feedRight = document.getElementById("feed-right");
+
 let globalUserIndex = 0;
+
+function isDesktop() {
+  return window.innerWidth >= 1024;
+}
 
 // ----------------------------------------------------
 // CLASS: FeedCard
@@ -718,7 +758,7 @@ class FeedCard {
     // 3. Action Buttons
     const btnPass = this.element.querySelector(".btn-pass");
     btnPass.addEventListener("click", () => {
-      handleNextProfile(); // Trigger global scroll
+      handleNextProfile(this); // Trigger global scroll with reference to this card
     });
 
     const btnStar = this.element.querySelector(".btn-star");
@@ -732,7 +772,12 @@ class FeedCard {
           message: `You are about to add ${this.user.name} to your crush list.`,
           onConfirm: async () => {
             btnStar.disabled = true;
-            try { await crushUser(this.user.id); } finally { btnStar.disabled = false; }
+            try {
+              await crushUser(this.user.id);
+              handleNextProfile(this);
+            } finally {
+              btnStar.disabled = false;
+            }
           },
         });
       });
@@ -746,7 +791,12 @@ class FeedCard {
           message: `You are about to propose to ${this.user.name}.`,
           onConfirm: async () => {
             btnLike.disabled = true;
-            try { await proposeUser(this.user.id); } finally { btnLike.disabled = false; }
+            try {
+              await proposeUser(this.user.id);
+              handleNextProfile(this);
+            } finally {
+              btnLike.disabled = false;
+            }
           },
         });
       });
@@ -825,7 +875,9 @@ class FeedCard {
 // GLOBAL FEED LOGIC
 // ----------------------------------------------------
 
-let currentCardInstance = null;
+let currentCardInstance = null; // used for mobile (single card)
+let leftCardInstance = null;    // desktop left slot
+let rightCardInstance = null;   // desktop right slot
 
 // Auth header helper (same approach as propose.html)
 function authHeader() {
@@ -892,16 +944,25 @@ async function initFeed() {
       return;
     }
   }
-  // Load first user
-  loadUser(globalUserIndex);
+
+  if (isDesktop()) {
+    loadUser(globalUserIndex++, 'left');
+    loadUser(globalUserIndex++, 'right');
+  } else {
+    loadUser(globalUserIndex, 'left');
+  }
 }
 
-function loadUser(index) {
-  if (usersData.length === 0) return;
+function loadUser(index, slot) {
+  if (usersData.length === 0) return null;
   const data = usersData[index % usersData.length];
   const newCard = new FeedCard(data);
 
-  feedContainer.appendChild(newCard.element);
+  const parent = isDesktop()
+    ? (slot === 'right' ? feedRight : feedLeft)
+    : feedLeft;
+
+  parent.appendChild(newCard.element);
 
   // Small delay to allow CSS to register "next-waiting" before removing it for animation
   setTimeout(() => {
@@ -909,32 +970,82 @@ function loadUser(index) {
     newCard.element.classList.add("current");
   }, 50);
 
-  currentCardInstance = newCard;
+  if (!isDesktop()) {
+    currentCardInstance = newCard;
+  } else if (slot === 'right') {
+    rightCardInstance = newCard;
+  } else {
+    leftCardInstance = newCard;
+  }
+
+  return newCard;
 }
 
-async function handleNextProfile() {
-  if (!currentCardInstance) return;
+async function handleNextProfile(cardInstance) {
+  if (!cardInstance) return;
 
-  const oldCardElement = currentCardInstance.element;
+  const oldCardElement = cardInstance.element;
 
   // 1. Animate Old Card Up & Out
   oldCardElement.classList.remove("current");
   oldCardElement.classList.add("slide-out");
 
-  // 2. Load Next Card (It will animate In from bottom automatically via CSS logic in loadUser)
-  globalUserIndex++;
+  // Determine behavior based on viewport
+  if (!isDesktop()) {
+    // Mobile: keep original single-card sequence
+    globalUserIndex++;
+
+    // If we're about to wrap soon, prefetch a new chunk
+    if (globalUserIndex >= usersData.length - 1) {
+      try { await fetchChunk(); } catch (_) {}
+    }
+
+    loadUser(globalUserIndex, 'left');
+
+    // Remove old card after animation
+    setTimeout(() => {
+      oldCardElement.remove();
+    }, 600); // matches CSS transition time
+
+    return;
+  }
+
+  // Desktop: manage two slots (left & right)
+  const isLeftCard = cardInstance === leftCardInstance;
 
   // If we're about to wrap soon, prefetch a new chunk
   if (globalUserIndex >= usersData.length - 1) {
     try { await fetchChunk(); } catch (_) {}
   }
 
-  loadUser(globalUserIndex);
+  if (isLeftCard) {
+    // Left card skipped: right card moves into left, new card appears on right
+    const previousRight = rightCardInstance;
 
-  // 3. Remove Old Card from DOM after animation finishes
-  setTimeout(() => {
-    oldCardElement.remove();
-  }, 600); // matches CSS transition time
+    // After animation, remove old left card and shift right into left
+    setTimeout(() => {
+      oldCardElement.remove();
+
+      if (previousRight) {
+        // Move DOM element
+        feedLeft.appendChild(previousRight.element);
+        leftCardInstance = previousRight;
+        rightCardInstance = null;
+      }
+
+      // Load a new card into the right slot
+      globalUserIndex++;
+      loadUser(globalUserIndex, 'right');
+    }, 600); // matches CSS transition time
+  } else {
+    // Right card skipped: only replace right card, left remains
+    setTimeout(() => {
+      oldCardElement.remove();
+
+      globalUserIndex++;
+      loadUser(globalUserIndex, 'right');
+    }, 600); // matches CSS transition time
+  }
 }
 
 // ----------------------------------------------------
@@ -967,7 +1078,7 @@ async function crushUser(targetId) {
   }
 
   // Only move to next profile on successful crush
-  handleNextProfile();
+  // (handled by caller so it can know which card triggered the action)
 }
 
 async function proposeUser(targetId) {
@@ -997,7 +1108,7 @@ async function proposeUser(targetId) {
   }
 
   // Only move to next profile on successful proposal
-  handleNextProfile();
+  // (handled by caller so it can know which card triggered the action)
 }
 
 // ----------------------------------------------------
