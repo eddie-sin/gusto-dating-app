@@ -11,6 +11,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet" />
 
   <style>
+    /* Align global navbar pill with this page's content width (match feed page) */
+    :root {
+      --nav-max: 100%;  /* let width be controlled by padding instead of fixed max */
+      --nav-pad: 4rem;  /* match lg:px-16 side padding */
+    }
+
+    @media (max-width: 1024px) {
+      :root {
+        --nav-pad: 1rem; /* match px-4 on smaller screens */
+      }
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
