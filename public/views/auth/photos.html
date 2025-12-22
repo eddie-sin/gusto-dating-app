@@ -95,6 +95,25 @@
       transition: 0.3s;
     }
 
+    /* Mobile-only layout: 3 rows, 2 cols (first 2 rows), 5th centered on last row */
+    @media (max-width: 640px) {
+      .photo-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        justify-items: center;
+      }
+
+      .photo-box {
+        width: 150px;
+        height: 150px;
+      }
+
+      .photo-row .photo-box:nth-child(5) {
+        grid-column: 1 / -1;
+        justify-self: center;
+      }
+    }
+
     /* Profile badge shown on the first/top-left photo */
     .profile-badge {
       position: absolute;
