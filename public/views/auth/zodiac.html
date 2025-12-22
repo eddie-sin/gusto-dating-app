@@ -239,12 +239,88 @@
       transform: scale(1.05);
       box-shadow: 0 0 12px rgba(255,140,170,0.8);
     }
+
+    @media (max-width: 768px) {
+      body {
+        align-items: stretch;
+        justify-content: flex-start;
+        padding-top: 0;
+        height: 100vh;
+      }
+
+      .zodiac-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .card {
+        width: 320px;
+        max-width: calc(100% - 40px);
+        padding: 24px 20px 32px;
+        min-height: 0;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+
+      .heart-bg {
+        width: 260px;
+        height: 260px;
+      }
+
+      .title {
+        font-size: 20px;
+        margin-bottom: 28px;
+      }
+
+      .zodiac-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px 12px;
+      }
+
+      .zodiac-item {
+        width: 86px;
+        height: 86px;
+      }
+
+      .zodiac-item img {
+        width: 30px;
+        height: 30px;
+      }
+
+      .label {
+        font-size: 12px;
+      }
+
+      .btn-row {
+        position: static;
+        margin-top: 32px;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .next-btn {
+        width: 104px;
+        padding-inline: 10px;
+        font-size: 15px;
+      }
+
+      .back-btn {
+        position: fixed !important;
+        top: 16px !important;
+        left: 16px !important;
+        padding: 6px 16px;
+        font-size: 14px;
+      }
+    }
+
   </style>
 </head>
 
 <body>
-  <div class="relative w-full max-w-[880px]">
-    <a href="hobby.html" class="absolute -top-[110px] left-0 flex items-center justify-center mbti-btn
+  <div class="zodiac-wrapper relative w-full max-w-[880px]">
+    <a href="hobby.html" class="back-btn absolute -top-[110px] left-0 flex items-center justify-center mbti-btn
           w-[95px] sm:w-[105px] md:w-[115px] h-[40px] sm:h-[43px] md:h-[45px]
           px-4 sm:px-6 text-base sm:text-lg z-50">
       <i class="fa-solid fa-arrow-left"></i>
