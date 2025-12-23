@@ -190,7 +190,7 @@
     .mobile-heart-row {
       display: flex;
       justify-content: center;
-      gap: 8px;
+      gap: 0; /* spacing handled per-pill with margins */
     }
 
     .mobile-hobby-dots {
@@ -398,12 +398,12 @@
     <div id="mobileHobbyWrapper" class="mobile-hobby-wrapper">
       <div id="mobileHobbyTrack" class="mobile-hobby-track">
         <div class="mobile-hobby-slide" data-slide-index="0">
-          <div class="mobile-heart">
+          <div >
             <div id="mobileHeartInner1" class="mobile-heart-inner"></div>
           </div>
         </div>
         <div class="mobile-hobby-slide" data-slide-index="1">
-          <div class="mobile-heart">
+          <div >
             <div id="mobileHeartInner2" class="mobile-heart-inner"></div>
           </div>
         </div>
@@ -439,13 +439,14 @@
     const mobileHeartInner1 = document.getElementById("mobileHeartInner1");
     const mobileHeartInner2 = document.getElementById("mobileHeartInner2");
 
-    function createPillElement(text, widthClass) {
+    function createPillElement(text, widthClass, marginClass) {
       const pill = document.createElement("div");
       pill.className =
         "text-center py-2 bg-[#E78597] border border-[#e8acb8]/60 " +
         "rounded-full text-[14px] md:text-[15px] text-gray-800 shadow-md " +
         "backdrop-blur-sm cursor-pointer transition hover:scale-105";
       if (widthClass) pill.classList.add(widthClass);
+      if (marginClass) pill.classList.add(marginClass);
       pill.textContent = text;
       pill.dataset.hobby = text.toLowerCase();
       return pill;
@@ -471,29 +472,66 @@
       });
     });
 
-    // Flatten hobbies and distribute between two mobile hearts using
-    // explicit heart-like row patterns.
-    const allHobbies = rows.flat();
+    // Per-pill spacing on mobile hearts.
+    // Edit values here (e.g. 'mx-1', 'mx-2', 'mx-3', 'mx-4') to change
+    // horizontal space for individual pills on MOBILE ONLY.
+    const mobilePillSpacing = {
+      // Second heart tuning: larger mx-* pushes pills outward, smaller pulls inward
+      // Top row
+      "Gaming": "mx-4",
+      "Crafting": "mx-4",
+      // Second row (wider bulge)
+      "Graphic Design": "mx-3",
+      "Movie": "mx-2",
+      "Football": "mx-3",
+      // Third row
+      "Gym": "mx-3",
+      "Camping": "mx-3",
+      // Fourth row
+      "Video Editing": "mx-4",
+      "Volunteering": "mx-4",
+      // Bottom point
+      "Coding": "mx-2",
+    };
 
-    function fillMobileHeart(innerEl, startIndex, pattern) {
-      let index = startIndex;
-      pattern.forEach(count => {
+    // Explicit rows for each mobile heart so we can shape them like hearts
+    const mobileHeart1Rows = [
+      ["Singing", "Music"],
+      ["Cooking", "Reading", "Travel"],
+      ["Learn", "Fashion", "Photography"],
+      ["Exercise", "Dancing"],
+      ["Painting"],
+    ];
+
+    const mobileHeart2Rows = [
+      // top lobe
+      ["Gaming", "Crafting"],
+      // widest row
+      ["Graphic Design", "Movie", "Football"],
+      // narrowing
+      ["Gym", "Camping"],
+      // lower narrowing row
+      ["Video Editing", "Volunteering"],
+      // bottom point
+      ["Coding"],
+    ];
+
+    function fillMobileHeartFromRows(innerEl, rowDefinitions) {
+      rowDefinitions.forEach(rowItems => {
         const row = document.createElement("div");
         row.className = "mobile-heart-row";
-        for (let i = 0; i < count && index < allHobbies.length; i++, index++) {
-          const text = allHobbies[index];
-          const pill = createPillElement(text, "px-3");
+        rowItems.forEach(text => {
+          const spacingClass = mobilePillSpacing[text] || "mx-2"; // default spacing
+          const pill = createPillElement(text, "px-3", spacingClass);
           row.appendChild(pill);
-        }
+        });
         innerEl.appendChild(row);
       });
-      return index;
     }
 
-    // First heart: 2-3-3-2-1 rows (top to bottom)
-    let nextStart = fillMobileHeart(mobileHeartInner1, 0, [2, 3, 3, 2, 1]);
-    // Second heart: custom pattern 2-3-2-2-1 rows (10 items) to keep a pointed bottom
-    fillMobileHeart(mobileHeartInner2, nextStart, [2, 3, 2, 2, 1]);
+    // Build both hearts explicitly
+    fillMobileHeartFromRows(mobileHeartInner1, mobileHeart1Rows);
+    fillMobileHeartFromRows(mobileHeartInner2, mobileHeart2Rows);
 
     // Keep selections in sync across all pill copies
     document.addEventListener("click", (e) => {
