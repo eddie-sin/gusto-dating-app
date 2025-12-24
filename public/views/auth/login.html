@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Font Awesome (working CDN) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
     <title>Login Account</title>
     <style>
       @keyframes float {
@@ -190,6 +194,109 @@
         font-weight: 700;
         text-shadow: 0 0 6px rgba(255, 77, 109, 0.6);
       }
+
+       .modal-content {
+  width: min(720px, calc(100% - 32px));
+  max-height: 35vh; /* <-- limit height to 80% of viewport */
+  margin-top: 28px;
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Body scroll */
+.modal-body {
+  padding: 16px;
+  overflow-y: auto;  /* <-- scroll vertically if content is too tall */
+  flex: 1 1 auto;    /* take remaining space in modal */
+}
+
+#uploadGuidanceModal {
+  display: none; /* hidden by default */
+  position: fixed;
+  inset: 0;
+  justify-content: center;
+  align-items: flex-start; /* top pop-up */
+  z-index: 9999;
+}
+
+/* NEW: visible state */
+#uploadGuidanceModal.open {
+  display: flex;
+  pointer-events: auto;
+  animation: slideDown 260ms ease-out;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-10px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* UPDATED modal content to be a top bar with responsive width */
+.modal-content {
+  width: min(720px, calc(100% - 32px));
+  margin-top: 28px;    /* distance from viewport top */
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+   background: rgba(255,255,255,0.85);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* NEW: header bar (red/pink) */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(90deg,#F78998,#fa97a9 60%);
+  color: white;
+}
+
+/* NEW: header title */
+.modal-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* NEW: close button using Font Awesome */
+.modal-close-button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+}
+.modal-close-button:focus { outline: 2px solid rgba(255,255,255,0.3); }
+
+/* small-screen tweak */
+@media (max-width:420px) {
+  .modal-content { width: calc(100% - 16px); margin-top: 16px; }
+  .modal-header h2 { font-size: 0.95rem; }
+}
+
+
+.info-icon {
+  font-size: 20px;
+  color: black;
+  cursor: pointer;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+}
+
+.custom-leading {
+  line-height: 1.8; /* adjust this value as needed */
+}
+
     </style>
   </head>
 
@@ -197,6 +304,42 @@
     <!-- Placeholder for Navigation Bar -->
     <div class="navbar-space"></div>
     <div class="container animate-float">
+      <span class="info-icon" onclick="openGuidanceModal()" role="button" aria-label="Upload guidance" title="Upload guidance">
+  <i class="fa-solid fa-circle-exclamation" style="font-size:20px; color:black;"></i>
+</span>
+
+<!-- modal inner structure with a top-bar header + body -->
+<div id="uploadGuidanceModal" aria-hidden="true" role="dialog" aria-labelledby="uploadGuidanceTitle">
+  <div class="modal-content" role="document">
+    <div class="modal-header">
+      <h2 id="uploadGuidanceTitle" class="text-base sm:text-lg md:text-xl lg:text-2xl custom-leading">User guidance</h2>
+      <!-- Font Awesome X icon (accessible button) -->
+      <button class="modal-close-button" onclick="closeGuidanceModal()" aria-label="Close upload guidance">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" style="padding:16px; text-align:left;">
+      <div class="modal-body p-4 text-left font-inter font-normal">
+        <p class="mb-4 text-sm sm:text-base md:text-lg lg:text-xl font-medium custom-leading">လော့ဂ်အင်(Login)အတွက် အကြံပေးချက်များ</p>
+  
+         <ul class="list-disc list-inside text-xs sm:text-sm md:text-base lg:text-lg mb-4 custom-leading">
+    <li>သင်မှတ်ပုံတင်ထားသော(registered) အသုံးပြုသူနာမည်ကို ထည့်ပါ။ အကြီး/အသေးအက္ခရာကို မှန်မှန်ထည့်ရန် သတိထားပါ။</li>
+    <li>စကားဝှက်ကို အမှန်အမှန်ထည့်ပါ။ စကားဝှက်မှာလည်း အကြီး/အသေးအက္ခရာကို မှန်မှန်ထည့်ရန် သတိထားပါ။</li>
+    <li>လုံခြုံစွာသင့်ကိုယ်ပိုင်စက်ပေါ်တွင် လော့ဂ်အင်နေစေရန် "Remember Me" ကို ရွေးပါ။</li>
+    <li>စကားဝှက်မေ့နေပါက "Forget Password?" ကို နှိပ်ပြီး ပြန်လည်ပြင်ဆင်နိုင်ပါသည်</li>
+    <li>Ensure your internet connection is stable for a smooth login.
+      အကောင့်သို့ လျင်မြန်စွာ ဝင်ရန် အင်တာနက် ချိတ်ဆက်မှု တည်ငြိမ်နေစေရန် လိုပါတယ်သည်။</li>
+  </ul>
+
+  <p class="text-sm sm:text-base md:text-lg lg:text-xl custom-leading">
+   ဤအကြံပြုချက်များကို လိုက်နာခြင်းဖြင့် သင့်အကောင့်ကို မြန်မြန်ဆန်ဆန်နှင့် လုံခြုံစွာဝင်ရောက်နိုင်ရန် ကူညီပေးပါမည်။
+  </p>
+      </div>
+    </div>
+  </div>
+</div>
+
       <h2>Login Account</h2>
       <form id="loginForm">
         <input
@@ -277,7 +420,18 @@
                 "An error occurred during login. Please try again."
             );
           }
+
         });
+
+                     function openGuidanceModal() {
+  document.getElementById('uploadGuidanceModal').style.display = 'flex';
+}
+function closeGuidanceModal() {
+  document.getElementById('uploadGuidanceModal').style.display = 'none';
+}
+
+
+        
     </script>
   </body>
 </html>
