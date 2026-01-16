@@ -50,6 +50,11 @@
     .next-btn::before { content:""; position:absolute; top:0; left:0; height:100%; width:100%; background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100%); pointer-events:none; border-radius:55px; }
     .next-btn:hover { transform: translateY(-2px) scale(1.02); }
 
+    /* Spinner for Next/Skip buttons */
+    .loading { display:inline-block; width:16px; height:16px; border:3px solid rgba(255,255,255,0.3); border-radius:50%; border-top-color:white; animation:spin 1s linear infinite; margin-left:8px; }
+    .hidden { display:none !important; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* Floating glass card (same as Confirm Document) */
     .glass {
       background: rgba(255, 255, 255, 0.15);
@@ -79,6 +84,7 @@
           transparent 70%);
       filter: blur(45px);
       opacity: 1;
+      pointer-events: none;
       clip-path: path(
         "M 250 0 
          C 390 0, 520 110, 520 230 
@@ -139,6 +145,83 @@
     .mbti-btn:hover {
       transform: scale(1.06);
       box-shadow: 0 0 18px rgba(255, 180, 200, 0.85);
+    }
+
+    /* ===== MOBILE HOBBY SLIDER (hearts) ===== */
+    .mobile-hobby-wrapper {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: -8px;
+      overflow: hidden; /* keep only one heart visible */
+    }
+
+    .mobile-hobby-track {
+      display: flex;
+      width: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    .mobile-hobby-slide {
+      flex: 0 0 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .mobile-heart {
+      position: relative;
+      width: 70%;
+      max-width: 260px;
+      padding: 20px 14px 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 50% 25%, rgba(255, 120, 150, 0.9), rgba(255, 90, 130, 0.72), rgba(255, 90, 130, 0.45));
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+
+    .mobile-heart-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mobile-heart-row {
+      display: flex;
+      justify-content: center;
+      gap: 0; /* spacing handled per-pill with margins */
+    }
+
+    .mobile-hobby-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .mobile-hobby-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.55);
+      background: transparent;
+      padding: 0;
+    }
+
+    .mobile-hobby-dot-active {
+      background: black;
+    }
+
+    @media (max-width: 640px) {
+      /* Hide desktop-style hobby cloud on small screens */
+      #hobbyContainer {
+        display: none;
+      }
+
+      .mobile-hobby-wrapper {
+        display: flex;
+      }
     }
 
 
@@ -264,8 +347,6 @@
   <div class="glass relative z-10 w-[92%] sm:w-[85%] md:w-[75%] lg:w-[68%] xl:w-[58%] 
               max-w-[760px] rounded-3xl p-8 sm:p-10 md:p-12 text-center animate-float">
 
-    <div class="heart-bg"></div>
-
     
 <span class="info-icon" onclick="openGuidanceModal()" role="button" aria-label="Upload guidance" title="Upload guidance">
   <i class="fa-solid fa-circle-exclamation" style="font-size:20px; color:black;"></i>
@@ -312,7 +393,7 @@
       What's your Hobby?
     </h2>
 
-    <!-- Pill Layout -->
+    <!-- Pill Layout (desktop / tablet) -->
     <div id="hobbyContainer" class="relative z-10 flex flex-col items-center space-y-3 md:space-y-4">
       <div class="flex gap-16 justify-center translate-y-0 translate-x-0"></div>
       <div class="flex gap-4 justify-center -translate-y-2 translate-x-1"></div>
@@ -324,10 +405,30 @@
       <div class="flex gap-4 justify-center -translate-y-7 -translate-x-1"></div>
     </div>
 
+    <!-- Mobile-only slider with 2 small heart cards -->
+    <div id="mobileHobbyWrapper" class="mobile-hobby-wrapper">
+      <div id="mobileHobbyTrack" class="mobile-hobby-track">
+        <div class="mobile-hobby-slide" data-slide-index="0">
+          <div >
+            <div id="mobileHeartInner1" class="mobile-heart-inner"></div>
+          </div>
+        </div>
+        <div class="mobile-hobby-slide" data-slide-index="1">
+          <div >
+            <div id="mobileHeartInner2" class="mobile-heart-inner"></div>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-hobby-dots">
+        <button type="button" class="mobile-hobby-dot mobile-hobby-dot-active" data-target-slide="0"></button>
+        <button type="button" class="mobile-hobby-dot" data-target-slide="1"></button>
+      </div>
+    </div>
+
     <!-- Buttons -->
     <div class="flex justify-center gap-6 mt-10">
-      <button id="skipBtn" class="next-btn">Skip</button>
-      <button id="nextBtn" class="next-btn">Next</button>
+      <button id="skipBtn" class="next-btn"><span class="btn-text">Skip</span><span class="loading hidden"></span></button>
+      <button id="nextBtn" class="next-btn"><span class="btn-text">Next</span><span class="loading hidden"></span></button>
     </div>
 
   </div>
@@ -346,34 +447,155 @@
     ];
 
     const container = document.getElementById("hobbyContainer");
+    const mobileHeartInner1 = document.getElementById("mobileHeartInner1");
+    const mobileHeartInner2 = document.getElementById("mobileHeartInner2");
 
+    function createPillElement(text, widthClass, marginClass) {
+      const pill = document.createElement("div");
+      pill.className =
+        "text-center py-2 bg-[#E78597] border border-[#e8acb8]/60 " +
+        "rounded-full text-[14px] md:text-[15px] text-gray-800 shadow-md " +
+        "backdrop-blur-sm cursor-pointer transition hover:scale-105";
+      if (widthClass) pill.classList.add(widthClass);
+      if (marginClass) pill.classList.add(marginClass);
+      pill.textContent = text;
+      pill.dataset.hobby = text.toLowerCase();
+      return pill;
+    }
+
+    // Desktop / tablet layout
     rows.forEach((rowItems, i) => {
       const row = container.children[i];
 
       rowItems.forEach(text => {
-        const pill = document.createElement("div");
+        let widthClass = "";
+        if (i === 0) widthClass = "w-[150px]";
+        if (i === 1) widthClass = "w-[140px]";
+        if (i === 2) widthClass = "w-[130px]";
+        if (i === 3) widthClass = "w-[135px]";
+        if (i === 4) widthClass = "w-[145px]";
+        if (i === 5) widthClass = "w-[150px]";
+        if (i === 6) widthClass = "w-[160px]";
+        if (i === 7) widthClass = "w-[170px]";
 
-        pill.className =
-          "text-center py-2 bg-[#E78597] border border-[#e8acb8]/60 " +
-          "rounded-full text-[14px] md:text-[15px] text-gray-800 shadow-md " +
-          "backdrop-blur-sm cursor-pointer transition hover:scale-105";
-
-        if (i === 0) pill.classList.add("w-[150px]");
-        if (i === 1) pill.classList.add("w-[140px]");
-        if (i === 2) pill.classList.add("w-[130px]");
-        if (i === 3) pill.classList.add("w-[135px]");
-        if (i === 4) pill.classList.add("w-[145px]");
-        if (i === 5) pill.classList.add("w-[150px]");
-        if (i === 6) pill.classList.add("w-[160px]");
-        if (i === 7) pill.classList.add("w-[170px]");
-
-        pill.textContent = text;
-        pill.dataset.hobby = text.toLowerCase();
-        pill.addEventListener("click", () => {
-          pill.classList.toggle("pill-selected");
-        });
+        const pill = createPillElement(text, widthClass);
         row.appendChild(pill);
       });
+    });
+
+    // Per-pill spacing on mobile hearts.
+    // Edit values here (e.g. 'mx-1', 'mx-2', 'mx-3', 'mx-4') to change
+    // horizontal space for individual pills on MOBILE ONLY.
+    const mobilePillSpacing = {
+      // Second heart tuning: larger mx-* pushes pills outward, smaller pulls inward
+      // Top row
+      "Gaming": "mx-4",
+      "Crafting": "mx-4",
+      // Second row (wider bulge)
+      "Graphic Design": "mx-3",
+      "Movie": "mx-2",
+      "Football": "mx-3",
+      // Third row
+      "Gym": "mx-3",
+      "Camping": "mx-3",
+      // Fourth row
+      "Video Editing": "mx-4",
+      "Volunteering": "mx-4",
+      // Bottom point
+      "Coding": "mx-2",
+    };
+
+    // Explicit rows for each mobile heart so we can shape them like hearts
+    const mobileHeart1Rows = [
+      ["Singing", "Music"],
+      ["Cooking", "Reading", "Travel"],
+      ["Learn", "Fashion", "Photography"],
+      ["Exercise", "Dancing"],
+      ["Painting"],
+    ];
+
+    const mobileHeart2Rows = [
+      // top lobe
+      ["Gaming", "Crafting"],
+      // widest row
+      ["Graphic Design", "Movie", "Football"],
+      // narrowing
+      ["Gym", "Camping"],
+      // lower narrowing row
+      ["Video Editing", "Volunteering"],
+      // bottom point
+      ["Coding"],
+    ];
+
+    function fillMobileHeartFromRows(innerEl, rowDefinitions) {
+      rowDefinitions.forEach(rowItems => {
+        const row = document.createElement("div");
+        row.className = "mobile-heart-row";
+        rowItems.forEach(text => {
+          const spacingClass = mobilePillSpacing[text] || "mx-2"; // default spacing
+          const pill = createPillElement(text, "px-3", spacingClass);
+          row.appendChild(pill);
+        });
+        innerEl.appendChild(row);
+      });
+    }
+
+    // Build both hearts explicitly
+    fillMobileHeartFromRows(mobileHeartInner1, mobileHeart1Rows);
+    fillMobileHeartFromRows(mobileHeartInner2, mobileHeart2Rows);
+
+    // Keep selections in sync across all pill copies
+    document.addEventListener("click", (e) => {
+      const target = e.target;
+      if (!target || !target.dataset || !target.dataset.hobby) return;
+      const hobbyKey = target.dataset.hobby;
+      const allMatching = document.querySelectorAll(`[data-hobby="${hobbyKey}"]`);
+      const shouldSelect = !target.classList.contains("pill-selected");
+      allMatching.forEach(el => {
+        el.classList.toggle("pill-selected", shouldSelect);
+      });
+    });
+
+    // Mobile slider behavior
+    const mobileTrack = document.getElementById("mobileHobbyTrack");
+    const mobileDots = Array.from(document.querySelectorAll(".mobile-hobby-dot"));
+    let mobileCurrentSlide = 0;
+
+    function setMobileSlide(index) {
+      mobileCurrentSlide = index;
+      mobileTrack.style.transform = `translateX(-${index * 100}%)`;
+      mobileDots.forEach((dot, i) => {
+        dot.classList.toggle("mobile-hobby-dot-active", i === index);
+      });
+    }
+
+    mobileDots.forEach(dot => {
+      dot.addEventListener("click", () => {
+        const targetIndex = Number(dot.dataset.targetSlide || "0");
+        setMobileSlide(targetIndex);
+      });
+    });
+
+    // Basic touch swipe support on mobile track
+    let touchStartX = null;
+    mobileTrack.addEventListener("touchstart", (e) => {
+      if (!e.touches || !e.touches.length) return;
+      touchStartX = e.touches[0].clientX;
+    });
+
+    mobileTrack.addEventListener("touchend", (e) => {
+      if (touchStartX === null) return;
+      const endX = e.changedTouches[0].clientX;
+      const deltaX = endX - touchStartX;
+      const threshold = 40; // minimal swipe distance
+      if (Math.abs(deltaX) > threshold) {
+        if (deltaX < 0 && mobileCurrentSlide < 1) {
+          setMobileSlide(1);
+        } else if (deltaX > 0 && mobileCurrentSlide > 0) {
+          setMobileSlide(0);
+        }
+      }
+      touchStartX = null;
     });
 
     document.getElementById('skipBtn').addEventListener('click', (e) => {
@@ -402,7 +624,7 @@
 
     window.collectPageData = function() {
       const selected = document.querySelectorAll('.pill-selected');
-      const hobbies = Array.from(selected).map(pill => pill.dataset.hobby);
+      const hobbies = Array.from(new Set(Array.from(selected).map(pill => pill.dataset.hobby)));
       if (hobbies.length > 5) {
         alert('⚠️ You can select a maximum of 5 hobbies.');
         return null;

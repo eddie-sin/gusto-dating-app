@@ -11,6 +11,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@400;700&family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet" />
 
   <style>
+    /* Align global navbar pill with this page's content width (match feed page) */
+    :root {
+      --nav-max: 100%;  /* let width be controlled by padding instead of fixed max */
+      --nav-pad: 4rem;  /* match lg:px-16 side padding */
+    }
+
+    @media (max-width: 1024px) {
+      :root {
+        --nav-pad: 1rem; /* match px-4 on smaller screens */
+      }
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -214,7 +226,7 @@
 <body class="text-[#4a2630]">
 
   <!-- Simple top bar / logo (replace with your real navbar if needed) -->
-  <header class="w-full bg-white/70 backdrop-blur-md shadow-sm">
+  <header data-local-header class="w-full bg-white/70 backdrop-blur-md shadow-sm">
     <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
       <div class="font-bold text-xl tracking-wide">GUSTO Dating App</div>
       <nav class="hidden sm:flex gap-6 text-sm">
@@ -668,5 +680,6 @@
       window.__teamOrbitTimer = setTimeout(buildTeamOrbit, 250);
     });
   </script>
+  <script src="/js/navbar.js" defer></script>
 </body>
 </html>

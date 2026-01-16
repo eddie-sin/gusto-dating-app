@@ -66,6 +66,11 @@
   }
   .btn-soft:hover { transform: translateY(-2px) scale(1.02); }
 
+  /* Spinner for continue button */
+  .loading { display:inline-block; width:16px; height:16px; border:3px solid rgba(0,0,0,0.12); border-radius:50%; border-top-color:#2e2e2e; animation:spin 1s linear infinite; margin-left:8px; }
+  .hidden { display:none !important; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   /* Short corner lines */
   .corner-line {
     position: absolute;
@@ -167,7 +172,7 @@
     <!-- Buttons -->
     <div class="flex flex-col items-center gap-4">
       <button id="continueBtn" class="btn-soft w-full max-w-[350px] h-[42px] sm:h-[45px] md:h-[48px] text-sm sm:text-base md:text-lg mb-2">
-        Yes, continue
+        <span class="btn-text">Yes, continue</span><span class="loading hidden"></span>
       </button>
       <a href="StudentId1.html"
    class="btn-soft w-full max-w-[350px] h-[42px] sm:h-[45px] md:h-[48px] text-sm sm:text-base md:text-lg flex items-center justify-center">
@@ -193,6 +198,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 document.getElementById('continueBtn').addEventListener('click', (e) => {
   e.preventDefault();
+  const btn = document.getElementById('continueBtn');
+  const text = btn.querySelector('.btn-text');
+  const loader = btn.querySelector('.loading');
+  try { btn.disabled = true; if (text) text.textContent = 'Processing...'; if (loader) loader.classList.remove('hidden'); } catch(e) {}
   document.dispatchEvent(new Event('registration:submit'));
 });
 

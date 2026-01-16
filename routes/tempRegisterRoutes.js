@@ -18,4 +18,7 @@ router.post("/step/:step", tempCtrl.saveStep);
 // Finalize: create User
 router.post("/complete", tempCtrl.completeRegistration);
 
+// Check username availability (query: ?username=...)
+router.get("/check-username", tempCtrl.checkUsername);
+
 module.exports = router;

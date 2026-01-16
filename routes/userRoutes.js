@@ -42,17 +42,13 @@ router.post(
 // Get all users (with optional status filter - for admin)
 router.get("/", authController.protect, userController.getAllUsers);
 
-// Get user by ID
-router.get("/:id", authController.protect, userController.getUser);
-
-// Get current user profile
+// Current user profile routes (must come BEFORE generic "/:id")
 router.get("/me", authController.protect, userController.getMe);
-
-// Update current user profile
 router.patch("/me", authController.protect, userController.updateMe);
-
-// Delete current user account
 router.delete("/me", authController.protect, userController.deleteMe);
+
+// Get user by ID (generic route, placed last)
+router.get("/:id", authController.protect, userController.getUser);
 
 /* ============================================================
    EXPORT ROUTER

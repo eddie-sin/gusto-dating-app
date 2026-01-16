@@ -81,10 +81,13 @@ exports.uploadUserMedia = catchAsync(async (req, res, next) => {
   const uploaded = { photos: [], studentIdPhoto: null };
 
   try {
-    // Validate presence of files
+    // Validate presence of files (or allow keptFileIds-only updates)
     const hasPhotos = Array.isArray(req.files?.photos) && req.files.photos.length > 0;
     const hasId = Array.isArray(req.files?.studentIdPhoto) && req.files.studentIdPhoto.length > 0;
-    if (!hasPhotos && !hasId) {
+    const hasKeptIds =
+      typeof req.body?.keptFileIds !== "undefined" && req.body.keptFileIds !== null;
+
+    if (!hasPhotos && !hasId && !hasKeptIds) {
       return next(new AppError("Please attach 'photos' and/or 'studentIdPhoto' files", 400));
     }
 
@@ -118,7 +121,46 @@ exports.uploadUserMedia = catchAsync(async (req, res, next) => {
 
     // Optionally update user's stored media if provided
     const update = {};
-    if (uploaded.photos.length) update.photos = uploaded.photos;
+
+    // Merge existing photos (keptFileIds) with newly uploaded photos, if provided
+    let finalPhotos = null;
+    if (uploaded.photos.length || typeof req.body?.keptFileIds !== "undefined") {
+      const currentUser = await User.findById(req.user._id).select("photos");
+      const existing = Array.isArray(currentUser?.photos)
+        ? currentUser.photos
+        : [];
+
+      let keptIds = [];
+      if (typeof req.body.keptFileIds === "string") {
+        try {
+          keptIds = JSON.parse(req.body.keptFileIds) || [];
+        } catch (_) {
+          keptIds = [];
+        }
+      } else if (Array.isArray(req.body.keptFileIds)) {
+        keptIds = req.body.keptFileIds;
+      }
+
+      keptIds = keptIds.map((id) => String(id));
+
+      const keptExisting = existing.filter((p) =>
+        keptIds.includes(String(p.fileId || p._id))
+      );
+
+      finalPhotos = [...keptExisting, ...uploaded.photos];
+
+      if (finalPhotos.length < 3 || finalPhotos.length > 5) {
+        return next(
+          new AppError(
+            "You must have at least 3 and at most 5 profile photos.",
+            400
+          )
+        );
+      }
+
+      update.photos = finalPhotos;
+    }
+
     if (uploaded.studentIdPhoto) update.studentIdPhoto = uploaded.studentIdPhoto;
 
     let updatedUser = null;

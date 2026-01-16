@@ -104,6 +104,11 @@
     }
   }
 
+  /* Spinner used for camera/upload buttons */
+  .loading { display:inline-block; width:16px; height:16px; border:3px solid rgba(0,0,0,0.12); border-radius:50%; border-top-color:#2e2e2e; animation:spin 1s linear infinite; margin-left:8px; }
+  .hidden { display:none !important; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
 </style>
 
 
@@ -152,6 +157,7 @@
   <div class="flex gap-3 justify-center mb-4 sm:mb-6">
     <button id="cameraBtn" class="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full bg-white flex items-center justify-center shadow-md hover:scale-105 transition-all duration-300">
       <i class="fa-solid fa-camera text-lg sm:text-xl md:text-2xl text-[#2e2e2e]"></i>
+      <span class="loading hidden"></span>
     </button>
     <button id="switchCameraBtn" class="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full bg-white flex items-center justify-center shadow-md hover:scale-105 transition-all duration-300">
       <i class="fa-solid fa-retweet text-lg sm:text-xl md:text-2xl text-[#2e2e2e]"></i>
@@ -166,10 +172,11 @@
   </div>
 
   <!-- Upload Button -->
-  <label for="fileUpload"
+  <label id="uploadLabel" for="fileUpload"
     class="mt-4 sm:mt-6 w-full max-w-xs sm:max-w-sm cursor-pointer glass px-6 sm:px-10 py-3 rounded-full text-[#2e2e2e] text-sm sm:text-base md:text-lg font-medium font-inter flex items-center justify-center gap-2 hover:scale-105 transition-all duration-300">
     <i class="fa-solid fa-upload"></i>
-    Upload an Image
+    <span class="upload-text">Upload an Image</span>
+    <span class="loading hidden"></span>
     <input id="fileUpload" type="file" accept="image/*" class="hidden" />
   </label>
 </div>
@@ -281,19 +288,25 @@ async function capturePhoto() {
   stream.getTracks().forEach(track => track.stop());
   cameraStarted = false;
 
-  // Save and redirect
+  // Save and trigger registration step save (step 13)
   localStorage.setItem('capturedID', imgData);
-  window.location.href = 'StudentId1Holder.html';
+  // show spinner on camera button while dispatching
+  try {
+    const loader = cameraBtn.querySelector('.loading');
+    cameraBtn.disabled = true;
+    if (loader) loader.classList.remove('hidden');
+  } catch (e) {}
+  document.dispatchEvent(new Event('registration:submit'));
 }
 
 // ✅ Handle camera button click
 cameraBtn.addEventListener('click', async () => {
   if (!cameraStarted) {
     await startCamera();
-    cameraBtn.innerHTML = '<i class="fa-solid fa-circle-stop text-red-500 text-2xl"></i>'; // change icon
+    cameraBtn.innerHTML = '<i class="fa-solid fa-circle-stop text-red-500 text-2xl"></i><span class="loading hidden"></span>'; // change icon
   } else {
     await capturePhoto();
-    cameraBtn.innerHTML = '<i class="fa-solid fa-camera text-lg sm:text-xl md:text-2xl text-[#2e2e2e]"></i>'; // reset icon
+    cameraBtn.innerHTML = '<i class="fa-solid fa-camera text-lg sm:text-xl md:text-2xl text-[#2e2e2e]"></i><span class="loading hidden"></span>'; // reset icon
   }
 });
 
@@ -309,11 +322,19 @@ fileUpload.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
+  // show spinner on upload label
+  try {
+    const uploadLabel = document.getElementById('uploadLabel');
+    const loader = uploadLabel.querySelector('.loading');
+    uploadLabel.setAttribute('aria-busy', 'true');
+    if (loader) loader.classList.remove('hidden');
+  } catch (e) {}
+
   const reader = new FileReader();
   reader.onload = function(event) {
     localStorage.setItem('capturedID', event.target.result);
-    // keep existing UX: navigate to holder/preview page
-    window.location.href = 'StudentId1Holder.html';
+    // Trigger registration flow to save this step and advance
+    document.dispatchEvent(new Event('registration:submit'));
   };
   reader.readAsDataURL(file);
 });

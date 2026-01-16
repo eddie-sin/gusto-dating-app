@@ -95,9 +95,53 @@
       transition: 0.3s;
     }
 
+    /* Mobile-only layout: 3 rows, 2 cols (first 2 rows), 5th centered on last row */
+    @media (max-width: 640px) {
+      .photo-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        justify-items: center;
+      }
+
+      .photo-box {
+        width: 150px;
+        height: 150px;
+      }
+
+      .photo-row .photo-box:nth-child(5) {
+        grid-column: 1 / -1;
+        justify-self: center;
+      }
+    }
+
+    /* Profile badge shown on the first/top-left photo */
+    .profile-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: linear-gradient(90deg,#FFD166,#FF6B6B);
+      color: white;
+      padding: 6px 8px;
+      font-size: 12px;
+      border-radius: 999px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      z-index: 12;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+    }
+
     .photo-box:hover {
       border-color: #ff6f91;
       background-color: rgba(255, 240, 245, 0.9);
+    }
+
+    /* Emphasize the main profile box (first box) when it has a profile image */
+    .photo-box.profile-main {
+      border-color: #ffd166;
+      box-shadow: 0 8px 30px rgba(255, 150, 130, 0.18), inset 0 1px 0 rgba(255,255,255,0.25);
+      transform: translateY(-4px);
     }
 
     .upload-area {
@@ -155,6 +199,11 @@
     .next-btn { background: linear-gradient(135deg, #F78998 0%, #fa97a9 50%, #F78998 100%); border-width: 0.13rem; border-style: solid; border-top-color: #ffffffcc; border-bottom-color: #ffffffcc; border-left-color: #fa97a9; border-right-color: #fa97a9; border-radius: 55px; box-shadow: 0px 36.86px 13.98px rgba(255, 106, 106, 0.02), 0px 20.34px 12.71px rgba(255, 106, 106, 0.08), 0px 8.9px 8.9px rgba(255, 106, 106, 0.13), 0px 2.54px 5.08px rgba(255, 106, 106, 0.15); position: relative; overflow:hidden; padding: 10px 25px; font-size: 16px; color: black; cursor: pointer; transition:0.25s ease; }
     .next-btn::before{ content:""; position:absolute; inset:0; background: linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.35) 100% ); border-radius:55px; pointer-events:none; }
     .next-btn:hover { transform: translateY(-2px) scale(1.02); }
+
+    /* Spinner for Next/Skip buttons */
+    .loading { display:inline-block; width:16px; height:16px; border:3px solid rgba(255,255,255,0.3); border-radius:50%; border-top-color:white; animation:spin 1s linear infinite; margin-left:8px; }
+    .hidden { display:none !important; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   
        /* ====== MODAL FIX ====== */
 
@@ -435,6 +484,7 @@
 
     <div class="photo-row">
       <div class="photo-box" id="box1">
+        <div class="profile-badge" id="profileBadge">Profile</div>
         <div class="upload-area">
           <span class="plus">+</span>
           <p>Tap to add</p>
@@ -486,7 +536,7 @@
     </div>
 
     <div class="btn-container">
-      <button id="nextBtn" class="next-btn">Next</button>
+      <button id="nextBtn" class="next-btn"><span class="btn-text">Next</span><span class="loading hidden"></span></button>
     </div>
   </div>
 
@@ -509,9 +559,14 @@
 
         const reader = new FileReader();
         reader.onload = (e) => {
-          preview.innerHTML = `<img src="${e.target.result}" alt="photo">`;
-          uploadArea.style.display = "none";
-          removeBtn.style.display = "block";
+            preview.innerHTML = `<img src="${e.target.result}" alt="photo">`;
+            uploadArea.style.display = "none";
+            removeBtn.style.display = "block";
+            // If this is the first box, show profile badge
+            if (boxId === 'box1') {
+              const badge = document.getElementById('profileBadge');
+              if (badge) badge.style.display = 'flex';
+            }
         };
         reader.readAsDataURL(file);
       });
@@ -522,6 +577,12 @@
         preview.innerHTML = "";
         uploadArea.style.display = "block";
         removeBtn.style.display = "none";
+        if (boxId === 'box1') {
+          const badge = document.getElementById('profileBadge');
+          if (badge) badge.style.display = 'none';
+          const boxEl = document.getElementById('box1');
+          if (boxEl) boxEl.classList.remove('profile-main');
+        }
       });
     }
 
@@ -530,6 +591,27 @@
     setupPhotoBox("box3", "photo3", "preview3", "remove3");
     setupPhotoBox("box4", "photo4", "preview4", "remove4");
     setupPhotoBox("box5", "photo5", "preview5", "remove5");
+
+    function updateProfileBadgeFromLocalStorage() {
+      try {
+        const photos = JSON.parse(localStorage.getItem('photos') || '[]');
+        const badge = document.getElementById('profileBadge');
+        if (!badge) return;
+        const box1 = document.getElementById('box1');
+        if (Array.isArray(photos) && photos.length > 0 && photos[0]) {
+          badge.style.display = 'flex';
+          if (box1) box1.classList.add('profile-main');
+        } else {
+          badge.style.display = 'none';
+          if (box1) box1.classList.remove('profile-main');
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    // Update badge when page pre-fills or on load
+    updateProfileBadgeFromLocalStorage();
 
     document.getElementById("nextBtn").addEventListener("click", async () => {
       const photos = [];
@@ -584,6 +666,19 @@
         const removeBtn = document.getElementById(`remove${idx+1}`);
         if (removeBtn) removeBtn.style.display = 'block';
       });
+      // show profile badge when there is a first photo
+      try {
+        // If prefill provided photos, prefer that; otherwise check localStorage
+        const firstPhoto = Array.isArray(prefill.photos) && prefill.photos.length > 0 ? prefill.photos[0] : null;
+        if (firstPhoto) {
+          const badge = document.getElementById('profileBadge');
+          const box1 = document.getElementById('box1');
+          if (badge) badge.style.display = 'flex';
+          if (box1) box1.classList.add('profile-main');
+        } else {
+          updateProfileBadgeFromLocalStorage();
+        }
+      } catch (e) { /* ignore */ }
     };
 
     window.collectPageData = function() {
@@ -605,6 +700,5 @@ function closeGuidanceModal() {
 
   </script>
   <script type="module" src="/js/registration.js"></script>
-  </script>
 </body>
 </html>
