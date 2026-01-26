@@ -23,7 +23,7 @@ router.post("/login", authController.login);
 /* router.use(authController.protect); */
 
 // Update password (must be logged in)
-router.patch("/updatePassword", authController.updatePassword);
+router.patch("/updatePassword", authController.protect, authController.updatePassword);
 
 // Get a chunk (5 profiles) for feed
 router.get("/feed/chunk", authController.protect, feedController.getFeedChunk);

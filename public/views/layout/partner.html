@@ -1031,7 +1031,7 @@
           )
           .join('');
 
-        const bioLines = [match.bio || '', match.zodiac || '', match.batch || '', match.contact || ''].filter(Boolean);
+        const bioLines = [match.name || '', match.bio || '', match.batch || '', match.contact || ''].filter(Boolean);
 
         return `
           <div class="match-card relative w-[90vw] max-w-[1200px]

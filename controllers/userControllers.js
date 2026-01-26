@@ -68,8 +68,30 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     
     // Filter out fields that shouldn't be updated
     const filteredBody = {};
-    const allowedFields = ['nickname', 'bio', 'hobbies', 'heightFt', 'heightIn', 'zodiac', 'mbti', 'photos', 'contact'];
+    // Allow username updates from profile page (client-side verifies current password before calling)
+    const allowedFields = ['username','nickname', 'bio', 'hobbies', 'heightFt', 'heightIn', 'zodiac', 'mbti', 'photos', 'contact'];
     
+    // If user attempts to change nickname, enforce 30-day restriction
+    if (req.body.nickname) {
+        const currentUser = await User.findById(req.user.id).select('nickname nicknameChangedAt');
+        if (currentUser) {
+            const newNickname = req.body.nickname;
+            if (newNickname !== currentUser.nickname) {
+                if (currentUser.nicknameChangedAt) {
+                    const now = Date.now();
+                    const changedAt = new Date(currentUser.nicknameChangedAt).getTime();
+                    const daysSince = (now - changedAt) / (1000 * 60 * 60 * 24);
+                    if (daysSince < 30) {
+                        const nextAllowed = new Date(changedAt + 30 * 24 * 60 * 60 * 1000);
+                        return next(new AppError(`Display name can only be changed once every 30 days. Next allowed change: ${nextAllowed.toISOString()}`, 403));
+                    }
+                }
+                // allowed: mark timestamp for change
+                filteredBody.nicknameChangedAt = Date.now();
+            }
+        }
+    }
+
     Object.keys(req.body).forEach(key => {
         if (allowedFields.includes(key)) {
             filteredBody[key] = req.body[key];

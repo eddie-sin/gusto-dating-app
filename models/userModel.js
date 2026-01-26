@@ -50,6 +50,8 @@ const userSchema = new mongoose.Schema(
     heightIn: { type: Number },
     zodiac: { type: String, trim: true },
     mbti: { type: String, trim: true },
+    // Timestamp when user last changed their display name (nickname)
+    nicknameChangedAt: { type: Date },
 
     /* SECTION-B: Verification */
     name: {

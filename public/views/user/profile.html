@@ -227,7 +227,7 @@
     <script src="/js/navbar.js" defer></script>
   </head>
 
-    <body class="min-h-screen overflow-y-hidden">
+    <body class="min-h-screen overflow-y-auto">
     <!-- Top Bar -->
     <div class="flex items-center justify-end max-w-4xl mx-auto p-4">
       <div class="flex flex-col items-center gap-2">
@@ -504,6 +504,7 @@
 
           <button
             class="w-full p-2 sm:p-2 rounded-2xl text-black text-base sm:text-md bg-[#FE5171] border border-white/50"
+            id="savePasswordBtn"
           >
             Save Change
           </button>
@@ -851,12 +852,8 @@
 
         <div class="w-full sm:w-4/5 mx-auto">
           <div class="mb-4 text-left">
-            <span class="text-sm sm:text-base text-gray-700"
-              >Current Username:</span
-            >
-            <span class="text-sm sm:text-sm font-semibold"
-              >Htet Oo Wai Yan</span
-            >
+            <span class="text-sm sm:text-base text-gray-700">Current Username:</span>
+            <span id="currentUsernameText" class="text-sm sm:text-sm font-semibold"></span>
           </div>
 
           <!-- NEW USERNAME FIELD -->
@@ -894,6 +891,7 @@
             Enter your current password to validate the username change:
           </label>
           <button
+            id="saveUsernameBtn"
             class="w-full p-2 sm:p-2 rounded-2xl text-black text-base sm:text-md bg-[#FE5171] border border-white/50 mb-2 mt-4"
           >
             Save Change
@@ -1322,7 +1320,7 @@
         // First verify the password
         try {
           const verifyResponse = await fetch(
-            `${API_BASE_URL.replace("/users", "/auth")}/login`,
+            `${API_BASE_URL}/login`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -1419,18 +1417,38 @@
 
       function updateAdditionalInfoUI(user) {
         if (!user) return;
-        // Only show editable Bio and read-only Phone. Remove Email/Instagram/Twitter/Location.
+        // Show Bio and Phone, plus editable Zodiac, MBTI, Height and Hobbies
         const additionalInfo = [
           {
             label: "Bio",
-            value: user.bio || "You can edit these details anytime",
+            value: user.bio || "Not set",
             field: "bio",
           },
           {
             label: "Phone",
-            value: user.contact?.phone || "09 00000000",
-            field: "contact.phone",
+            value: user.contact || "Error",
+            field: "contact",
             readOnly: true,
+          },
+          {
+            label: "Zodiac",
+            value: user.zodiac || "Not set",
+            field: "zodiac",
+          },
+          {
+            label: "MBTI",
+            value: user.mbti || "Not set",
+            field: "mbti",
+          },
+          {
+            label: "Height",
+            value: user.heightCm ? `${user.heightCm} cm` : (user.heightFt || user.heightIn) ? `${user.heightFt || ""} ft ${user.heightIn || ""} in` : "Not set",
+            field: "height",
+          },
+          {
+            label: "Hobbies",
+            value: user.hobbies && Array.isArray(user.hobbies) ? user.hobbies.join(', ') : "Not set",
+            field: "hobbies",
           },
         ];
 
@@ -1440,11 +1458,17 @@
           if (grid) {
             const [leftCol, rightCol] = grid.children;
 
-            // Update left column (only first half of small list)
-            leftCol.innerHTML = additionalInfo
-              .slice(0, 1)
+            // Left column: Bio, Zodiac, MBTI (3 items)
+            const bio = {
+              label: "Bio",
+              value: user.bio || "You can edit these details anytime",
+              field: "bio",
+            };
+            const zodiac = { label: "Zodiac", value: user.zodiac || "Not set", field: "zodiac" };
+            const mbti = { label: "MBTI", value: user.mbti || "Not set", field: "mbti" };
+
+            leftCol.innerHTML = [bio, zodiac, mbti]
               .map((item) => {
-                // If readOnly, don't render edit icon
                 const editIcon = item.readOnly
                   ? ""
                   : `<i class="fa-solid fa-pen ml-3 text-lg cursor-pointer edit-icon" data-field="${item.field}" data-value="${item.value}"></i>`;
@@ -1459,23 +1483,23 @@
               })
               .join("");
 
-            // Update right column (remaining items)
-            rightCol.innerHTML = additionalInfo
-              .slice(1)
-              .map((item) => {
-                const editIcon = item.readOnly
-                  ? ""
-                  : `<i class="fa-solid fa-pen ml-3 text-lg cursor-pointer edit-icon" data-field="${item.field}" data-value="${item.value}"></i>`;
-                return `
+            // Right column: Contact (read-only) then a combined block for Hobbies and Height
+            const contact = { label: "Phone", value: user.contact || "09 00000000", field: "contact", readOnly: true };
+            const hobbiesItem = { label: "Hobbies", value: user.hobbies && Array.isArray(user.hobbies) ? user.hobbies.join(', ') : "Not set", field: "hobbies" };
+            const heightItem = { label: "Height", value: user.heightCm ? `${user.heightCm} cm` : (user.heightFt || user.heightIn) ? `${user.heightFt || ""} ft ${user.heightIn || ""} in` : "Not set", field: "height" };
+
+            rightCol.innerHTML = `
                 <div class="mb-4">
-                    <p class="text-md mb-1">
-                        ${item.label} ${editIcon}
-                    </p>
-                    <p class="text-xl mb-5 value-text">${item.value}</p>
+                    <p class="text-md mb-1">${contact.label}</p>
+                    <p class="text-xl mb-5 value-text">${contact.value}</p>
+                </div>
+                <div class="mb-4">
+                    <p class="text-md mb-1">${hobbiesItem.label} <i class="fa-solid fa-pen ml-3 text-lg cursor-pointer edit-icon" data-field="${hobbiesItem.field}" data-value="${hobbiesItem.value}"></i></p>
+                    <p class="text-xl mb-2 value-text">${hobbiesItem.value}</p>
+                    <p class="text-md mb-1">${heightItem.label} <i class="fa-solid fa-pen ml-3 text-lg cursor-pointer edit-icon" data-field="${heightItem.field}" data-value="${heightItem.value}"></i></p>
+                    <p class="text-xl mb-5 value-text">${heightItem.value}</p>
                 </div>
             `;
-              })
-              .join("");
           }
         }
       }
@@ -1499,7 +1523,7 @@
       // Event Handlers
       // ============================
       function setupPasswordModal() {
-        const savePasswordBtn = document.querySelector("#passwordModal button");
+        const savePasswordBtn = document.getElementById("savePasswordBtn");
         if (savePasswordBtn) {
           savePasswordBtn.addEventListener("click", async () => {
             const oldPassword = document.getElementById("oldPassword").value;
@@ -1524,10 +1548,44 @@
             closePasswordModal();
           });
         }
+
+        // Toggle old password visibility
+        const toggleOld = document.getElementById("toggleOldPassword");
+        const oldInput = document.getElementById("oldPassword");
+        if (toggleOld && oldInput) {
+          toggleOld.addEventListener("click", () => {
+            oldInput.type = oldInput.type === "password" ? "text" : "password";
+          });
+        }
       }
 
       function setupUsernameModal() {
-        const saveUsernameBtn = document.querySelector("#usernameModal button");
+        // populate current username and wire UI
+        const currentUsernameSpan = document.getElementById("currentUsernameText");
+        if (currentUsernameSpan) {
+          currentUsernameSpan.textContent = window.currentUser?.username || "";
+        }
+
+        // Toggle to enable editing new username
+        const toggleNew = document.getElementById("toggleNewUsername");
+        const newUsernameInput = document.getElementById("newUsername");
+        if (toggleNew && newUsernameInput) {
+          toggleNew.addEventListener("click", () => {
+            newUsernameInput.readOnly = false;
+            newUsernameInput.focus();
+          });
+        }
+
+        // Toggle show/hide password
+        const togglePwd = document.getElementById("toggleUsernamePassword");
+        const pwdInput = document.getElementById("usernamePassword");
+        if (togglePwd && pwdInput) {
+          togglePwd.addEventListener("click", () => {
+            pwdInput.type = pwdInput.type === "password" ? "text" : "password";
+          });
+        }
+
+        const saveUsernameBtn = document.getElementById("saveUsernameBtn");
         if (saveUsernameBtn) {
           saveUsernameBtn.addEventListener("click", async () => {
             const newUsername = document.getElementById("newUsername").value;
@@ -1540,17 +1598,14 @@
 
             try {
               // Verify password first
-              const verifyResponse = await fetch(
-                `${API_BASE_URL.replace("/users", "/auth")}/login`,
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    username: window.currentUser?.username,
-                    password: password,
-                  }),
-                }
-              );
+              const verifyResponse = await fetch(`${API_BASE_URL}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  username: window.currentUser?.username,
+                  password: password,
+                }),
+              });
 
               if (!verifyResponse.ok) {
                 throw new Error("Incorrect password");
@@ -1635,6 +1690,9 @@
             window.currentUser.username || "Set username"
           } <i class="fa-solid fa-pen text-xl"></i>`;
           usernameBtn.addEventListener("click", () => {
+            // populate current username before showing
+            const currentUsernameSpan = document.getElementById("currentUsernameText");
+            if (currentUsernameSpan) currentUsernameSpan.textContent = window.currentUser?.username || "";
             document.getElementById("usernameModal").classList.remove("hidden");
           });
         }
@@ -1659,9 +1717,9 @@
           deleteBtn.addEventListener("click", deleteUserAccount);
         }
 
-        // Logout button
-        const logoutBtn = document.querySelector(".mbti-btnB:last-child");
-        if (logoutBtn && !logoutBtn.querySelector(".fa-trash")) {
+        // Logout button (select by explicit id to avoid accidental matches)
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
           logoutBtn.addEventListener("click", logoutUser);
         }
       }
@@ -1977,6 +2035,10 @@
           batch: "text",
           program: "text",
           nickname: "text",
+          zodiac: "select",
+          mbti: "select",
+          hobbies: "text",
+          height: "number",
         };
 
         return fieldTypes[field] || "text";
@@ -2190,6 +2252,67 @@
             helpText = "Enter your display name (max 30 characters)";
             break;
 
+          case "zodiac":
+            inputField = `
+        <select id="newPersonalValue" class="custom-select w-full p-4 rounded-2xl text-gray-800">
+          <option value="">Select Zodiac</option>
+          <option value="Aries" ${currentValue === "Aries" ? "selected" : ""}>Aries</option>
+          <option value="Taurus" ${currentValue === "Taurus" ? "selected" : ""}>Taurus</option>
+          <option value="Gemini" ${currentValue === "Gemini" ? "selected" : ""}>Gemini</option>
+          <option value="Cancer" ${currentValue === "Cancer" ? "selected" : ""}>Cancer</option>
+          <option value="Leo" ${currentValue === "Leo" ? "selected" : ""}>Leo</option>
+          <option value="Virgo" ${currentValue === "Virgo" ? "selected" : ""}>Virgo</option>
+          <option value="Libra" ${currentValue === "Libra" ? "selected" : ""}>Libra</option>
+          <option value="Scorpio" ${currentValue === "Scorpio" ? "selected" : ""}>Scorpio</option>
+          <option value="Sagittarius" ${currentValue === "Sagittarius" ? "selected" : ""}>Sagittarius</option>
+          <option value="Capricorn" ${currentValue === "Capricorn" ? "selected" : ""}>Capricorn</option>
+          <option value="Aquarius" ${currentValue === "Aquarius" ? "selected" : ""}>Aquarius</option>
+          <option value="Pisces" ${currentValue === "Pisces" ? "selected" : ""}>Pisces</option>
+        </select>
+      `;
+            helpText = "Select your zodiac sign";
+            break;
+
+          case "mbti":
+            inputField = `
+        <select id="newPersonalValue" class="custom-select w-full p-4 rounded-2xl text-gray-800">
+          <option value="">Select MBTI</option>
+          <option value="INTJ" ${currentValue === "INTJ" ? "selected" : ""}>INTJ</option>
+          <option value="INTP" ${currentValue === "INTP" ? "selected" : ""}>INTP</option>
+          <option value="ENTJ" ${currentValue === "ENTJ" ? "selected" : ""}>ENTJ</option>
+          <option value="ENTP" ${currentValue === "ENTP" ? "selected" : ""}>ENTP</option>
+          <option value="INFJ" ${currentValue === "INFJ" ? "selected" : ""}>INFJ</option>
+          <option value="INFP" ${currentValue === "INFP" ? "selected" : ""}>INFP</option>
+          <option value="ENFJ" ${currentValue === "ENFJ" ? "selected" : ""}>ENFJ</option>
+          <option value="ENFP" ${currentValue === "ENFP" ? "selected" : ""}>ENFP</option>
+          <option value="ISTJ" ${currentValue === "ISTJ" ? "selected" : ""}>ISTJ</option>
+          <option value="ISFJ" ${currentValue === "ISFJ" ? "selected" : ""}>ISFJ</option>
+          <option value="ESTJ" ${currentValue === "ESTJ" ? "selected" : ""}>ESTJ</option>
+          <option value="ESFJ" ${currentValue === "ESFJ" ? "selected" : ""}>ESFJ</option>
+          <option value="ISTP" ${currentValue === "ISTP" ? "selected" : ""}>ISTP</option>
+          <option value="ISFP" ${currentValue === "ISFP" ? "selected" : ""}>ISFP</option>
+          <option value="ESTP" ${currentValue === "ESTP" ? "selected" : ""}>ESTP</option>
+          <option value="ESFP" ${currentValue === "ESFP" ? "selected" : ""}>ESFP</option>
+        </select>
+      `;
+            helpText = "Select your MBTI type";
+            break;
+
+          case "hobbies":
+            inputField = `
+        <input type="text" id="newPersonalValue" value="${currentValue || ""}" class="modal-input w-full p-4 rounded-2xl text-gray-800" placeholder="Comma separated hobbies (e.g. reading, soccer)">
+      `;
+            helpText = "Enter hobbies separated by commas (max 5)";
+            break;
+
+          case "height":
+            const heightDefault = (window.currentUser && window.currentUser.heightCm) ? window.currentUser.heightCm : (parseFloat(currentValue) || "");
+            inputField = `
+        <input type="number" id="newPersonalValue" value="${heightDefault || ""}" class="modal-input w-full p-4 rounded-2xl text-gray-800" placeholder="Height in cm">
+      `;
+            helpText = "Enter your height in centimeters";
+            break;
+
           default:
             inputField = `
         <input type="text" 
@@ -2215,6 +2338,10 @@
           batch: "Text",
           program: "Text",
           nickname: "Text",
+          zodiac: "Selection",
+          mbti: "Text",
+          hobbies: "Text",
+          height: "Number",
         };
 
         return labels[field] || "Text";
@@ -2254,12 +2381,34 @@
         showLoading("Updating personal information...");
 
         try {
-          const updateData = { [currentEditField]: newValue };
+          let updateData = {};
+
+          if (currentEditField === "hobbies") {
+            // Expect comma-separated hobbies from input -> send as array
+            const arr = newValue
+              .split(",")
+              .map((s) => s.trim())
+              .filter((s) => s);
+            updateData = { hobbies: arr };
+          } else if (currentEditField === "height") {
+            // Accept centimeters as numeric input and convert to ft/in
+            const cm = parseFloat(newValue);
+            if (isNaN(cm) || cm <= 0) throw new Error("Please enter a valid height in cm");
+            const totalInches = cm / 2.54;
+            const ft = Math.floor(totalInches / 12);
+            const inches = Math.round(totalInches - ft * 12);
+            updateData = { heightFt: ft, heightIn: inches };
+          } else {
+            // simple field update (zodiac, mbti, nickname, etc.)
+            updateData = { [currentEditField]: newValue };
+          }
+
           const updatedUser = await updateUserProfile(updateData);
 
           if (updatedUser) {
             // Update UI
             updatePersonalInfoUI(updatedUser);
+            updateAdditionalInfoUI(updatedUser);
 
             closeModal("personalInfoModal");
             showConfirmation(
@@ -2372,6 +2521,10 @@
                 "batch",
                 "program",
                 "nickname",
+                "zodiac",
+                "mbti",
+                "hobbies",
+                "height",
               ].includes(field)
             ) {
               openPersonalInfoModal(field, currentValue, label);

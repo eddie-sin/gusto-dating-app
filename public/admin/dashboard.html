@@ -232,21 +232,7 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-
-<script src="/admin/js/auth.js"></script>
-<script src="/admin/js/modalManager.js"></script>
-<script src="/admin/js/dashboard.js"></script>
-<script>
-    console.log('Dashboard.html loaded');
-    console.log('Token in localStorage:', localStorage.getItem('adminToken'));
-    
-    // If no token, redirect to login
-    if (!localStorage.getItem('adminToken')) {
-        console.log('No token found, redirecting to login');
-        window.location.href = '/admin';
-    }
-</script>
+    <!-- Scripts will be loaded after modal markup to ensure elements exist -->
 <!-- Confirmation Modal -->
 <div id="confirmationModal" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 modal-hidden">
     <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95">
@@ -345,5 +331,19 @@
         </div>
     </div>
 </div>
+<!-- Load scripts after modal markup to ensure modal elements exist before JS runs -->
+<script src="/admin/js/auth.js"></script>
+<script src="/admin/js/modalManager.js"></script>
+<script src="/admin/js/dashboard.js"></script>
+<script>
+    console.log('Dashboard.html loaded');
+    console.log('Token in localStorage:', localStorage.getItem('adminToken'));
+    
+    // If no token, redirect to login
+    if (!localStorage.getItem('adminToken')) {
+        console.log('No token found, redirecting to login');
+        window.location.href = '/admin';
+    }
+</script>
 </body>
 </html>
